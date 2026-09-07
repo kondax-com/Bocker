@@ -216,7 +216,15 @@ class EnvConfigManager {
   }
 
   getAppUrl(): string {
-    return resolveAppUrl(this.config)
+    return resolveAppUrl({
+      ...this.config,
+      // Vercel が自動付与するシステム環境変数（NEXT_PUBLIC_ 版はクライアントバンドルにも埋め込まれる）
+      VERCEL_ENV: process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.VERCEL_ENV,
+      VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL,
+      VERCEL_PROJECT_PRODUCTION_URL:
+        process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ||
+        process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    })
   }
 
   validateRequired(): void {
@@ -251,15 +259,54 @@ class EnvConfigManager {
 
 type AppUrlConfig = Partial<
   Pick<EnvConfig, 'NODE_ENV' | 'NEXT_PUBLIC_DEPLOY_URL' | 'NEXT_PUBLIC_DEVELOP_URL'>
->
+> & {
+  /** Vercel の VERCEL_ENV（'production' | 'preview' | 'development'） */
+  VERCEL_ENV?: string
+  /** Vercel が各デプロイに自動付与するホスト名（例: bocker-project-xxxx.vercel.app） */
+  VERCEL_URL?: string
+  /** Vercel の本番ドメイン（カスタムドメインがあればそれ） */
+  VERCEL_PROJECT_PRODUCTION_URL?: string
+}
 
+const withHttps = (host: string): string =>
+  /^https?:\/\//i.test(host) ? host : `https://${host}`
+
+/**
+ * アプリの公開URLを解決する。
+ *
+ * 本番ビルド（NODE_ENV=production）では以下の優先順位で解決する:
+ *   1. NEXT_PUBLIC_DEPLOY_URL（明示設定。本番環境では必ず設定すること）
+ *   2. Vercel 本番デプロイなら VERCEL_PROJECT_PRODUCTION_URL
+ *   3. Vercel の Preview / Development デプロイなら VERCEL_URL
+ *   4. ブラウザ上なら現在のオリジン
+ *
+ * 2〜4 のフォールバックは、Vercel の Preview 環境など NEXT_PUBLIC_DEPLOY_URL を
+ * 環境ごとに設定していないデプロイで `next build` が
+ * "NEXT_PUBLIC_DEPLOY_URL is not set" で失敗するのを防ぐためのもの。
+ * いずれも解決できない場合のみエラーを投げる。
+ */
 export const resolveAppUrl = (config: AppUrlConfig): string => {
   if (config.NODE_ENV === 'production') {
     const deployUrl = config.NEXT_PUBLIC_DEPLOY_URL?.trim()
-    if (!deployUrl) {
-      throw new Error('NEXT_PUBLIC_DEPLOY_URL is not set')
+    if (deployUrl) {
+      return deployUrl
     }
-    return deployUrl
+
+    const productionUrl = config.VERCEL_PROJECT_PRODUCTION_URL?.trim()
+    if (config.VERCEL_ENV === 'production' && productionUrl) {
+      return withHttps(productionUrl)
+    }
+
+    const vercelUrl = config.VERCEL_URL?.trim()
+    if (vercelUrl) {
+      return withHttps(vercelUrl)
+    }
+
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      return window.location.origin
+    }
+
+    throw new Error('NEXT_PUBLIC_DEPLOY_URL is not set')
   }
 
   return config.NEXT_PUBLIC_DEVELOP_URL?.trim() || 'http://localhost:3000'

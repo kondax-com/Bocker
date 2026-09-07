@@ -53,9 +53,62 @@ describe('env-config ライブラリ', () => {
           NEXT_PUBLIC_DEPLOY_URL: 'https://bocker.jp',
         })
       ).toBe('https://bocker.jp')
-      expect(() => resolveAppUrl({ NODE_ENV: 'production' })).toThrow(
-        'NEXT_PUBLIC_DEPLOY_URL is not set'
-      )
+    })
+
+    it('本番環境でデプロイURLも Vercel URL も無い場合、ブラウザでは現在のオリジンを使う', () => {
+      // vitest は jsdom 環境のため window.location.origin が存在する
+      expect(resolveAppUrl({ NODE_ENV: 'production' })).toBe(window.location.origin)
+    })
+
+    it('本番環境でデプロイURLも Vercel URL も無く、ブラウザでもなければエラーをスローする', () => {
+      vi.stubGlobal('window', undefined)
+      try {
+        expect(() => resolveAppUrl({ NODE_ENV: 'production' })).toThrow(
+          'NEXT_PUBLIC_DEPLOY_URL is not set'
+        )
+      } finally {
+        vi.unstubAllGlobals()
+      }
+    })
+
+    it('本番ビルドでデプロイURLが未設定なら Vercel の自動付与URLへフォールバックする', () => {
+      // Preview デプロイ: VERCEL_URL を使う
+      expect(
+        resolveAppUrl({
+          NODE_ENV: 'production',
+          VERCEL_ENV: 'preview',
+          VERCEL_URL: 'bocker-project-abc123.vercel.app',
+          VERCEL_PROJECT_PRODUCTION_URL: 'bocker.jp',
+        })
+      ).toBe('https://bocker-project-abc123.vercel.app')
+
+      // 本番デプロイ: VERCEL_PROJECT_PRODUCTION_URL を優先する
+      expect(
+        resolveAppUrl({
+          NODE_ENV: 'production',
+          VERCEL_ENV: 'production',
+          VERCEL_URL: 'bocker-project-abc123.vercel.app',
+          VERCEL_PROJECT_PRODUCTION_URL: 'bocker.jp',
+        })
+      ).toBe('https://bocker.jp')
+
+      // 明示設定があればそれが最優先
+      expect(
+        resolveAppUrl({
+          NODE_ENV: 'production',
+          NEXT_PUBLIC_DEPLOY_URL: 'https://bocker.jp',
+          VERCEL_ENV: 'preview',
+          VERCEL_URL: 'bocker-project-abc123.vercel.app',
+        })
+      ).toBe('https://bocker.jp')
+
+      // 既にスキームが付いている場合は二重に付けない
+      expect(
+        resolveAppUrl({
+          NODE_ENV: 'production',
+          VERCEL_URL: 'https://bocker-project-abc123.vercel.app',
+        })
+      ).toBe('https://bocker-project-abc123.vercel.app')
     })
   })
 
