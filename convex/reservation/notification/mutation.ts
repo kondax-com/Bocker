@@ -1,3 +1,4 @@
+import { assertSameOrganization, denyNotificationAccess, requireOrganizationAccess } from '@/convex/utils/notificationAccess'
 import { mutation } from '@/convex/_generated/server';
 import { v } from 'convex/values';
 import { ConvexError } from 'convex/values';
@@ -14,16 +15,18 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const { tenant_id, org_id, reservation_id } = args;
     const reservation = await ctx.db.get(reservation_id);
-    if (!reservation) {
+    if (!reservation || reservation.is_archive) {
       throw new ConvexError({
         severity: ERROR_SEVERITY.ERROR,
         statusCode: ERROR_STATUS_CODE.NOT_FOUND,
         message: 'Reservation not found',
       });
     }
+    assertSameOrganization(reservation, tenant_id, org_id)
+    await requireOrganizationAccess(ctx, reservation.tenant_id, reservation.org_id)
     const notificationId = await createRecord(ctx, 'reservation_notification', {
-      tenant_id,
-      org_id,
+      tenant_id: reservation.tenant_id,
+      org_id: reservation.org_id,
       reservation_id,
       notification_sent: false,
       notification_sent_at: new Date().getTime(),
@@ -48,6 +51,9 @@ export const kill = mutation({
   }),
   handler: async (ctx, args) => {
     const { reservation_notification_id } = args;
+    const notification = await ctx.db.get(reservation_notification_id)
+    if (!notification) denyNotificationAccess()
+    await requireOrganizationAccess(ctx, notification.tenant_id, notification.org_id)
     await killRecord(ctx, reservation_notification_id);
     return {
       success: true,
@@ -63,6 +69,7 @@ export const killAll = mutation({
   handler: async (ctx, args) => {
     const { tenant_id, org_id } = args
 
+    await requireOrganizationAccess(ctx, tenant_id, org_id)
     // 該当する通知を取得
     const notifications = await ctx.db
       .query('reservation_notification')

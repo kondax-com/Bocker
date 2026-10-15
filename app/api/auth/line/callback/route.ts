@@ -14,8 +14,7 @@ import {
 } from '@/lib/line-oauth'
 import { verifyLineIdToken, type LineIdTokenPayload } from '@/lib/verify-line-idtoken'
 import { storeTokens, type LineTokens } from '@/lib/auth/token-manager'
-import { fetchQuery } from 'convex/nextjs'
-import { api } from '@/convex/_generated/api'
+import { getServerApiConfig } from '@/services/notifications/apiConfig'
 import type { Id } from '@/convex/_generated/dataModel'
 
 /**
@@ -204,36 +203,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 async function processOAuthCallback(request: NextRequest): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams
   let stateId: string | null = null
-  // 影響のないトレースログ（受信パラメータの可視化）
-  try {
-    const rawParams = Object.fromEntries(searchParams.entries())
-    const liffState = searchParams.get('liff.state')
-    let inner: Record<string, string | null> | null = null
-    if (liffState) {
-      try {
-        const qs = liffState.split('?')[1] ?? ''
-        const innerParams = new URLSearchParams(qs)
-        inner = {
-          code: innerParams.get('code'),
-          state: innerParams.get('state'),
-          id_token: innerParams.get('id_token'),
-        }
-      } catch {}
-    }
-    console.log('[LineAuth:Callback][TRACE] incoming', {
-      url: request.url,
-      origin: request.nextUrl.origin,
-      top_level: {
-        code: searchParams.get('code'),
-        state: searchParams.get('state'),
-        has_liff_state: !!liffState,
-      },
-      liff_state_inner: inner,
-      raw: rawParams,
-      ts: new Date().toISOString(),
-    })
-  } catch {}
-
   try {
     // Check for OAuth error response first
     const error = searchParams.get('error')
@@ -260,17 +229,15 @@ async function processOAuthCallback(request: NextRequest): Promise<NextResponse>
     stateId = extractState(searchParams)
 
     if (!stateId) {
-      const allParams = Object.fromEntries(searchParams.entries())
+      const parameterNames = Array.from(searchParams.keys())
       const liffState = searchParams.get('liff.state')
 
       debugLogger.error('Callback', 'State parameter missing from URL', {
-        allParams,
+        parameterNames,
         userAgent: request.headers.get('User-Agent')?.substring(0, 100),
         stateExtractionAnalysis: {
           directState: searchParams.get('state'),
           hasLiffState: !!liffState,
-          liffStateContent: liffState?.substring(0, 200),
-          liffStateDecoded: liffState ? decodeURIComponent(liffState) : null,
         },
         environmentInfo: {
           host: request.headers.get('host'),
@@ -280,9 +247,7 @@ async function processOAuthCallback(request: NextRequest): Promise<NextResponse>
         },
       })
 
-      const userMessage = OAUTH_DEBUG_MODE
-        ? `State パラメータが見つかりません - 受信パラメータ: ${JSON.stringify(allParams)}`
-        : 'Missing state parameter'
+      const userMessage = 'Missing state parameter'
 
       const redirectUrl = computeRedirectUrl(request)
       return NextResponse.redirect(
@@ -305,12 +270,10 @@ async function processOAuthCallback(request: NextRequest): Promise<NextResponse>
         hasCode: !!authCode,
         hasState: !!stateId,
         hasError: !!authError,
-        receivedParams: Object.fromEntries(searchParams.entries()),
+        receivedParameterNames: Array.from(searchParams.keys()),
       })
 
-      const userMessage = OAUTH_DEBUG_MODE
-        ? `必須パラメータが不足: code=${!!authCode}, state=${!!stateId}, error=${!!authError} - 受信: ${JSON.stringify(Object.fromEntries(searchParams.entries()))}`
-        : 'Invalid callback parameters'
+      const userMessage = 'Invalid callback parameters'
 
       const redirectUrl = computeRedirectUrl(request)
       return NextResponse.redirect(
@@ -466,10 +429,10 @@ async function processOAuthCallback(request: NextRequest): Promise<NextResponse>
     // Fetch LINE channel config from Convex using tenant/org stored in PreAuth
     const apiConfig =
       preAuth.tenantId && preAuth.orgId
-        ? await fetchQuery(api.organization.api_config.query.findByTenantAndOrg, {
-            tenant_id: preAuth.tenantId as Id<'tenant'>,
-            org_id: preAuth.orgId as Id<'organization'>,
-          })
+        ? await getServerApiConfig(
+            preAuth.tenantId as Id<'tenant'>,
+            preAuth.orgId as Id<'organization'>
+          )
         : null
 
     const channelId = apiConfig?.line_channel_id
@@ -535,19 +498,16 @@ async function processOAuthCallback(request: NextRequest): Promise<NextResponse>
         codeVerifierLength: preAuth.cv?.length,
         channelId,
         hasChannelSecret: !!channelSecret,
-        requestUrl: request.url,
+        requestPath: request.nextUrl.pathname,
         computedRedirectUri,
         httpStatus: err?.status,
         httpStatusText: err?.statusText,
         lineError: err?.data?.error,
         lineErrorDescription: err?.data?.error_description,
         lineErrorUri: err?.data?.error_uri,
-        rawResponse: err?.raw ? String(err.raw).substring(0, 400) + '...' : undefined,
       })
 
-      const userMessage = OAUTH_DEBUG_MODE
-        ? `トークン交換失敗 - code=${authCode?.substring(0, 10)}..., channelId=${channelId}, redirect_uri=${computedRedirectUri}`
-        : 'Failed to obtain access tokens'
+      const userMessage = 'Failed to obtain access tokens'
 
       // Redirect with additional debug info (non-sensitive)
       const redirectUrl = new URL(
@@ -579,13 +539,11 @@ async function processOAuthCallback(request: NextRequest): Promise<NextResponse>
         codeVerifierLength: preAuth.cv?.length,
         channelId,
         hasChannelSecret: !!channelSecret,
-        requestUrl: request.url,
+        requestPath: request.nextUrl.pathname,
         computedRedirectUri: computedRedirectUri,
       })
 
-      const userMessage = OAUTH_DEBUG_MODE
-        ? `トークン交換失敗 - code=${authCode?.substring(0, 10)}..., channelId=${channelId}, redirect_uri=${computedRedirectUri}`
-        : 'Failed to obtain access tokens'
+      const userMessage = 'Failed to obtain access tokens'
 
       return NextResponse.redirect(
         new URL(
@@ -759,7 +717,7 @@ async function exchangeCodeForTokens(
     debugLogger.info('TokenExchange', 'Using consistent redirect URI calculation', {
       baseOrigin,
       redirectUri,
-      requestUrl: request.url,
+      requestPath: request.nextUrl.pathname,
       headers: {
         host: request.headers.get('host'),
         xForwardedHost: request.headers.get('x-forwarded-host'),
@@ -785,7 +743,6 @@ async function exchangeCodeForTokens(
       channelId,
       hasChannelSecret: !!channelSecret,
       grantType: 'authorization_code',
-      codeSnippet: code.substring(0, 10) + '...',
     })
 
     const response = await fetch('https://api.line.me/oauth2/v2.1/token', {
@@ -808,8 +765,6 @@ async function exchangeCodeForTokens(
       debugLogger.error('TokenExchange', 'LINE API token exchange failed', {
         status: response.status,
         statusText: response.statusText,
-        error: errorData,
-        raw: raw?.substring(0, 400) + (raw && raw.length > 400 ? '...' : ''),
         endpoint: 'https://api.line.me/oauth2/v2.1/token',
         codeVerifierLength: codeVerifier.length,
         redirectUri,

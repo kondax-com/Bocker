@@ -1,6 +1,5 @@
 'use node';
 import Stripe from 'stripe';
-import { randomUUID } from 'crypto';
 import { api } from '@/convex/_generated/api';
 import { ConvexHttpClient } from 'convex/browser';
 import { Id } from '@/convex/_generated/dataModel';
@@ -46,8 +45,8 @@ export class StripeConnectRepository {
         charges_enabled: boolean;
         payouts_enabled: boolean;
         requirements: {
-          currently_due: any[];
-          errors: any[];
+          currently_due: NonNullable<Stripe.Account.Requirements['currently_due']>;
+          errors: NonNullable<Stripe.Account.Requirements['errors']>;
         };
       };
     }>
@@ -261,6 +260,13 @@ export class StripeConnectRepository {
       const default_fee_amount = 40;// 40円固定
       const percentage_fee = 0.04;// 4%
       const fee_amount = Math.floor(line_items.reduce((sum, item) => sum + (item.price_data?.unit_amount_decimal ? parseFloat(item.price_data.unit_amount_decimal) : item.price_data?.unit_amount || 0),0) * percentage_fee) + default_fee_amount;
+      const reservationMetadata = {
+        ...metadata,
+        reservation_id,
+        stripe_account_id,
+        tenant_id,
+        org_id,
+      };
       const sessionCreateParams: Stripe.Checkout.SessionCreateParams = {
         payment_method_types: ['card'],
         line_items: line_items,
@@ -270,18 +276,13 @@ export class StripeConnectRepository {
         customer_email: customer_email,
         client_reference_id: reservation_id,
         payment_intent_data: {
+          metadata: reservationMetadata,
           application_fee_amount: fee_amount,
           transfer_data: {
             destination: stripe_account_id,
           },
         },
-        metadata: {
-          ...metadata,
-          reservation_id: reservation_id,
-          stripe_account_id: stripe_account_id,
-          tenant_id: tenant_id,
-          org_id: org_id,
-        },
+        metadata: reservationMetadata,
       };
       
       const session = await this.stripe.checkout.sessions.create(sessionCreateParams);

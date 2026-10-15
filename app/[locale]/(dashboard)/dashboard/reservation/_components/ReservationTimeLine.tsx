@@ -6,7 +6,6 @@ import { useTenantAndOrganization } from '@/hooks/useTenantAndOrganization'
 import { useTimelineData, useReservationBars, useScheduleBars } from '@/hooks/useTimelineData'
 import { toast } from 'sonner'
 import { useErrorHandler } from '@/hooks/useErrorHandler'
-import { fetchMutation } from 'convex/nextjs'
 import { useRouter } from 'next/navigation'
 import { Id } from '@/convex/_generated/dataModel'
 
@@ -59,7 +58,7 @@ import { useDebounce } from 'use-debounce'
 import type { ReservationMenu, ReservationOption } from '@/convex/types'
 import { CustomerRepository } from '@/services/supabase/repositories/customer/CustomerRepository'
 import type { RowType, InsertType } from '@/services/supabase/SupabaseService'
-import { useQuery } from 'convex/react'
+import { useQuery, useMutation } from 'convex/react'
 import { GENDER_VALUES, Gender } from '@/convex/types'
 import {
   Select,
@@ -387,6 +386,7 @@ const ReservationDetailDialog = memo(
     const router = useRouter()
     const { showErrorToast } = useErrorHandler()
     const [updating, setUpdating] = useState(false)
+    const manageReservation = useMutation(api.reservation.manage.handleReservationManage)
 
     if (!reservation) return null
 
@@ -400,7 +400,7 @@ const ReservationDetailDialog = memo(
         setUpdating(true)
         if (!reservation) return
 
-        await fetchMutation(api.reservation.manage.handleReservationManage, {
+        await manageReservation({
           mode: 'status',
           payload: {
             reservationId: reservation._id,
@@ -537,6 +537,7 @@ const ReservationCreateDialog = memo(
     isOpen: boolean
     onClose: () => void
   }) => {
+    const manageReservation = useMutation(api.reservation.manage.handleReservationManage)
     const { tenantId, orgId, planName } = useTenantAndOrganization()
     const [selectedMenus, setSelectedMenus] = useState<ReservationMenu[]>([])
     const [selectedOptions, setSelectedOptions] = useState<ReservationOption[]>([])
@@ -766,7 +767,7 @@ const ReservationCreateDialog = memo(
         const startTimeUnix = target.getTime()
         const endTimeUnix = startTimeUnix + totalTimeMinutes * 60 * 1000
 
-        await fetchMutation(api.reservation.manage.handleReservationManage, {
+        await manageReservation({
           mode: 'create',
           payload: {
             tenant_id: tenantId,
@@ -823,6 +824,7 @@ const ReservationCreateDialog = memo(
         setIsCreating(false)
       }
     }, [
+      manageReservation,
       tenantId,
       orgId,
       selectedStaffId,

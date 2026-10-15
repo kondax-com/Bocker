@@ -59,7 +59,7 @@ const ApiSettingsCard = () => {
 
   // すべてのフックをここでトップレベルで宣言
   const organizationApiConfig = useQuery(
-    api.organization.api_config.query.findByTenantAndOrg,
+    api.organization.api_config.query.getForManagement,
     tenantId && orgId ? { tenant_id: tenantId, org_id: orgId } : 'skip'
   )
   const upsertOrganizationApiConfig = useMutation(api.organization.api_config.mutation.upsert)
@@ -74,10 +74,17 @@ const ApiSettingsCard = () => {
 
   // フォームの初期値が変更されたらリセット
   useEffect(() => {
-    if (organizationApiConfig) {
-      reset(organizationApiConfig)
-    }
-  }, [organizationApiConfig, reset])
+    reset(
+      organizationApiConfig ?? {
+        line_access_token: '',
+        line_channel_secret: '',
+        liff_id: '',
+        line_channel_id: '',
+        destination_id: '',
+        org_line_id: '',
+      }
+    )
+  }, [tenantId, orgId, organizationApiConfig, reset])
 
   // APIの設定を保存する関数
   const onApiSubmit = useCallback(

@@ -1,7 +1,7 @@
 import { mutation } from '@/convex/_generated/server';
 import { v } from 'convex/values';
 import { createRecord, updateRecord, excludeFields, archiveRecord, killRecord } from '@/convex/utils/helpers';
-import { checkAuth } from '@/convex/utils/auth';
+import { assertSameOrganization, denyNotificationAccess, requireStaffManagement, requireStaffConfigManagement } from '@/convex/utils/notificationAccess'
 import { ConvexError } from 'convex/values';
 import { ERROR_SEVERITY, ERROR_STATUS_CODE } from '@/lib/errors/constants';
 import { validateNumberLength } from '@/convex/utils/validations';
@@ -23,9 +23,11 @@ export const create = mutation({
     priority: v.optional(v.number()), // 優先度
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx);
+
     validateNumberLength(args.extra_charge, 'extra_charge');
     validateNumberLength(args.priority, 'priority');
+    const managedStaff = await requireStaffManagement(ctx, args.staff_id)
+    assertSameOrganization(managedStaff, args.tenant_id, args.org_id)
     // スタッフの存在確認
     const staff = await ctx.db.get(args.staff_id);
     if (!staff) {
@@ -71,7 +73,7 @@ export const update = mutation({
     priority: v.optional(v.number()), // 優先度
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx);
+
     validateNumberLength(args.extra_charge, 'extra_charge');
     validateNumberLength(args.priority, 'priority');
     // スタッフ設定の存在確認
@@ -86,7 +88,10 @@ export const update = mutation({
       });
     }
 
-    const updateData = excludeFields(args, ['staff_config_id']);
+    const managed = await requireStaffConfigManagement(ctx, args.staff_config_id)
+    assertSameOrganization(managed.config, args.tenant_id, args.org_id)
+    if (managed.config.staff_id !== args.staff_id) denyNotificationAccess()
+    const updateData = excludeFields(args, ['staff_config_id', 'staff_id', 'tenant_id', 'org_id']);
 
     return await updateRecord(ctx, args.staff_config_id, updateData);
   },
@@ -100,6 +105,8 @@ export const updateRole = mutation({
     role: roleType,
   },
   handler: async (ctx, args) => {
+    const { config, staff } = await requireStaffConfigManagement(ctx, args.staff_config_id)
+    if (config.staff_id !== args.staff_id || staff.clerk_user_id !== args.clerk_user_id) denyNotificationAccess()
     await updateRecord(ctx, args.staff_config_id, {
       role: args.role,
     })
@@ -117,7 +124,8 @@ export const archive = mutation({
     staff_config_id: v.id('staff_config'),
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx);
+
+    await requireStaffConfigManagement(ctx, args.staff_config_id)
     return await archiveRecord(ctx, args.staff_config_id);
   },
 });
@@ -138,12 +146,18 @@ export const upsert = mutation({
     priority: v.optional(v.number()), // 優先度
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx);
+
     validateNumberLength(args.extra_charge, 'extra_charge');
     validateNumberLength(args.priority, 'priority');
     const existingStaffConfig = await ctx.db.get(args.staff_config_id);
+    const staff = await requireStaffManagement(ctx, args.staff_id)
+    assertSameOrganization(staff, args.tenant_id, args.org_id)
+    if (existingStaffConfig) {
+      assertSameOrganization(existingStaffConfig, staff.tenant_id, staff.org_id)
+      if (existingStaffConfig.staff_id !== args.staff_id) denyNotificationAccess()
+    }
     if (!existingStaffConfig || existingStaffConfig.is_archive) {
-      return await createRecord(ctx, 'staff_config', args);
+      return await createRecord(ctx, 'staff_config', excludeFields(args, ['staff_config_id']));
     } else {
       const updateData = excludeFields(args, ['staff_config_id', 'staff_id', 'tenant_id', 'org_id']);
       return await updateRecord(ctx, existingStaffConfig._id, updateData);
@@ -156,7 +170,8 @@ export const kill = mutation({
     staff_config_id: v.id('staff_config'),
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx);
+
+    await requireStaffConfigManagement(ctx, args.staff_config_id)
     return await killRecord(ctx, args.staff_config_id);
   },
 });

@@ -1,10 +1,11 @@
+import { withReservationMutationCapability } from '@/lib/auth/reservation-capability'
 import type Stripe from 'stripe';
 import type { WebhookMetricsCollector } from '@/services/webhook/metrics';
 import type { LogContext, EventProcessingResult, WebhookDependencies } from '../types';
 import * as Sentry from '@sentry/nextjs';
 import { api } from '@/convex/_generated/api';
 import { fetchMutation, fetchQuery } from 'convex/nextjs';
-import { Id } from '@/convex/_generated/dataModel';
+import { Id, Doc } from '@/convex/_generated/dataModel';
 import { PointTransactionRepository } from '@/services/supabase/repositories/point';
 import { CustomerRepository } from '@/services/supabase/repositories/customer';
 import { CouponTransactionRepository } from '@/services/supabase/repositories/coupon';
@@ -13,10 +14,39 @@ import { SupabaseService } from '@/services/supabase/SupabaseService';
 import { sendReservationConfirmationEmail } from '@/lib/email_templates/reservation_email';
 import { getAppUrl, getEnv } from '@/lib/env-config';
 import { sendLineFlexMessageOrThrow } from '@/services/line/sendLineFlexMessageOrThrow';
+import { getServerApiConfig } from '@/services/notifications/apiConfig';
 import {
   formatReservationDateInJapan,
   formatReservationTimeRangeInJapan,
 } from '@/lib/reservationDateTime';
+
+function assertReservationMetadata(
+  reservation: Doc<'reservation'>,
+  metadata: Stripe.Metadata | null
+) {
+  const matches = (keys: string[], expected: string | undefined, required = true) => {
+    const present = keys.filter(key => metadata?.[key] !== undefined)
+    return (!required || present.length > 0) && present.every(key => metadata![key] === expected)
+  }
+  if (reservation.is_archive ||
+      !matches(['reservationId', 'reservation_id'], reservation._id) ||
+      !matches(['tenantId', 'tenant_id'], reservation.tenant_id) ||
+      !matches(['orgId', 'org_id'], reservation.org_id) ||
+      !matches(['customerUid', 'customer_uid'], reservation.customer_uid, false)) {
+    throw new Error('Checkout metadata does not match the stored reservation')
+  }
+}
+
+function assertBoundCheckoutSession(
+  reservation: Doc<'reservation'>,
+  metadata: Stripe.Metadata | null,
+  sessionId: string
+) {
+  assertReservationMetadata(reservation, metadata)
+  if (!reservation.stripe_checkout_session_id || reservation.stripe_checkout_session_id !== sessionId) {
+    throw new Error('Checkout session does not match the stored reservation')
+  }
+}
 
 /**
  * Stripe Checkout Session完了時のWebhookイベントを処理
@@ -54,10 +84,10 @@ export async function handleCheckoutSessionCompleted(
     // メタデータから予約情報を取得（snake_caseとcamelCase両方をサポート）
     const metadata = session.metadata;
     const reservationId = metadata?.reservationId || metadata?.reservation_id;
-    const tenantId = metadata?.tenantId || metadata?.tenant_id;
-    const orgId = metadata?.orgId || metadata?.org_id;
+    const metadataTenantId = metadata?.tenantId || metadata?.tenant_id;
+    const metadataOrgId = metadata?.orgId || metadata?.org_id;
     
-    if (!reservationId || !tenantId || !orgId) {
+    if (!reservationId || !metadataTenantId || !metadataOrgId) {
       console.warn(`⚠️ [${eventId}] 必要なメタデータが不足しています`, { ...context, metadata });
       return {
         result: 'skipped',
@@ -74,16 +104,7 @@ export async function handleCheckoutSessionCompleted(
       ? session.payment_intent 
       : session.payment_intent?.id;
 
-    // 2. 決済確認処理（ポイント使用・在庫確定含む）
-    await deps.retry(() =>
-      fetchMutation(api.reservation.payment.confirmPayment, {
-        reservation_id: reservationId as Id<"reservation">,
-        stripe_payment_intent_id: paymentIntentId,
-      })
-    );
-    metrics.incrementApiCall('convex');
-    
-    // 3. 予約詳細情報を取得（通知送信用）
+    // 決済の変更前に予約とCheckout Sessionの所属を検証する。
     const reservationWithDetail = await deps.retry(() =>
       fetchQuery(api.reservation.query.getWithDetailById, {
         id: reservationId as Id<"reservation">
@@ -97,6 +118,18 @@ export async function handleCheckoutSessionCompleted(
     
     const reservation = reservationWithDetail.reservation;
     const reservationDetail = reservationWithDetail.reservationDetail;
+    assertBoundCheckoutSession(reservation, metadata, session.id)
+    const tenantId = reservation.tenant_id;
+    const orgId = reservation.org_id;
+
+    // 予約で検証したIDを使って決済を確定する。
+    await deps.retry(() =>
+      fetchMutation(api.reservation.payment.confirmPayment, withReservationMutationCapability('payment-confirm', {
+        reservation_id: reservation._id,
+        stripe_payment_intent_id: paymentIntentId,
+      }))
+    );
+    metrics.incrementApiCall('convex');
     
     // 3. 顧客情報を取得
     const supabase = createClient(
@@ -158,10 +191,7 @@ export async function handleCheckoutSessionCompleted(
       })
     ),
       deps.retry(() =>
-        fetchQuery(api.organization.api_config.query.findByTenantAndOrg, {
-          tenant_id: tenantId as Id<"tenant">,
-          org_id: orgId as Id<"organization">
-        })
+        getServerApiConfig(tenantId, orgId)
       )
     ]);
     
@@ -279,8 +309,8 @@ export async function handleCheckoutSessionCompleted(
             date: reservation.date,
             start_time_unix: reservation.start_time_unix,
             end_time_unix: reservation.end_time_unix,
-            status: reservation.status,
-            payment_status: reservation.payment_status,
+            status: 'confirmed',
+            payment_status: 'completed',
             is_free_nomination: reservation.is_free_nomination ?? false,
           },
           reservationDetail: {
@@ -377,7 +407,8 @@ export async function handlePaymentIntentFailed(
     
     // メタデータから予約情報を取得
     const metadata = paymentIntent.metadata;
-    if (!metadata?.reservationId || !metadata?.tenantId || !metadata?.orgId) {
+    const reservationId = metadata?.reservationId || metadata?.reservation_id
+    if (!reservationId || !(metadata?.tenantId || metadata?.tenant_id) || !(metadata?.orgId || metadata?.org_id)) {
       console.warn(`⚠️ [${eventId}] 必要なメタデータが不足しています（サロン予約以外の決済の可能性）`, { ...context, metadata });
       return {
         result: 'skipped',
@@ -388,8 +419,6 @@ export async function handlePaymentIntentFailed(
         }
       };
     }
-    
-    const { reservationId } = metadata;
     
     // 1. 予約情報を取得
     const reservation = await deps.retry(() =>
@@ -403,27 +432,43 @@ export async function handlePaymentIntentFailed(
       throw new Error(`予約が見つかりません: ${reservationId}`);
     }
     
-    // 既にキャンセルされている場合はスキップ
-    if (reservation.status === 'cancelled' || reservation.status === 'refunded') {
-      console.log(`ℹ️ [${eventId}] 予約は既にキャンセル済みです: ${reservationId}`, context);
+    assertReservationMetadata(reservation, metadata)
+    if (!reservation.stripe_checkout_session_id) {
+      throw new Error('Checkout session is not attached to the reservation')
+    }
+
+    // 遅れて届いた決済失敗イベントで確定・完了済み予約を取り消さない。
+    if (reservation.status !== 'pending' || reservation.payment_status === 'paid' || reservation.payment_status === 'completed') {
+      console.log(`ℹ️ [${eventId}] 予約は既に処理済みです: ${reservationId}`, context);
       return {
         result: 'skipped',
         metadata: {
           action: 'payment_intent_failed',
-          reason: 'already_cancelled',
+          reason: 'already_processed',
           reservationId,
         }
       };
     }
+
+    const checkout = await deps.retry(() =>
+      deps.stripe.checkout.sessions.retrieve(reservation.stripe_checkout_session_id!)
+    )
+    metrics.incrementApiCall('stripe')
+    assertBoundCheckoutSession(reservation, checkout.metadata, checkout.id)
+    const checkoutPaymentIntentId = typeof checkout.payment_intent === 'string'
+      ? checkout.payment_intent : checkout.payment_intent?.id
+    if (!checkoutPaymentIntentId || checkoutPaymentIntentId !== paymentIntent.id) {
+      throw new Error('Payment intent does not match the stored checkout session')
+    }
     
     // 2. 予約をキャンセル（在庫復元も含む）
     await deps.retry(() =>
-      fetchMutation(api.reservation.mutation.cancelReservation, {
+      fetchMutation(api.reservation.mutation.cancelReservation, withReservationMutationCapability('cancel', {
         reservationId: reservationId as Id<"reservation">,
-        cancelledBy: 'system',
+        cancelledBy: 'system' as const,
         cancelReason: '決済失敗',
         skipValidation: true,
-      })
+      }))
     );
     metrics.incrementApiCall('convex');
     
@@ -486,7 +531,8 @@ export async function handleCheckoutSessionExpired(
     
     // メタデータから予約情報を取得
     const metadata = session.metadata;
-    if (!metadata?.reservationId || !metadata?.tenantId || !metadata?.orgId) {
+    const reservationId = metadata?.reservationId || metadata?.reservation_id
+    if (!reservationId || !(metadata?.tenantId || metadata?.tenant_id) || !(metadata?.orgId || metadata?.org_id)) {
       console.warn(`⚠️ [${eventId}] 必要なメタデータが不足しています（サロン予約以外の決済の可能性）`, { ...context, metadata });
       return {
         result: 'skipped',
@@ -497,8 +543,6 @@ export async function handleCheckoutSessionExpired(
         }
       };
     }
-    
-    const { reservationId } = metadata;
     
     // 1. 予約情報を取得
     const reservation = await deps.retry(() =>
@@ -512,8 +556,9 @@ export async function handleCheckoutSessionExpired(
       throw new Error(`予約が見つかりません: ${reservationId}`);
     }
     
-    // 既にキャンセルまたは予約受付されている場合はスキップ
-    if (reservation.status === 'cancelled' || reservation.status === 'refunded' || reservation.status === 'confirmed') {
+    assertBoundCheckoutSession(reservation, metadata, session.id)
+    // 既に確定・完了した予約は古い期限切れイベントで取り消さない。
+    if (reservation.status !== 'pending' || reservation.payment_status === 'paid' || reservation.payment_status === 'completed') {
       console.log(`ℹ️ [${eventId}] 予約は既に処理済みです: ${reservationId} (status: ${reservation.status})`, context);
       return {
         result: 'skipped',
@@ -528,12 +573,12 @@ export async function handleCheckoutSessionExpired(
     
     // 2. 予約をキャンセル（在庫復元も含む）
     await deps.retry(() =>
-      fetchMutation(api.reservation.mutation.cancelReservation, {
+      fetchMutation(api.reservation.mutation.cancelReservation, withReservationMutationCapability('cancel', {
         reservationId: reservationId as Id<"reservation">,
-        cancelledBy: 'system',
+        cancelledBy: 'system' as const,
         cancelReason: '決済タイムアウト',
         skipValidation: true,
-      })
+      }))
     );
     metrics.incrementApiCall('convex');
     

@@ -1,3 +1,5 @@
+import { denyNotificationAccess, requireActiveOrganization, requireOrganizationAccess, requireStaffManagement } from '@/convex/utils/notificationAccess'
+import { verifyServerCapability } from '@/lib/auth/server-capability'
 import { v } from 'convex/values';
 import { mutation } from '../../_generated/server';
 import { updateRecord, createRecord, killRecord } from '@/convex/utils/helpers';
@@ -29,6 +31,7 @@ export const createWithInvitation = mutation({
   },
   handler: async (ctx, args) => {
   
+    await requireOrganizationAccess(ctx, args.tenant_id, args.org_id, true)
     // 注: メールアドレスの重複チェックはフロントエンドで実施済み
     
     // スタッフレコード作成（clerk_user_id = null で招待中を示す）
@@ -76,16 +79,19 @@ export const acceptInvitation = mutation({
   args: {
     staff_id: v.id('staff'),
     clerk_user_id: v.string(),
+    server_token: v.string(),
     role: v.optional(roleType),
   },
   handler: async (ctx, args) => {
 
+    if (!verifyServerCapability(args.server_token, 'staff:accept-invitation', JSON.stringify(['staff-invitation', args.staff_id, args.clerk_user_id]))) denyNotificationAccess()
     // スタッフレコード取得
     const staff = await ctx.db.get(args.staff_id);
     if (!staff) {
       throw new Error('スタッフが見つかりません');
     }
 
+    await requireActiveOrganization(ctx, staff.tenant_id, staff.org_id)
     if (staff.clerk_user_id) {
       throw new Error('既に受諾済みの招待です');
     }
@@ -146,6 +152,7 @@ export const cancelInvitation = mutation({
       throw new Error('スタッフが見つかりません');
     }
 
+    await requireStaffManagement(ctx, args.staff_id)
     // 既に受諾済みの場合はキャンセルできない
     if (staff.clerk_user_id) {
       throw new Error('既に受諾済みの招待はキャンセルできません');

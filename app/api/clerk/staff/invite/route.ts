@@ -1,9 +1,8 @@
 // app/api/clerk/staff/invite/route.ts
 // スタッフ招待API - Clerk Core 2を使用してスタッフ招待を実行
 
-import { clerkClient, auth } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@/convex/_generated/api'
 import { Id } from '@/convex/_generated/dataModel'
 import { BASE_URL } from '@/lib/constants'
@@ -11,9 +10,12 @@ import { Role } from '@/convex/types'
 import { z } from 'zod'
 import { validateRequest, createValidationErrorResponse } from '@/lib/api/validation'
 import { inviteStaffSchema } from '@/lib/validations/api/staff'
-import { getEnv } from '@/lib/env-config'
+import {
+  getStaffManagementClient,
+  requireStaffManagement,
+  staffManagementErrorResponse,
+} from '@/lib/auth/staff-management'
 
-const convex = new ConvexHttpClient(getEnv('NEXT_PUBLIC_CONVEX_URL'))
 
 // Extend the inviteStaffSchema for full request
 const inviteStaffRequestSchema = inviteStaffSchema.extend({
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
   try {
     // 1. 認証チェック - 現在のユーザーが認証されているか確認
     console.log('🔐 認証チェック中...')
-    const { userId } = await auth()
+    const { convex, userId } = await getStaffManagementClient()
     console.log('👤 ユーザーID:', userId)
     
     if (!userId) {
@@ -73,7 +75,8 @@ export async function POST(req: NextRequest) {
       extra_charge,
       priority,
     } = validation.data
-    console.log('📦 受信データ:', { email, tenant_id, org_id, role })
+    await requireStaffManagement(convex, tenant_id as Id<'tenant'>, org_id as Id<'organization'>)
+
 
     // 5. Convexに招待レコード作成（clerk_user_id = null）
     // 注: メール重複チェックはフロントエンドで事前に実施済み
@@ -191,6 +194,8 @@ export async function POST(req: NextRequest) {
     })
 
   } catch (error: unknown) {
+    const authorizationError = staffManagementErrorResponse(error)
+    if (authorizationError) return authorizationError
     // 9. エラーハンドリング
     console.error('🚨 招待作成エラー:', error)
     console.error('🐞 エラーの詳細:', JSON.stringify(error, null, 2))

@@ -1,27 +1,23 @@
 // app/api/clerk/staff/invitations/route.ts
 // 招待状況管理API - 招待の確認・再送・キャンセル機能
 
-import { clerkClient, currentUser } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@/convex/_generated/api'
 import { Id } from '@/convex/_generated/dataModel'
 import { BASE_URL } from '@/lib/constants'
-import { getEnv } from '@/lib/env-config'
+import {
+  getStaffManagementClient,
+  requireStaffManagement,
+  staffManagementErrorResponse,
+} from '@/lib/auth/staff-management'
 
-const convex = new ConvexHttpClient(getEnv('NEXT_PUBLIC_CONVEX_URL'))
 
 // 招待一覧取得（保留中のもののみ）
 export async function GET(req: NextRequest) {
   try {
     // 1. 認証チェック
-    const user = await currentUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      )
-    }
+    const { convex } = await getStaffManagementClient()
 
     // 2. クエリパラメータからテナント・組織IDを取得（フィルタリング用）
     const { searchParams } = new URL(req.url)
@@ -34,6 +30,8 @@ export async function GET(req: NextRequest) {
         { status: 400 }
       )
     }
+
+    await requireStaffManagement(convex, tenant_id as Id<'tenant'>, org_id as Id<'organization'>)
 
     // 3. Convexから招待中スタッフ一覧を取得（招待情報も含まれている）
     const pendingStaff = await convex.query(api.staff.invitation.query.listPending, {
@@ -87,6 +85,8 @@ export async function GET(req: NextRequest) {
     })
 
   } catch (error: unknown) {
+    const authorizationError = staffManagementErrorResponse(error)
+    if (authorizationError) return authorizationError
     console.error('招待一覧取得エラー:', error)
     return NextResponse.json(
       { error: '招待一覧の取得に失敗しました' },
@@ -101,15 +101,7 @@ export async function POST(req: NextRequest) {
     console.log('🔄 招待再送処理開始')
     
     // 1. 認証チェック
-    const user = await currentUser()
-    if (!user) {
-      console.log('❌ 認証失敗')
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      )
-    }
-    const userId = user.id
+    const { convex, userId } = await getStaffManagementClient()
     console.log('✅ 認証成功:', userId)
 
     // 2. リクエストボディから再送に必要な情報を取得
@@ -129,7 +121,7 @@ export async function POST(req: NextRequest) {
 
     // 4. Convexからスタッフ情報を取得（一時的な情報含む）
     console.log('🔍 スタッフ情報取得中:', staff_id)
-    const staffData = await convex.query(api.staff.invitation.query.getCompleteStaffData, {
+    const staffData = await convex.query(api.staff.invitation.query.getStaffWithInvitation, {
       staff_id: staff_id as Id<"staff">,
     })
 
@@ -140,6 +132,8 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       )
     }
+
+    await requireStaffManagement(convex, staffData.tenant_id, staffData.org_id)
 
     console.log('✅ スタッフ情報取得成功:', { 
       name: staffData.name, 
@@ -159,7 +153,10 @@ export async function POST(req: NextRequest) {
     const clerk = await clerkClient()
     
     // フロントエンドから渡されたIDまたはConvexに保存されているIDを使用
-    const invitationIdToRevoke = invitation_id
+    const invitationIdToRevoke = staffData.invitation_id
+    if (invitation_id && invitation_id !== invitationIdToRevoke) {
+      return NextResponse.json({ error: '招待IDがスタッフと一致しません' }, { status: 400 })
+    }
     
     if (invitationIdToRevoke) {
       console.log('🗑️ 古い招待をキャンセル中:', invitationIdToRevoke)
@@ -231,6 +228,8 @@ export async function POST(req: NextRequest) {
     })
 
   } catch (error: unknown) {
+    const authorizationError = staffManagementErrorResponse(error)
+    if (authorizationError) return authorizationError
     console.error('❌ 招待再送エラー:', error)
     
     // エラーの詳細をログ出力

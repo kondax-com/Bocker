@@ -1,3 +1,5 @@
+import { requireReservationCreation, requireReservationMutation } from '@/convex/utils/reservationAccess'
+import { assertSameOrganization } from '@/convex/utils/notificationAccess'
 
 import { internal } from '@/convex/_generated/api'
 import { mutation, internalMutation } from '@/convex/_generated/server';
@@ -5,7 +7,6 @@ import { v } from 'convex/values';
 import { updateRecord } from '@/convex/utils/helpers';
 import { reservationStatusType,  paymentMethodType,reservationPaymentStatusType, reservationMenuType, reservationOptionType, imageType, StaffChangeHistory } from '@/convex/types';
 import { validateRequired, validateRequiredNumber, validateDateStrToDate } from '@/convex/utils/validations';
-import { checkAuth } from '@/convex/utils/auth';
 import { ConvexError } from 'convex/values';
 import { ERROR_STATUS_CODE, ERROR_SEVERITY } from '@/lib/errors/constants';
 import { cancelableDeadline } from '@/convex/reservation/reservation.helpers'; 
@@ -168,6 +169,7 @@ export const create = mutation({
     pending_duration_minutes: v.optional(v.number()), // pending状態の有効期限（分）
   },
   handler: async (ctx, args) => {
+    await requireReservationCreation(ctx, args)
     // 入力値の妥当性を検証し、不正なデータの登録を防止するためのバリデーション処理
     validateDateStrToDate(args.date, 'date')
     validateRequiredNumber(args.start_time_unix, 'start_time_unix')
@@ -367,7 +369,8 @@ export const update = mutation({
   },
   handler: async (ctx, args) => {
     // 認証チェック: ログイン済みユーザーのみ更新可能
-    checkAuth(ctx)
+    const managedReservation = await requireReservationMutation(ctx, args.reservation_id, 'update', args)
+    assertSameOrganization(managedReservation, args.tenant_id, args.org_id)
     // 入力値の妥当性検証
     validateDateStrToDate(args.date, 'date')
     validateRequiredNumber(args.start_time_unix, 'start_time_unix')
@@ -440,8 +443,10 @@ export const cancelReservation = mutation({
     cancelledBy: v.union(v.literal('customer'), v.literal('staff'), v.literal('system')),
     cancelReason: v.optional(v.string()),
     skipValidation: v.optional(v.boolean()), // 検証をスキップするか（システムキャンセル用）
+    server_token: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireReservationMutation(ctx, args.reservationId, 'cancel', args, args.server_token)
     // 予約と詳細情報を取得
     const reservation = await ctx.db.get(args.reservationId);
     if (!reservation || reservation.is_archive) {
@@ -580,8 +585,10 @@ export const confirmPayment = mutation({
   args: {
     reservation_id: v.id('reservation'),
     stripe_payment_intent_id: v.optional(v.string()),
+    server_token: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireReservationMutation(ctx, args.reservation_id, 'payment-confirm', args, args.server_token)
     // 予約の存在確認
     const reservation = await ctx.db.get(args.reservation_id);
     if (!reservation || reservation.is_archive) {
@@ -624,7 +631,8 @@ export const archive = mutation({
   },
   handler: async (ctx, args) => {
     // 認証チェック: ログイン済みユーザーのみアーカイブ可能
-    checkAuth(ctx)
+    const managedReservation = await requireReservationMutation(ctx, args.reservation_id, 'delete', args)
+    assertSameOrganization(managedReservation, args.tenant_id, args.org_id)
     validateRequired(args.org_id, 'org_id')
 
     // 対象予約が存在することを確認
@@ -659,7 +667,8 @@ export const kill = mutation({
   },
   handler: async (ctx, args) => {
     // 認証チェック: ログイン済みユーザーのみ削除可能
-    checkAuth(ctx)
+    const managedReservation = await requireReservationMutation(ctx, args.reservation_id, 'delete', args)
+    assertSameOrganization(managedReservation, args.tenant_id, args.org_id)
     validateRequired(args.org_id, 'org_id')
 
     // 対象予約が存在することを確認
@@ -709,7 +718,7 @@ export const updateStatus = mutation({
     status: reservationStatusType,
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx)
+    await requireReservationMutation(ctx, args.reservation_id, 'status', args)
     await updateRecord(ctx, args.reservation_id, {
       status: args.status,
     })
@@ -746,7 +755,7 @@ export const changeStaffForFreeNomination = mutation({
     })), // 入れ替えた相手の予約情報
   }),
   handler: async (ctx, args) => {
-    await checkAuth(ctx);
+    await requireReservationMutation(ctx, args.reservation_id, 'staff-change', args)
     
     // 入れ替え処理の状態を管理する変数
     let wasSwapped = false;
@@ -777,7 +786,7 @@ export const changeStaffForFreeNomination = mutation({
 
     // 4. 新しいスタッフ情報を取得
     const newStaff = await ctx.db.get(args.new_staff_id);
-    if (!newStaff || newStaff.org_id !== reservation.org_id) {
+    if (!newStaff || newStaff.org_id !== reservation.org_id || newStaff.tenant_id !== reservation.tenant_id || newStaff.is_archive || !newStaff.is_active) {
       throw new ConvexError({
         statusCode: ERROR_STATUS_CODE.NOT_FOUND,
         severity: ERROR_SEVERITY.ERROR,

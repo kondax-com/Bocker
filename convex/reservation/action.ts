@@ -5,6 +5,7 @@ import { v } from 'convex/values';
 import { RowType, SupabaseService } from '@/services/supabase/SupabaseService';
 import { createClient } from '@supabase/supabase-js';
 import { getEnv } from '@/lib/env-config'
+import { sendInternalReservationNotification } from '@/services/notifications/internalRequest'
 import { internal } from '@/convex/_generated/api';
 import { Doc, Id} from '@/convex/_generated/dataModel';
 import { ReservationMenu, ReservationOption, ReservationStatus, PaymentMethod, reservationStatusType } from '@/convex/types';
@@ -152,9 +153,9 @@ export const sendHourlyReminders = internalAction({
             
             // 通知送信処理
             if (customer.line_id) {
-              await sendLineReminder(reminder.org_name, reminder.reservation, reminder.menus, reminder.options, reminder.extra_charge, reminder.coupon_discount, reminder.use_points, reminder.total_price, customer);
+              await sendInternalReservationNotification('/api/line/reminder', reminder.reservation._id, 'reminder');
             } else if (customer.email) {
-              await sendEmailReminder(reminder.org_name, reminder.reservation, reminder.menus, reminder.options, reminder.extra_charge, reminder.coupon_discount, reminder.use_points, reminder.total_price, customer);
+              await sendInternalReservationNotification('/api/resend/reminder', reminder.reservation._id, 'reminder');
             } else {
               throw new Error('通知先（LINE IDまたはメール）が設定されていません');
             }
@@ -195,108 +196,35 @@ export const sendHourlyReminders = internalAction({
   },
 });
 
-// LINE通知送信（リマインダー専用APIを使用）
-async function sendLineReminder(orgName: string, reservation: Doc<"reservation">, menus: ReservationMenu[], options: ReservationOption[], extra_charge: number, coupon_discount: number, use_points: number, total_price: number, customer: RowType<'customer'>) {
-  // Convex環境では process.env.CONVEX_SITE_URL が利用可能
-  const baseUrl = getEnv('NEXT_PUBLIC_DEPLOY_URL')
-  const fullUrl = `${baseUrl}/api/line/reminder`
-  
-  console.log('=== LINE リマインダー送信開始 ===')
-  const requestBody = {
-    tenant_id: reservation.tenant_id,
-    org_id: reservation.org_id,
-    line_user_id: customer.line_id,
-    message_type: 'reminder',
-    reservation_data: {
-      id: reservation._id,
-      customer_name: reservation.customer_name,
-      staff_name: reservation.staff_name,
-      start_time_unix: reservation.start_time_unix,
-      end_time_unix: reservation.end_time_unix,
-      menus: menus,
-      options: options,
-      extra_charge: extra_charge,
-      coupon_discount: coupon_discount,
-      use_points: use_points,
-      total_price: total_price,
-      org_name: orgName
-    },
-  }
-  const response = await fetch(fullUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestBody),
-  });
-
-  // ヘッダーを安全に出力
-  const headers: Record<string, string> = {};
-  response.headers.forEach((value, key) => {
-    headers[key] = value;
-  });
-  
-  if (!response.ok) {
-    let errorData = {};
-    let responseText = '';
-    
-    try {
-      responseText = await response.text();
-      
-      if (responseText) {
-        errorData = JSON.parse(responseText);
+export const sendCancellationNotifications = internalAction({
+  args: { reservation_id: v.id('reservation') },
+  handler: async (_ctx, args) => {
+    const results = await Promise.allSettled([
+      sendInternalReservationNotification(
+        '/api/line/customer-cancellation-notification',
+        args.reservation_id,
+        'cancellation'
+      ),
+      sendInternalReservationNotification(
+        '/api/line/salon-cancellation-notification',
+        args.reservation_id,
+        'cancellation'
+      ),
+    ])
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        console.error('Cancellation notification failed', {
+          reservationId: args.reservation_id,
+          audience: index === 0 ? 'customer' : 'salon',
+        })
       }
-    } catch (parseError) {
-      console.log('Failed to parse response as JSON:', parseError);
+    })
+    return {
+      customer: results[0].status === 'fulfilled',
+      salon: results[1].status === 'fulfilled',
     }
-    console.log('Error data:', errorData);
-    throw new Error(`LINE通知送信エラー: ${response.status} ${response.statusText} - Response: ${responseText}`);
-  }
-  console.log('=== LINE リマインダー送信完了 ===');
-}
-
-// メール通知送信（リマインダー専用APIを使用）
-async function sendEmailReminder(orgName: string, reservation: Doc<"reservation">, menus: ReservationMenu[], options: ReservationOption[], extra_charge: number, coupon_discount: number, use_points: number, total_price: number, customer: RowType<'customer'>) {
-  const baseUrl = getEnv('NEXT_PUBLIC_DEPLOY_URL')
-  const fullUrl = `${baseUrl}/api/resend/reminder`
-  const response = await fetch(fullUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      type: 'reminder',
-      to: customer.email,
-      subject: '【リマインダー】本日のご予約について',
-      customerData: {
-        name: reservation.customer_name,
-        email: customer.email,
-      },
-      reservationData: {
-        id: reservation._id,
-        customer_name: reservation.customer_name,
-        staff_name: reservation.staff_name,
-        start_time_unix: reservation.start_time_unix,
-        end_time_unix: reservation.end_time_unix,
-        menus: menus,
-        options: options,
-        extra_charge: extra_charge,
-        coupon_discount: coupon_discount,
-        use_points: use_points,
-        total_price: total_price,
-        org_name: orgName
-      },
-      organizationData: {
-        name: orgName,
-      }
-    }),
-  });
-  
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(`メール送信エラー: ${response.status} ${errorData.error || response.statusText}`);
-  }
-}
+  },
+})
 
 type CreatePayload = {
   tenant_id: Id<'tenant'>;
