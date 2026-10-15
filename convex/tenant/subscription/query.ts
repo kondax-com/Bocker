@@ -22,6 +22,29 @@ export const getSubscription = query({
 });
 
 /**
+ * Stripe サブスクリプションIDでサブスクリプションを検索
+ *
+ * Webhook (customer.subscription.deleted など) が「どのサブスクリプションに関する
+ * イベントか」を厳密に照合するために使用する。顧客IDでの検索は、テナントが
+ * 再決済で別のサブスクリプションに乗り換えた後に古いサブスクリプションの
+ * イベントが届いた場合、新しいレコードを誤って操作してしまうため使わない。
+ */
+export const findByStripeSubscriptionId = query({
+  args: {
+    stripe_subscription_id: v.string(),
+  },
+  handler: async (ctx, args) => {
+    validateStringLength(args.stripe_subscription_id, 'stripe_subscription_id');
+    return await ctx.db
+      .query('subscription')
+      .withIndex('by_stripe_subscription_archive', (q) =>
+        q.eq('stripe_subscription_id', args.stripe_subscription_id).eq('is_archive', false)
+      )
+      .first();
+  },
+});
+
+/**
  * Stripe顧客IDでサブスクリプションを検索
  */
 export const findByStripeCustomerId = query({

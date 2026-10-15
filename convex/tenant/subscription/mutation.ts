@@ -13,6 +13,7 @@ import {
 import { archiveRecord, updateRecord, killRecord, createRecord } from '@/convex/utils/helpers';
 import { checkAuth } from "@/convex/utils/auth";
 import { billingPeriodType, subscriptionPlanNameType, subscriptionStatusType } from '@/convex/types';
+import { isStaleSubscriptionEvent } from '@/convex/utils/subscription';
 
 export const upsertSubscription = mutation({
   args: {
@@ -58,6 +59,31 @@ export const upsertSubscription = mutation({
           q.eq('stripe_customer_id', args.stripe_customer_id).eq('is_archive', false)
         )
         .first();
+    }
+
+    // 別のサブスクリプションIDを持つ既存レコードが見つかった場合（tenant_id / customer_id で
+    // フォールバック一致した場合）、届いたイベントが「乗り換え前の古いサブスクリプション」の
+    // ものであれば無視する。支払い失敗 → 再決済で新しいサブスクリプションに切り替わった後、
+    // 古いサブスクリプションの past_due / canceled イベントが遅れて届き、新しいレコードを
+    // 巻き戻してしまうのを防ぐ。
+    if (
+      existingSubscription &&
+      isStaleSubscriptionEvent({
+        existing: {
+          stripe_subscription_id: existingSubscription.stripe_subscription_id,
+          current_period_start: existingSubscription.current_period_start,
+        },
+        incoming: {
+          stripe_subscription_id: args.stripe_subscription_id,
+          status: args.status,
+          current_period_start: args.current_period_start * 1000,
+        },
+      })
+    ) {
+      console.warn(
+        `[upsertSubscription] Ignored stale event for stripe_subscription_id=${args.stripe_subscription_id} (status=${args.status}); tenant is now tracking stripe_subscription_id=${existingSubscription.stripe_subscription_id}`
+      );
+      return existingSubscription._id;
     }
 
     // plan_name が UNKNOWN の場合、既存レコードに有効な値があれば上書きしない。
@@ -118,7 +144,7 @@ export const paymentFailed = mutation({
     validateStringLength(args.stripe_customer_id, 'stripe_customer_id');
     
     // サブスクリプションを検索
-    let subscription = await ctx.db.query('subscription').withIndex('by_stripe_customer_archive', q => 
+    const subscription = await ctx.db.query('subscription').withIndex('by_stripe_customer_archive', q => 
       q.eq('stripe_customer_id', args.stripe_customer_id)
       .eq('is_archive', false)
     ).first();
