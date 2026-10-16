@@ -1,11 +1,20 @@
-import { getEnv } from '@/lib/env-config'
+const domain = process.env.CLERK_JWT_ISSUER_DOMAIN
+const applicationID = process.env.NEXT_PUBLIC_CONVEX_AUD
+
+if (!domain?.trim()) {
+  throw new Error('CLERK_JWT_ISSUER_DOMAIN is required')
+}
+if (!applicationID?.trim()) {
+  throw new Error('NEXT_PUBLIC_CONVEX_AUD is required')
+}
+
 const authConfig = {
   providers: [
     {
-      domain: getEnv('CLERK_JWT_ISSUER_DOMAIN'),
-      applicationID: getEnv('NEXT_PUBLIC_CONVEX_AUD'),
+      domain,
+      applicationID,
     },
   ],
-};
+}
 
-export default authConfig;
+export default authConfig
