@@ -2,16 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
 import { CustomerRepository } from '@/services/supabase/repositories/customer';
 import { verifyPassword } from '@/lib/auth/password';
 import { emailSchema } from '@/lib/validations/api/common';
 import { LOGIN_SESSION_KEY } from '@/services/line/constants';
 import { SessionPayload } from '@/lib/types';
 import { getEnv } from '@/lib/env-config';
-import { ActiveCustomerType } from '@/convex/types';
-import type { RowType } from '@/services/supabase/SupabaseService';
 import { Id } from '@/convex/_generated/dataModel';
+import { getCustomerSession } from '@/lib/auth/customer';
 
 export const runtime = 'nodejs';
 
@@ -130,200 +128,21 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    // URLからtenantIdとorgIdを取得
-    const { searchParams } = new URL(request.url);
-    const requestedTenantId = searchParams.get('tenantId');
-    const requestedOrgId = searchParams.get('orgId');
-    
-    console.log('[API /api/auth/session] Processing session retrieval request:', {
-      requestedTenantId,
-      requestedOrgId,
-      url: request.url,
-      host: request.headers.get('host'),
-      origin: request.headers.get('origin'),
-      referer: request.headers.get('referer'),
-      userAgent: request.headers.get('User-Agent')?.substring(0, 50),
-      cookieHeader: request.headers.get('cookie')?.substring(0, 100),
-    });
-
-    const cookieStore = await cookies();
-    const token = cookieStore.get(LOGIN_SESSION_KEY)?.value;
-    
-    // Debug: List all available cookies
-    const allCookies = cookieStore.getAll();
-    console.log('[API /api/auth/session] Cookie debug:', {
-      sessionCookieName: LOGIN_SESSION_KEY,
-      sessionTokenExists: !!token,
-      sessionTokenLength: token?.length || 0,
-      allCookieNames: allCookies.map(c => c.name),
-      cookieCount: allCookies.length,
-    });
-
-    if (!token) {
-      console.log('[API /api/auth/session] No session token found');
-      return NextResponse.json(
-        { error: 'Session not found' },
-        { status: 401 }
-      );
-    }
-
-    if (!requestedTenantId || !requestedOrgId) {
-      return NextResponse.json({ error: 'Missing store information' }, { status: 400 });
-    }
-
-    let currentSession: SessionPayload;
-    try {
-      const decodedPayload = jwt.verify(token, APP_JWT_SECRET) as SessionPayload & { name?: string };
-      
-      console.log('[API /api/auth/session] Successfully decoded JWT token:', {
-        customerUid: decodedPayload.customerUid,
-        email: decodedPayload.email,
-        tenantId: decodedPayload.tenantId,
-        orgId: decodedPayload.orgId,
-        customerName: decodedPayload.customerName,
-        name: decodedPayload.name,
-        lineUserId: decodedPayload.lineUserId,
-        target_type: decodedPayload.target_type,
-      });
-      
-      // Handle backward compatibility: if 'name' exists but 'customerName' doesn't, use 'name'
-      if (decodedPayload.name && !decodedPayload.customerName) {
-        decodedPayload.customerName = decodedPayload.name;
-        console.log('[API /api/auth/session] Migrated old token format: name -> customerName');
-      }
-      
-      currentSession = decodedPayload;
-    } catch (err) {
-      console.warn('[API /api/auth/session] Invalid session token:', err);
-      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
-    }
-
-    console.log('[API /api/auth/session] Session comparison:', {
-      currentTenantId: currentSession.tenantId,
-      requestedTenantId: requestedTenantId,
-      currentOrgId: currentSession.orgId, 
-      requestedOrgId: requestedOrgId,
-      tenantMatches: currentSession.tenantId === requestedTenantId,
-      orgMatches: currentSession.orgId === requestedOrgId,
-      bothMatch: currentSession.tenantId === requestedTenantId && currentSession.orgId === requestedOrgId,
-    });
-
-    // 同じ店舗の場合は現在のセッションを返す
-    if (currentSession.tenantId === requestedTenantId && currentSession.orgId === requestedOrgId) {
-      console.log('[API /api/auth/session] Session matches requested tenant/org, returning existing session');
-      return NextResponse.json({ session: currentSession }, { status: 200 });
-    }
-
-    console.log('[API /api/auth/session] Store transition detected, creating new session...');
-
-    // 異なる店舗の場合、新しいセッションを作成
-    const customerRepo = new CustomerRepository();
-    let customer: RowType<'customer'> | null = null;
-
-    if (currentSession.lineUserId) {
-      // LINE認証ユーザーの場合
-      customer = await customerRepo.findByTenantAndOrgAndCustomerLineId(
-        requestedTenantId,
-        requestedOrgId,
-        currentSession.lineUserId
-      );
-
-      if (!customer) {
-        console.log('[API /api/auth/session] Creating new LINE customer for different store');
-        const result = await customerRepo.createCustomerWithDetailsAndPoints(
-          {
-            uid: uuidv4(),
-            tenant_id: requestedTenantId,
-            org_id: requestedOrgId,
-            line_id: currentSession.lineUserId,
-            line_user_name: currentSession.lineUserName,
-            email: currentSession.email,
-            customer_type: 'first_time'
-          },
-          {
-            email: currentSession.email || '',
-            gender: null,
-            birthday: null,
-            age: 0,
-            notes: 'LI'
-          },
-          0
-        );
-        customer = result.customer;
-      }
-    } else if (currentSession.email) {
-      // メール認証ユーザーの場合
-      customer = await customerRepo.findByTenantAndOrgAndCustomerEmail(
-        requestedTenantId,
-        requestedOrgId,
-        currentSession.email
-      );
-
-      if (!customer) {
-        console.log('[API /api/auth/session] Creating new email customer for different store');
-        const result = await customerRepo.createCustomerWithDetailsAndPoints(
-          {
-            uid: uuidv4(),
-            tenant_id: requestedTenantId,
-            org_id: requestedOrgId,
-            email: currentSession.email,
-            customer_type: 'first_time'
-          },
-          {
-            email: currentSession.email,
-            gender: null,
-            birthday: null,
-            age: 0,
-            notes: ''
-          },
-          0
-        );
-        customer = result.customer;
-      }
-    }
-
-    if (!customer) {
-      console.error('[API /api/auth/session] Failed to create or find customer for new store');
-      return NextResponse.json({ error: 'Customer creation failed' }, { status: 500 });
-    }
-
-    // 新しいセッションペイロードを作成
-    const newSessionPayload: SessionPayload = {
-      customerUid: customer.uid,
-      tenantId: requestedTenantId as Id<"tenant">,
-      orgId: requestedOrgId as Id<"organization">,
-      email: customer.email || undefined,
-      customerName: customer.last_name + ' ' + customer.first_name,
-      lineUserId: customer.line_id || undefined,
-      lineUserName: customer.line_user_name || undefined,
-      target_type: customer.customer_type as ActiveCustomerType
-    };
-
-    // 新しいJWTトークンを生成
-    const newToken = jwt.sign(newSessionPayload, APP_JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-
-    // 新しいセッションクッキーを設定
-    cookieStore.set(LOGIN_SESSION_KEY, newToken, {
-      httpOnly: true,
-      secure: getEnv('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30日
-    });
-
-    console.log('[API /api/auth/session] Successfully created new session for different store');
-    return NextResponse.json({ session: newSessionPayload }, { status: 200 });
-
-  } catch (error) {
-    console.error('[API /api/auth/session] Error during session retrieval:', error);
-    
-    return NextResponse.json(
-      {
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
+  const { searchParams } = new URL(request.url)
+  const requestedTenantId = searchParams.get('tenantId')
+  const requestedOrgId = searchParams.get('orgId')
+  if (!requestedTenantId || !requestedOrgId) {
+    return NextResponse.json({ error: 'Missing store information' }, { status: 400 })
   }
+  const session = await getCustomerSession()
+  if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 401 })
+  if (session.tenantId !== requestedTenantId || session.orgId !== requestedOrgId) {
+    return NextResponse.json({ error: 'この店舗で再度ログインしてください' }, { status: 401 })
+  }
+  const legacyName = (session as SessionPayload & { name?: unknown }).name
+  const currentSession =
+    !session.customerName && typeof legacyName === 'string'
+      ? { ...session, customerName: legacyName }
+      : session
+  return NextResponse.json({ session: currentSession }, { status: 200 })
 }

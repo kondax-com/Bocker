@@ -1,3 +1,5 @@
+import { requireReservationMutation } from '@/convex/utils/reservationAccess'
+import { withReservationMutationCapability } from '@/lib/auth/reservation-capability'
 import { mutation, internalMutation } from '@/convex/_generated/server';
 import { v } from 'convex/values';
 import { ConvexError } from 'convex/values';
@@ -14,10 +16,12 @@ export const confirmPayment = mutation({
   args: {
     reservation_id: v.id('reservation'),
     stripe_payment_intent_id: v.optional(v.string()),
+    server_token: v.optional(v.string()),
   },
   returns: v.boolean(),
   handler: async (ctx, args) => {
     const { reservation_id, stripe_payment_intent_id } = args;
+    await requireReservationMutation(ctx, reservation_id, 'payment-confirm', args, args.server_token)
 
     // 予約情報を取得
     const reservation = await ctx.db.get(reservation_id);
@@ -108,12 +112,12 @@ export const cleanupExpiredPendingReservations = internalMutation({
     for (const reservation of expiredReservations) {
       try {
         // キャンセル処理（在庫復元も含む）
-        await ctx.runMutation(api.reservation.mutation.cancelReservation, {
+        await ctx.runMutation(api.reservation.mutation.cancelReservation, withReservationMutationCapability('cancel', {
           reservationId: reservation._id,
-          cancelledBy: 'system',
+          cancelledBy: 'system' as const,
           cancelReason: '決済タイムアウト',
           skipValidation: true,
-        });
+        }));
 
         cancelled++;
       } catch (error) {
@@ -140,6 +144,7 @@ export const retryPayment = mutation({
   }),
   handler: async (ctx, args) => {
     const { reservation_id } = args;
+    await requireReservationMutation(ctx, reservation_id, 'payment-retry', args)
 
     // 予約情報を取得
     const reservation = await ctx.db.get(reservation_id);

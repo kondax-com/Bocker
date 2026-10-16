@@ -13,7 +13,7 @@ import { ConvexError } from 'convex/values';
 import { ERROR_STATUS_CODE, ERROR_SEVERITY } from '@/lib/errors/constants';
 // Convex環境内では fetchQuery は使用できないためコメントアウト
 // import { fetchQuery } from 'convex/nextjs';
-import { getAppUrl } from '@/lib/env-config'
+import { internal } from '@/convex/_generated/api'
 import { SupabaseService } from '@/services/supabase/SupabaseService'
 import { getDayOfWeek, convertHourToTimestamp } from '@/lib/schedules'
 import { DayOfWeek } from '@/convex/types'
@@ -992,120 +992,14 @@ export async function findNextAvailableTimeForStaff(
   return null
 }
 
-// キャンセル通知を送信するヘルパー関数
+// 予約更新のコミット後に、更新済みデータからキャンセル通知を構築する。
 export async function cancelNotification(
-  ctx: QueryCtx | MutationCtx,
-  args: {
-    reservation: Doc<'reservation'> & {
-      detail?: Doc<'reservation_detail'> | null
-    }
-  }
+  ctx: MutationCtx,
+  args: { reservation: Doc<'reservation'> }
 ) {
-  // LINEでキャンセル通知を送信
-  try {
-    // 組織情報を取得
-    const organization = await ctx.db.get(args.reservation.org_id)
-    if (!organization) {
-      console.warn('キャンセル通知: 組織情報が見つかりません')
-      return {
-        reservationId: args.reservation._id,
-        refundedOptions: args.reservation.detail?.options || [],
-      }
-    }
-
-    // APIコンフィグを取得
-    const apiConfig = await ctx.db
-      .query('api_config')
-      .withIndex('by_tenant_org_archive', (q) =>
-        q
-          .eq('tenant_id', args.reservation.tenant_id)
-          .eq('org_id', args.reservation.org_id)
-          .eq('is_archive', false)
-      )
-      .first()
-
-    if (!apiConfig) {
-      console.warn('キャンセル通知: APIコンフィグが見つかりません')
-      return {
-        reservationId: args.reservation._id,
-        refundedOptions: args.reservation.detail?.options || [],
-      }
-    }
-
-    // 顧客にキャンセル通知を送信（customer_uidがある場合のみ）
-    if (args.reservation.customer_uid && apiConfig.line_access_token) {
-      try {
-        // 顧客向けキャンセル通知のデータを準備
-        const customerNotificationData = {
-          tenantId: args.reservation.tenant_id,
-          organizationId: args.reservation.org_id,
-          customerUid: args.reservation.customer_uid,
-          cancelData: {
-            reservationId: args.reservation._id,
-            date: args.reservation.date,
-            startTimeUnix: args.reservation.start_time_unix,
-            endTimeUnix: args.reservation.end_time_unix,
-            staffName: args.reservation.staff_name || '指名フリー',
-            menus: args.reservation.detail?.menus || [],
-            options: args.reservation.detail?.options || [],
-            totalPrice: args.reservation.detail?.total_price || 0,
-            cancelledBy: args.reservation.cancelled_by,
-            cancelReason: args.reservation.cancel_reason || '',
-          },
-        }
-
-        const baseUrl = getAppUrl()
-        const customerResponse = await fetch(
-          `${baseUrl}/api/line/customer-cancellation-notification`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(customerNotificationData),
-          }
-        )
-
-        if (!customerResponse.ok) {
-          console.error('顧客キャンセル通知APIエラー:', customerResponse.status)
-        } else {
-          console.log('顧客キャンセル通知送信成功')
-        }
-      } catch (customerNotificationError) {
-        console.warn('顧客キャンセル通知の送信に失敗しました:', customerNotificationError)
-        // 顧客通知の失敗はキャンセル処理をブロックしない
-      }
-    }
-
-    // サロンにキャンセル通知を送信（org_line_idがある場合のみ）
-    if (apiConfig.org_line_id) {
-      try {
-        // サロン向けキャンセル通知の対象を指定（通知内容はAPI側で予約データから取得）
-        const salonNotificationData = {
-          tenantId: args.reservation.tenant_id,
-          organizationId: args.reservation.org_id,
-          reservationId: args.reservation._id,
-        }
-
-        const baseUrl = getAppUrl()
-        const salonResponse = await fetch(`${baseUrl}/api/line/salon-cancellation-notification`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(salonNotificationData),
-        })
-
-        if (!salonResponse.ok) {
-          console.error('サロンキャンセル通知APIエラー:', salonResponse.status)
-        } else {
-          console.log('サロンキャンセル通知送信成功')
-        }
-      } catch (salonNotificationError) {
-        console.warn('サロンキャンセル通知の送信に失敗しました:', salonNotificationError)
-        // サロン通知の失敗はキャンセル処理をブロックしない
-      }
-    }
-  } catch (notificationError) {
-    console.warn('キャンセル通知処理でエラーが発生しました:', notificationError)
-    // 通知の失敗はキャンセル処理をブロックしない
-  }
+  await ctx.scheduler.runAfter(0, internal.reservation.action.sendCancellationNotifications, {
+    reservation_id: args.reservation._id,
+  })
 }
 
 /**

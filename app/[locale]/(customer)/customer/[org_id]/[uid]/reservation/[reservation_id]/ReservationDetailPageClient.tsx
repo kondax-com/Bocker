@@ -33,7 +33,6 @@ import type {
   ReservationPaymentStatus,
   PaymentMethod,
 } from '@/convex/types'
-import { fetchMutation } from 'convex/nextjs'
 
 interface ReservationDetailPageClientProps {
   orgId: string
@@ -321,16 +320,18 @@ export function ReservationDetailPageClient({
   const handleCancel = async () => {
     setIsCancelling(true)
     try {
-      await fetchMutation(api.reservation.manage.handleReservationManage, {
-        mode: 'cancel',
-        payload: {
-          reservationId: reservationData.id as Id<'reservation'>,
-          cancelledBy: 'customer',
+      const response = await fetch('/api/customer/reservation/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reservationId: reservationData.id,
           cancelReason: 'お客様都合によるキャンセル',
-          skipValidation: false,
-          checkCancelable: true,
-        },
+        }),
       })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new Error(result.error || 'キャンセルに失敗しました')
+      }
 
       toast.success('予約をキャンセルしました')
       setShowCancelDialog(false)

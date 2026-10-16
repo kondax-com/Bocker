@@ -10,6 +10,7 @@ import { executeInParallel, createTask } from '../parallel';
 import { WebhookMetricsCollector } from '../metrics';
 import { clerkClient } from '@clerk/nextjs/server';
 import { Id } from '@/convex/_generated/dataModel';
+import { createServerCapability, organizationResource } from '@/lib/auth/server-capability';
 
 /**
  * `user.created` Webhookイベントを処理するハンドラー関数。
@@ -212,6 +213,7 @@ export async function handleUserCreated(
           fetchMutation(deps.convex.organization.api_config.mutation.create, {
             org_id: orgId,
             tenant_id: tenantId,
+            server_token: createServerCapability('api-config:write', organizationResource(tenantId, orgId)),
           })
         );
         }catch(error){
@@ -542,6 +544,10 @@ async function handleStaffInvitationAccepted(
         staff_id: staff_id as Id<"staff">,
         clerk_user_id,
         role,
+        server_token: createServerCapability(
+          'staff:accept-invitation',
+          JSON.stringify(['staff-invitation', staff_id, clerk_user_id])
+        ),
       })
     );
 

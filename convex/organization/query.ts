@@ -1,3 +1,4 @@
+import { assertSameOrganization, publicApiConfig } from '@/convex/utils/notificationAccess'
 
 import { query } from "@/convex/_generated/server";
 import { checkAuth } from "@/convex/utils/auth";
@@ -144,6 +145,8 @@ export const getRelations = query({
       });
     }
     
+    assertSameOrganization({ tenant_id: organization.tenant_id, org_id: organization._id }, args.tenant_id, args.org_id)
+
     // 残りの関連データを並列で取得
     const [config, apiConfig, reservationConfig] = await Promise.all([
       ctx.db.query('config')
@@ -174,7 +177,7 @@ export const getRelations = query({
     return {
       organization,
       config,
-      apiConfig,
+      apiConfig: publicApiConfig(apiConfig),
       reservationConfig,
     };
   },

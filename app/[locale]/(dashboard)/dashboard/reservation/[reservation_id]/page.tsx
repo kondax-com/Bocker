@@ -44,7 +44,6 @@ import { useErrorHandler } from '@/hooks/useErrorHandler'
 import { CustomerRepository } from '@/services/supabase/repositories/customer'
 import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
-import { fetchMutation } from 'convex/nextjs'
 import { Link } from '@/i18n/navigation'
 
 const statusColorMap = {
@@ -92,6 +91,7 @@ export default function ReservationPage() {
     reservationData?.status as ReservationStatus
   )
   const [isStatusInitialized, setIsStatusInitialized] = useState(false)
+  const manageReservation = useMutation(api.reservation.manage.handleReservationManage)
   const deleteReservation = useMutation(api.reservation.mutation.kill)
   const changeStaff = useMutation(api.reservation.mutation.changeStaffForFreeNomination)
 
@@ -243,7 +243,7 @@ export default function ReservationPage() {
       if (!reservationData || reservationData.source !== 'convex' || !reservationData.convexData)
         return
 
-      await fetchMutation(api.reservation.manage.handleReservationManage, {
+      await manageReservation({
         mode: 'status',
         payload: {
           reservationId: reservationData.convexData._id,

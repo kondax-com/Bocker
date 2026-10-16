@@ -51,6 +51,7 @@ import type * as point_action from "../point/action.js";
 import type * as point_mutation from "../point/mutation.js";
 import type * as point_query from "../point/query.js";
 import type * as reservation_action from "../reservation/action.js";
+import type * as reservation_checkout_mutation from "../reservation/checkout/mutation.js";
 import type * as reservation_manage from "../reservation/manage.js";
 import type * as reservation_mutation from "../reservation/mutation.js";
 import type * as reservation_notification_mutation from "../reservation/notification/mutation.js";
@@ -67,6 +68,7 @@ import type * as staff_invitation_mutation from "../staff/invitation/mutation.js
 import type * as staff_invitation_query from "../staff/invitation/query.js";
 import type * as staff_mutation from "../staff/mutation.js";
 import type * as staff_query from "../staff/query.js";
+import type * as staff_role_sync_query from "../staff/role_sync/query.js";
 import type * as staff_week_schedule_mutation from "../staff/week_schedule/mutation.js";
 import type * as staff_week_schedule_query from "../staff/week_schedule/query.js";
 import type * as storage_action from "../storage/action.js";
@@ -132,6 +134,7 @@ declare const fullApi: ApiFromModules<{
   "point/mutation": typeof point_mutation;
   "point/query": typeof point_query;
   "reservation/action": typeof reservation_action;
+  "reservation/checkout/mutation": typeof reservation_checkout_mutation;
   "reservation/manage": typeof reservation_manage;
   "reservation/mutation": typeof reservation_mutation;
   "reservation/notification/mutation": typeof reservation_notification_mutation;
@@ -148,6 +151,7 @@ declare const fullApi: ApiFromModules<{
   "staff/invitation/query": typeof staff_invitation_query;
   "staff/mutation": typeof staff_mutation;
   "staff/query": typeof staff_query;
+  "staff/role_sync/query": typeof staff_role_sync_query;
   "staff/week_schedule/mutation": typeof staff_week_schedule_mutation;
   "staff/week_schedule/query": typeof staff_week_schedule_query;
   "storage/action": typeof storage_action;

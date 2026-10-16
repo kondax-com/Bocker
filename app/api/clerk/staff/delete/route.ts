@@ -1,18 +1,19 @@
 // app/api/clerk/staff/delete/route.ts
 // スタッフ削除API - Clerkユーザーの完全削除
 
-import { clerkClient, currentUser } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@/convex/_generated/api'
 import { Id } from '@/convex/_generated/dataModel'
 import { storageService } from '@/services/gcp/cloud_storage/GoogleStorageService'
 import { z } from 'zod'
 import { validateRequest, createValidationErrorResponse } from '@/lib/api/validation'
 import { convexIdSchema } from '@/lib/validations/api/common'
-import { getEnv } from '@/lib/env-config'
-
-const convex = new ConvexHttpClient(getEnv('NEXT_PUBLIC_CONVEX_URL'))
+import {
+  getStaffManagementClient,
+  requireStaffManagement,
+  staffManagementErrorResponse,
+} from '@/lib/auth/staff-management'
 
 // Delete staff schema
 const deleteStaffRequestSchema = z.object({
@@ -24,21 +25,7 @@ const deleteStaffRequestSchema = z.object({
 
 export async function DELETE(req: NextRequest) {
   try {
-    // 1. 認証チェック
-    const user = await currentUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      )
-    }
-    const role = user.publicMetadata?.role;
-    if(role !== 'admin') {
-      return NextResponse.json(
-        { error: '権限がありません' },
-        { status: 403 }
-      )
-    }
+    const { convex } = await getStaffManagementClient()
 
     // 2. リクエストボディの検証
     const validation = await validateRequest(req, deleteStaffRequestSchema)
@@ -60,6 +47,18 @@ export async function DELETE(req: NextRequest) {
       )
     }
     
+    await requireStaffManagement(convex, staffData.tenant_id, staffData.org_id)
+    if (
+      staffData.tenant_id !== tenant_id ||
+      staffData.org_id !== org_id ||
+      (staff_config_id && staff_config_id !== staffData.config?._id)
+    ) {
+      return NextResponse.json({ error: 'スタッフと店舗・設定が一致しません' }, { status: 400 })
+    }
+    if (!staffData.config) {
+      return NextResponse.json({ error: 'スタッフ設定が見つかりません' }, { status: 404 })
+    }
+
     // 6. 招待状態に応じた処理
     const clerk = await clerkClient()
     
@@ -102,10 +101,10 @@ export async function DELETE(req: NextRequest) {
 
     // 7. Convex関連データ削除
     await convex.mutation(api.staff.mutation.killRelatedTables, {
-      tenant_id: tenant_id as Id<"tenant">,
-      org_id: org_id as Id<"organization">,
-      staff_id: staff_id as Id<"staff">,
-      staff_config_id: staff_config_id as Id<"staff_config">
+      tenant_id: staffData.tenant_id,
+      org_id: staffData.org_id,
+      staff_id: staffData._id,
+      staff_config_id: staffData.config._id
     })
 
     // 8. 画像削除（存在する場合）
@@ -130,6 +129,8 @@ export async function DELETE(req: NextRequest) {
     })
 
   } catch (error: unknown) {
+    const authorizationError = staffManagementErrorResponse(error)
+    if (authorizationError) return authorizationError
     console.error('スタッフ削除エラー:', error)
     
     // エラーハンドリング

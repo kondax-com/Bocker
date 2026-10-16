@@ -24,8 +24,7 @@ export class LineMessageRepository implements MessageRepository {
       })
 
       // メッセージの送信
-      console.log('Sending pushMessage to:', message.line_id, 'with message:', message.message)
-      const response = await client.pushMessage({
+      await client.pushMessage({
         to: message.line_id,
         messages: [
           {
@@ -34,12 +33,10 @@ export class LineMessageRepository implements MessageRepository {
           },
         ],
       })
-      console.log('pushMessage response:', response)
 
       return true
-    } catch (error) {
-      console.error('Error in LineMessageRepository.sendMessage:', error)
-      throw error
+    } catch {
+      throw new Error('LINE message delivery failed')
     }
   }
 
@@ -54,17 +51,15 @@ export class LineMessageRepository implements MessageRepository {
         channelAccessToken: options.access_token,
       })
 
-      const response = await client.pushMessage({
+      await client.pushMessage({
         to: line_id,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         messages: messages as any,
       })
-      console.log('pushMessage response:', response)
 
       return true
-    } catch (error) {
-      console.error('Error in LineMessageRepository.sendMessage:', error)
-      throw error
+    } catch {
+      throw new Error('LINE message delivery failed')
     }
   }
 }

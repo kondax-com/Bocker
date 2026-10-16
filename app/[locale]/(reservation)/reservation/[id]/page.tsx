@@ -81,12 +81,7 @@ export default function ReservePage() {
   // LINE APIが完全に設定されているかを判定
   const isLineApiConfigured = useMemo(() => {
     if (!apiConfig) return false
-    return !!(
-      apiConfig.liff_id &&
-      apiConfig.line_access_token &&
-      apiConfig.line_channel_id &&
-      apiConfig.line_channel_secret
-    )
+    return apiConfig.isLineConfigured
   }, [apiConfig])
 
   const setDemoLogin = useCallback(async () => {

@@ -3,6 +3,8 @@
 
 'use client'
 
+import { useMutation } from 'convex/react'
+
 import { convertHourToTimestamp } from '@/lib/schedules'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
@@ -22,7 +24,6 @@ import { CustomerRepository } from '@/services/supabase/repositories/customer/Cu
 import type { RowType } from '@/services/supabase/SupabaseService'
 import { useTranslations } from 'next-intl'
 import { Doc } from '@/convex/_generated/dataModel'
-import { fetchMutation } from 'convex/nextjs'
 
 // 入力値を数値または undefined に変換するプリプロセス関数
 const preprocessNumber = (val: unknown) => {
@@ -306,6 +307,7 @@ const stepConfig = [
 ]
 
 export default function ReservationForm() {
+  const manageReservation = useMutation(api.reservation.manage.handleReservationManage)
   const { tenantId, orgId, planName } = useTenantAndOrganization()
   const { showErrorToast } = useErrorHandler()
   const router = useRouter()
@@ -863,7 +865,7 @@ export default function ReservationForm() {
         }
       }
 
-      await fetchMutation(api.reservation.manage.handleReservationManage, {
+      await manageReservation({
         mode: 'create',
         payload: {
           tenant_id: tenantId,

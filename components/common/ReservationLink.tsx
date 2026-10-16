@@ -44,10 +44,7 @@ export default function ReservationLink() {
     <div
       className={`${subscription && (subscription.status === 'active' || subscription.status === 'trialing') ? '' : 'bg-muted blur-sm pointer-events-none select-none'}`}
     >
-      {apiConfig &&
-      apiConfig?.liff_id &&
-      apiConfig?.line_channel_secret &&
-      apiConfig?.line_access_token ? (
+      {apiConfig?.isLineConfigured ? (
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Select

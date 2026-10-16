@@ -1,14 +1,15 @@
 // app/api/clerk/staff/invitations/[invitation_id]/route.ts
 // 個別招待管理API - 特定の招待のキャンセル
 
-import { clerkClient, currentUser } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { ConvexHttpClient } from 'convex/browser'
 import { api } from '@/convex/_generated/api'
 import { Id } from '@/convex/_generated/dataModel'
-import { getEnv } from '@/lib/env-config'
-
-const convex = new ConvexHttpClient(getEnv('NEXT_PUBLIC_CONVEX_URL'))
+import {
+  getStaffManagementClient,
+  requireStaffManagement,
+  staffManagementErrorResponse,
+} from '@/lib/auth/staff-management'
 
 // 招待のキャンセル（無効化）
 export async function DELETE(
@@ -16,11 +17,7 @@ export async function DELETE(
   { params }: { params: Promise<{ invitation_id: string }> }
 ) {
   try {
-    // 1. 認証チェック
-    const user = await currentUser()
-    if (!user) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 })
-    }
+    const { convex } = await getStaffManagementClient()
 
     // 2. パラメータから招待IDを取得
     const { invitation_id } = await params
@@ -45,6 +42,11 @@ export async function DELETE(
 
     if (!staffData) {
       return NextResponse.json({ error: 'スタッフが見つかりません' }, { status: 404 })
+    }
+
+    await requireStaffManagement(convex, staffData.tenant_id, staffData.org_id)
+    if (staffData.invitation_id && staffData.invitation_id !== invitation_id) {
+      return NextResponse.json({ error: 'スタッフと招待IDが一致しません' }, { status: 400 })
     }
 
     // 5. Clerk招待をキャンセル
@@ -147,6 +149,8 @@ export async function DELETE(
       },
     })
   } catch (error: unknown) {
+    const authorizationError = staffManagementErrorResponse(error)
+    if (authorizationError) return authorizationError
     console.error('招待キャンセルエラー:', error)
 
     // 招待が見つからない場合のエラーハンドリング

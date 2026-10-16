@@ -48,21 +48,9 @@ export class LineService {
         success: true,
         message: 'メッセージが送信されました。',
       }
-    } catch (error) {
-      // エラーハンドリング
-      console.error('Error in LineService.sendMessage:', error)
-
-      if (error instanceof Error) {
-        return {
-          success: false,
-          message: `メッセージ送信に失敗しました: ${error.message}`,
-        }
-      } else {
-        return {
-          success: false,
-          message: 'メッセージ送信に失敗しました: 不明なエラー',
-        }
-      }
+    } catch {
+      console.error('LINE message delivery failed')
+      return { success: false, message: 'メッセージ送信に失敗しました' }
     }
   }
 
@@ -90,14 +78,9 @@ export class LineService {
         success: true,
         message: 'フレックスメッセージが送信されました。',
       }
-    } catch (error) {
-      console.error('Error in LineService.sendFlexMessage:', error)
-      return {
-        success: false,
-        message: `フレックスメッセージ送信に失敗しました: ${
-          error instanceof Error ? error.message : '不明なエラー'
-        }`,
-      }
+    } catch {
+      console.error('LINE Flex notification delivery failed')
+      return { success: false, message: 'フレックスメッセージ送信に失敗しました' }
     }
   }
 }

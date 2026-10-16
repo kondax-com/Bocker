@@ -3,7 +3,7 @@ import { mutation } from '@/convex/_generated/server';
 import { v } from 'convex/values';
 import { createRecord, updateRecord, excludeFields, archiveRecord, killRecord } from '@/convex/utils/helpers';
 import { validateRequired, validateStringLength } from '@/convex/utils/validations';
-import { checkAuth } from '@/convex/utils/auth';
+import { assertSameOrganization, denyNotificationAccess, requireOrganizationAccess, requireStaffManagement } from '@/convex/utils/notificationAccess'
 import { ConvexError } from 'convex/values';
 import { ERROR_SEVERITY, ERROR_STATUS_CODE } from '@/lib/errors/constants';
 import { imageType, roleType, invitationStatusType } from '@/convex/types';
@@ -24,7 +24,7 @@ export const create = mutation({
     is_active: v.boolean(), // 有効/無効
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx)
+    await requireOrganizationAccess(ctx, args.tenant_id, args.org_id, true)
     validateRequired(args.name, 'name');
     validateStringLength(args.name, 'name');
     validateStringLength(args.description, 'description', MAX_NOTES_LENGTH);
@@ -117,7 +117,6 @@ export const update = mutation({
     is_active: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx)
     validateRequired(args.name, 'name');
     validateStringLength(args.name, 'name');
     validateStringLength(args.description, 'description', MAX_NOTES_LENGTH);
@@ -133,6 +132,7 @@ export const update = mutation({
       })
     }
 
+    await requireStaffManagement(ctx, args.staff_id)
     const updateData = excludeFields(args, ['staff_id'])
 
     return await updateRecord(ctx, args.staff_id, updateData)
@@ -145,7 +145,7 @@ export const archive = mutation({
     staffId: v.id('staff'),
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx)
+    await requireStaffManagement(ctx, args.staffId)
     return await archiveRecord(ctx, args.staffId)
   },
 })
@@ -163,14 +163,19 @@ export const upsert = mutation({
     is_active: v.boolean(), // 有効/無効
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx)
     validateRequired(args.name, 'name');
     validateStringLength(args.name, 'name');
     validateStringLength(args.description, 'description', MAX_NOTES_LENGTH);
     const existingStaff = await ctx.db.get(args.staff_id)
 
+    if (existingStaff) {
+      await requireStaffManagement(ctx, existingStaff._id)
+      assertSameOrganization(existingStaff, args.tenant_id, args.org_id)
+    } else {
+      await requireOrganizationAccess(ctx, args.tenant_id, args.org_id, true)
+    }
     if (!existingStaff || existingStaff.is_archive) {
-      return await createRecord(ctx, 'staff', args)
+      return await createRecord(ctx, 'staff', excludeFields(args, ['staff_id']))
     } else {
       const updateData = excludeFields(args, ['staff_id', 'tenant_id', 'org_id'])
       return await updateRecord(ctx, existingStaff._id, updateData)
@@ -187,6 +192,11 @@ export const killRelatedTables = mutation({
   },
   handler: async (ctx, args) => {
 
+    const staff = await requireStaffManagement(ctx, args.staff_id)
+    assertSameOrganization(staff, args.tenant_id, args.org_id)
+    const config = await ctx.db.get(args.staff_config_id)
+    if (!config || config.staff_id !== staff._id) denyNotificationAccess()
+    assertSameOrganization(config, staff.tenant_id, staff.org_id)
     // スタッフ設定の削除
     if (args.staff_config_id) {
       await killRecord(ctx, args.staff_config_id)
@@ -229,7 +239,6 @@ export const removeImages = mutation({
     staff_id: v.id('staff'),
   },
   handler: async (ctx, args) => {
-    checkAuth(ctx)
     const staff = await ctx.db.get(args.staff_id)
     if (!staff) {
       throw new ConvexError({
@@ -242,6 +251,7 @@ export const removeImages = mutation({
         details: { ...args },
       })
     }
+    await requireStaffManagement(ctx, args.staff_id)
     const deletedStaffImage = await ctx.db.patch(args.staff_id, {
       images: [],
     })
@@ -273,6 +283,7 @@ export const updateInvitationInfo = mutation({
       })
     }
 
+    await requireStaffManagement(ctx, args.staff_id)
     // 既存のstaff_invitationレコードを探す
     const existingInvitation = await ctx.db
       .query('staff_invitation')

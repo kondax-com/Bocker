@@ -1,11 +1,12 @@
 'use client'
 
+import { createCustomerReservation } from '@/services/reservations/createCustomerReservation'
+
 import { useEffect, useState, useRef, useMemo } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { api } from '@/convex/_generated/api'
 import { convertDayOfWeek } from '@/lib/schedules'
 import { fetchQuery } from 'convex/nextjs'
-import { useMutation } from 'convex/react'
 import { Doc, Id } from '@/convex/_generated/dataModel'
 import { Loading } from '@/components/common'
 import { Label } from '@/components/ui/label'
@@ -21,14 +22,12 @@ import {
 } from './_components'
 import { Button } from '@/components/ui/button'
 import { motion, AnimatePresence } from 'framer-motion'
-import { reservationFlexMessageTemplate } from '@/services/line/message_template/reservation_flex'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import Image from 'next/image'
 import { ReservationPaymentStatus, ActiveCustomerType } from '@/convex/types'
 import { CustomerRepository } from '@/services/supabase/repositories/customer/CustomerRepository'
 import { formatDateToYYYYMMDD } from '@/lib/schedules'
 import { performCompleteLogout } from '@/lib/auth/logout'
-import { BASE_URL } from '@/lib/constants'
 
 import {
   Check,
@@ -71,10 +70,6 @@ import { useQuery } from 'convex/react'
 import { RowType } from '@/services/supabase/SupabaseService'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { requestSalonReservationNotification } from '@/services/line/requestSalonReservationNotification'
-import {
-  formatReservationDateWithWeekdayInJapan,
-  formatReservationTimeRangeInJapan,
-} from '@/lib/reservationDateTime'
 
 // 曜日をソートするための順序を定義
 const dayOrder: Record<string, number> = {
@@ -238,7 +233,6 @@ export default function CalendarPage() {
       : 'skip'
   )
   // Convex mutations
-  const handleReservationManage = useMutation(api.reservation.manage.handleReservationManage)
 
   // ステップ変更時に画面トップへ自動スクロール
   useEffect(() => {
@@ -608,10 +602,7 @@ export default function CalendarPage() {
         checkout_url?: string
       } | null = null
       try {
-        result = await handleReservationManage({
-          mode: 'create',
-          payload: reservationData,
-        })
+        result = await createCustomerReservation(reservationData)
       } catch (error) {
         // 重複予約エラーの場合
         const errorData = error as {
@@ -918,10 +909,7 @@ export default function CalendarPage() {
           status: 'confirmed' as ReservationStatus,
         }
 
-        const result = await handleReservationManage({
-          mode: 'create',
-          payload: reservationDataForCash,
-        })
+        const result = await createCustomerReservation(reservationDataForCash)
 
         if (!result?.reservationId) {
           throw new Error('予約の作成に失敗しました。')
@@ -948,181 +936,21 @@ export default function CalendarPage() {
           // サロン通知の失敗は顧客の予約処理をブロックしない
         }
 
-        if (sessionCustomer.lineUserId && organizationComplete.config) {
-          // Lineにメッセージ予約の確認用Flexメッセージを作成
-          const flexMessages = reservationFlexMessageTemplate(
-            organizationComplete.organization, // 1. organization
-            organizationComplete.config, // 2. orgConfig
-            customerName, // 3. customerName
-            organizationComplete.organization._id as Id<'organization'>, // 4. orgId
-            sessionCustomer.customerUid, // 5. customerUid
-            selectedStaffCompleted.staff === 'free' ||
-              isAutoAssignedStaff(selectedStaffCompleted.staff)
-              ? null
-              : selectedStaffCompleted.staff, // 6. selectedStaff (null for free nomination)
-            selectedDate!, // 7. selectedDate
-            selectedTime!, // 8. selectedTimeSlot
-            selectedMenus, // 9. selectedMenus
-            selectedOptions, // 10. selectedOptions
-            usePoints, // 11. usePoints
-            appliedDiscount.discount || 0, // 12. couponDiscount
-            calculateTotal(), // 13. calculateTotalPrice
-            reservationId!, // 14. reservationId
-            organizationComplete.reservationConfig?.available_cancel_days ?? 3 // 15. availableCancelDay
-          )
-          // Lineにメッセージ送信
+        try {
           const response = await fetch('/api/line/flex-message', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              lineId: sessionCustomer?.lineUserId,
-              messages: flexMessages,
-              accessToken: organizationComplete.apiConfig?.line_access_token,
-            }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reservationId }),
           })
-
-          if (!response.ok) {
-            let errorData
-            try {
-              errorData = await response.json()
-            } catch (e) {
-              console.log(e)
-              try {
-                errorData = await response.text()
-              } catch (textError) {
-                console.log(textError)
-                errorData = `Status: ${response.status}, StatusText: ${response.statusText}`
-              }
-            }
-            console.error('LINEメッセージ送信APIエラー:', response.status, errorData)
-            const errorMessage =
-              typeof errorData === 'object' && errorData !== null && errorData.message
-                ? errorData.message
-                : typeof errorData === 'string' && errorData
-                  ? errorData
-                  : `サーバーエラー: ${response.status}`
-            throw new Error(`LINEメッセージ送信に失敗しました: ${errorMessage}`)
+          const notification = await response.json()
+          if (!response.ok || notification.success !== true) {
+            throw new Error('予約確認通知を送信できませんでした')
           }
-
-          console.log(selectedStaffCompleted)
-          try {
-            const result = await response.json()
-            if (result.success) {
-              router.push(
-                `/reservation/${organizationComplete.organization._id}/calendar/complete?reservationId=${reservationId}`
-              )
-            } else {
-              throw new Error(result.error || result.message || 'メッセージ送信処理に失敗しました')
-            }
-          } catch (e) {
-            console.error('LINEメッセージ送信APIからのレスポンス処理エラー:', e)
-            throw new Error(
-              'LINEメッセージ送信APIからの応答の処理中にエラーが発生しました。詳細はコンソールネットワークタブを確認してください。'
-            )
-          }
-        } else if (sessionCustomer.email) {
-          try {
-            const mailSubject = `【${organizationComplete.organization.org_name}】ご予約内容の確認`
-
-            const menuTotal = selectedMenus.reduce(
-              (sum, menu) => sum + (menu.sale_price || menu.unit_price || 0),
-              0
-            )
-            const optionTotal = selectedOptions.reduce(
-              (sum, option) => sum + (option.sale_price || option.unit_price || 0),
-              0
-            )
-
-            const extraCharge =
-              selectedStaffCompleted.staff === 'free' ||
-              isAutoAssignedStaff(selectedStaffCompleted.staff)
-                ? 0
-                : selectedStaffCompleted.staff.extra_charge || 0
-
-            const emailTemplateProps = {
-              customerName:
-                sessionCustomer.customerName ??
-                sessionCustomer.email ??
-                sessionCustomer.lineUserName ??
-                'お客様',
-              customerEmail: sessionCustomer.email,
-              orgName: organizationComplete.organization.org_name,
-              orgPhone: organizationComplete.config?.phone,
-              orgAddress: organizationComplete.config?.address,
-              orgPostalCode: organizationComplete.config?.postal_code,
-              reservationDate: formatReservationDateWithWeekdayInJapan(
-                reservationStartDateTime
-              ),
-              reservationTime: formatReservationTimeRangeInJapan(
-                reservationStartDateTime,
-                reservationEndDateTime
-              ),
-              staffName:
-                selectedStaffCompleted.staff === 'free' ||
-                isAutoAssignedStaff(selectedStaffCompleted.staff)
-                  ? '指名フリー'
-                  : selectedStaffCompleted.staff.name,
-              extraCharge:
-                selectedStaffCompleted.staff === 'free' ||
-                isAutoAssignedStaff(selectedStaffCompleted.staff)
-                  ? 0
-                  : selectedStaffCompleted.staff.extra_charge || 0,
-              menus: selectedMenus.map((menu) => ({
-                name: menu.name,
-                price: menu.sale_price || menu.unit_price || 0,
-              })),
-              options: groupOptionsByName(selectedOptions).map((option) => ({
-                name: option.name,
-                price: option.salePrice || option.unitPrice || 0,
-                count: option.count,
-              })),
-              subtotal: (menuTotal + optionTotal + extraCharge).toLocaleString(),
-              pointsUsed: usePoints > 0 ? usePoints : undefined,
-              couponDiscount: appliedDiscount.discount > 0 ? appliedDiscount.discount : undefined,
-              totalAmount: calculateTotal(),
-              reservationRules: organizationComplete.config?.reservation_rules,
-              reservationDetailUrl: `${BASE_URL}/customer/${organizationComplete.organization._id}/${sessionCustomer?.customerUid}/reservation`,
-            }
-
-            const emailResponse = await fetch('/api/resend', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                to: sessionCustomer.email,
-                subject: mailSubject,
-                templateProps: emailTemplateProps, // HTMLの代わりにtemplatePropsを渡す
-              }),
-            })
-
-            if (!emailResponse.ok) {
-              const errorData = await emailResponse.json()
-              console.error('メール送信APIエラー:', emailResponse.status, errorData)
-              throw new Error(errorData.error || 'メール送信に失敗しました。')
-            }
-            const emailResult = await emailResponse.json()
-            console.log('メール送信成功:', emailResult)
-
-            router.push(
-              `/reservation/${organizationComplete.organization._id}/calendar/complete?reservationId=${reservationId}`
-            )
-          } catch (e) {
-            console.error('メール送信処理エラー:', e)
-            toast.error('メールの送信に失敗しましたが、予約は受け付けました。')
-            // メール送信失敗時も予約完了ページには遷移する
-            router.push(
-              `/reservation/${organizationComplete.organization._id}/calendar/complete?reservationId=${reservationId}`
-            )
-          }
-        } else {
-          toast.error('LINEにもメールにも通知できませんでしたが、予約は受け付けました。')
-          router.push(
-            `/reservation/${organizationComplete.organization._id}/calendar/complete?reservationId=${reservationId}`
-          )
+        } catch {
+          toast.error('通知を送信できませんでしたが、予約は受け付けました。')
         }
         toast.success(
-          '予約を受け付けしました。予約確認メールまたはLINEメッセージを送信しましたのでご確認ください。'
+          '予約を受け付けました。'
         )
         router.push(
           `/reservation/${organizationComplete.organization._id}/calendar/complete?reservationId=${reservationId}`

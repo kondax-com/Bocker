@@ -11,8 +11,7 @@ import {
   getOAuthConfigSummary,
   debugLogger,
 } from '@/lib/line-oauth'
-import { fetchQuery } from 'convex/nextjs'
-import { api } from '@/convex/_generated/api'
+import { getServerApiConfig } from '@/services/notifications/apiConfig'
 import type { Id } from '@/convex/_generated/dataModel'
 import { seal } from '@/lib/crypto-server'
 import { z } from 'zod'
@@ -72,10 +71,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const { tenantId, orgId, redirectUri: clientRedirectUri, scope, next } = validation.data
 
     // Convex(DB) からテナント/組織の LINE チャンネル設定を取得
-    const apiConfig = await fetchQuery(api.organization.api_config.query.findByTenantAndOrg, {
-      tenant_id: tenantId as Id<'tenant'>,
-      org_id: orgId as Id<'organization'>,
-    })
+    const apiConfig = await getServerApiConfig(
+      tenantId as Id<'tenant'>,
+      orgId as Id<'organization'>
+    )
     const channelId = apiConfig?.line_channel_id
     if (!channelId) {
       debugLogger.error('Start', 'LINE channel configuration not found', {

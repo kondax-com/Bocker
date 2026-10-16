@@ -1,8 +1,7 @@
 // /lib/auth/token-manager.ts
 import { seal, open, constantTimeEqual } from '@/lib/crypto-server'
 import { cookies } from 'next/headers'
-import { fetchQuery } from 'convex/nextjs'
-import { api } from '@/convex/_generated/api'
+import { getServerApiConfig } from '@/services/notifications/apiConfig'
 import type { Id } from '@/convex/_generated/dataModel'
 
 /**
@@ -190,12 +189,9 @@ export async function clearTokens(): Promise<void> {
           const tenantId = cookieStore.get('line_ctx_tid')?.value
           const orgId = cookieStore.get('line_ctx_oid')?.value
           if (tenantId && orgId) {
-            const apiConfig = await fetchQuery(
-              api.organization.api_config.query.findByTenantAndOrg,
-              {
-                tenant_id: tenantId as Id<'tenant'>,
-                org_id: orgId as Id<'organization'>,
-              }
+            const apiConfig = await getServerApiConfig(
+              tenantId as Id<'tenant'>,
+              orgId as Id<'organization'>
             )
             const clientId = apiConfig?.line_channel_id
             const clientSecret = apiConfig?.line_channel_secret
@@ -315,10 +311,10 @@ export async function refreshLineToken(): Promise<LineTokens | null> {
     if (!tenantId || !orgId) {
       throw new Error('LINE context not found (tenant/org). Please re-authenticate.')
     }
-    const apiConfig = await fetchQuery(api.organization.api_config.query.findByTenantAndOrg, {
-      tenant_id: tenantId as Id<'tenant'>,
-      org_id: orgId as Id<'organization'>,
-    })
+    const apiConfig = await getServerApiConfig(
+      tenantId as Id<'tenant'>,
+      orgId as Id<'organization'>
+    )
     const clientId = apiConfig?.line_channel_id
     const clientSecret = apiConfig?.line_channel_secret
     if (!clientId || !clientSecret) {

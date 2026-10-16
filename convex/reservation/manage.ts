@@ -1,3 +1,4 @@
+import { requireReservationCreation, requireReservationMutation } from '@/convex/utils/reservationAccess'
 import { updateRecord } from '@/convex/utils/helpers'
 import { v } from "convex/values";
 import { mutation, MutationCtx } from "@/convex/_generated/server";
@@ -131,8 +132,17 @@ export const handleReservationManage = mutation({
       })
     ),
     eventId: v.optional(v.string()),
+    server_token: v.optional(v.string()),
   },
-  handler: async (ctx, { mode, payload, eventId }) => {
+  handler: async (ctx, { mode, payload, eventId, server_token }) => {
+    if (mode === 'create') {
+      await requireReservationCreation(ctx, payload as CreatePayload, server_token)
+    } else {
+      const reservationId = mode === 'confirm'
+        ? (payload as ConfirmPayload).reservation_id
+        : (payload as CancelPayload | StatusPayload).reservationId
+      await requireReservationMutation(ctx, reservationId, `manage:${mode}`, payload, server_token)
+    }
     // ① べき等性チェック
     if (eventId) {
       const done = await ctx.db
