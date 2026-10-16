@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { sendInternalReservationNotification } from './internalRequest'
 import { reservationResource, verifyServerCapability } from '@/lib/auth/server-capability'
 
 vi.mock('@/lib/env-config', () => ({ getAppUrl: () => 'https://application.example' }))
+beforeEach(() => vi.stubEnv('INTERNAL_NOTIFICATION_BASE_URL', ''))
 afterEach(() => vi.unstubAllEnvs())
 
 describe('internal reservation notification requests', () => {
@@ -34,6 +35,25 @@ describe('internal reservation notification requests', () => {
     expect(
       verifyServerCapability(token, 'notification:reminder', reservationResource('reservation-b'))
     ).toBe(false)
+  })
+
+  it('uses the prepared deployment URL when an internal notification base is configured', async () => {
+    vi.stubEnv('INTERNAL_NOTIFICATION_SECRET', 'test-private-key')
+    vi.stubEnv('INTERNAL_NOTIFICATION_BASE_URL', 'https://prepared-deployment.example')
+    const fetcher = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ success: true }), { status: 200 }))
+
+    await sendInternalReservationNotification(
+      '/api/line/customer-cancellation-notification',
+      'reservation-a',
+      'cancellation',
+      fetcher
+    )
+
+    expect(fetcher.mock.calls[0][0]).toBe(
+      'https://prepared-deployment.example/api/line/customer-cancellation-notification'
+    )
   })
 
   it.each([200, 500])('does not mark a failed delivery as sent (HTTP %s)', async (status) => {

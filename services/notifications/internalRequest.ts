@@ -7,7 +7,8 @@ export async function sendInternalReservationNotification(
   type: 'reminder' | 'cancellation',
   fetcher: typeof fetch = fetch
 ) {
-  const response = await fetcher(`${getAppUrl()}${endpoint}`, {
+  const baseUrl = process.env.INTERNAL_NOTIFICATION_BASE_URL || getAppUrl()
+  const response = await fetcher(`${baseUrl}${endpoint}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
