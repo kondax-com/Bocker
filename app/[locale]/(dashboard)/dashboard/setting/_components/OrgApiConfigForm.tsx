@@ -126,10 +126,10 @@ const ApiSettingsCard = () => {
   }
 
   return (
-    <div className="">
-      <div className="">
+    <div className="admin-panel admin-form p-5 sm:p-6">
+      <div>
         <div className="flex items-center gap-2">
-          <p className="text-2xl font-bold">{t('title')}</p>
+          <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
         </div>
         <div className="flex flex-col gap-2 mt-1 text-sm text-muted-foreground">
           <p>{t('description')}</p>
@@ -418,12 +418,16 @@ const ApiSettingsCard = () => {
           </div>
         </div>
 
-        <div className="px-0 pt-4 pb-0 flex justify-end gap-4">
+        <div className="admin-toolbar justify-end border-t border-border pt-5">
           <motion.div
             whileHover={{ scale: isDirty ? 1.03 : 1 }}
             whileTap={{ scale: isDirty ? 0.97 : 1 }}
           >
-            <Button type="submit" disabled={submitting || !isDirty} className="min-w-[140px]">
+            <Button
+              type="submit"
+              disabled={submitting || !isDirty}
+              className="min-h-11 min-w-[140px] rounded-lg shadow-none"
+            >
               {submitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -439,7 +443,7 @@ const ApiSettingsCard = () => {
           </motion.div>
         </div>
       </form>
-      <div className="flex flex-col relative mt-8">
+      <div className="relative mt-8 flex flex-col gap-2 rounded-xl bg-muted p-4">
         <h4 className="text-base font-bold">Bocker / 予約通知</h4>
         <p className="text-sm text-muted-foreground">
           予約通知の受け取りには以下の公式アカウントを追加してください。
@@ -830,7 +834,6 @@ const ApiSettingsCard = () => {
               </p>
             </div>
 
-
             {/* 前提条件 */}
             <div className="bg-warning border border-warning p-3 rounded-md">
               <p className="font-semibold text-warning-foreground text-sm mb-2">🔔 前提条件</p>
@@ -912,7 +915,6 @@ const ApiSettingsCard = () => {
                 ⚠️ 認証の検証に使用されるため、セキュリティ上非常に重要な値です
               </p>
             </div>
-
 
             {/* 取得手順 */}
             <p className="font-semibold">取得手順</p>
@@ -997,7 +999,6 @@ const ApiSettingsCard = () => {
                 ⚠️ LINEログインチャンネルが未作成の場合は、まずチャンネル作成から始めてください
               </p>
             </div>
-
 
             {/* 前提条件 */}
             <div className="bg-warning border border-warning p-3 rounded-md">
@@ -1114,7 +1115,6 @@ const ApiSettingsCard = () => {
                 ❌ <strong>よくある間違い</strong>：Messaging APIのChannel IDをここに設定してしまう
               </p>
             </div>
-
 
             {/* 前提条件 */}
             <div className="bg-warning border border-warning p-3 rounded-md">

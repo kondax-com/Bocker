@@ -72,9 +72,9 @@ export default function CouponList() {
         </p>
       </div>
       <div className="pt-2 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 px-4 md:px-0">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden border border-border rounded-lg">
+        <div className="w-full overflow-x-auto">
+          <div className="inline-block min-w-full align-middle">
+            <div className="admin-panel overflow-hidden">
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted text-nowrap px-2">
                   <tr>
@@ -108,12 +108,12 @@ export default function CouponList() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border bg-background text-nowrap">
+                <tbody className="divide-y divide-border bg-card text-nowrap">
                   {allCoupons.length > 0 ? (
                     allCoupons.map((coupon: Doc<'coupon'>, index: number) => (
                       <tr
                         key={`${coupon._id.slice(0, 4)}-${index}`}
-                        className="cursor-pointer hover:bg-secondary"
+                        className="cursor-pointer transition-colors hover:bg-muted"
                         onClick={() => router.push(`/dashboard/coupon/edit/${coupon._id}`)}
                       >
                         <td

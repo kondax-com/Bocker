@@ -36,12 +36,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Plus, Edit, Trash2, Star, Copy } from 'lucide-react'
 import { toast } from 'sonner'
-import {
-  Preset,
-  UTMParameters,
-  DEFAULT_PRESETS,
-  PRESET_CATEGORIES,
-} from '@/types/tracking'
+import { Preset, UTMParameters, DEFAULT_PRESETS, PRESET_CATEGORIES } from '@/types/tracking'
 
 // UTMパラメータ設定情報
 const UTM_PARAMETER_CONFIG = [
@@ -51,7 +46,16 @@ const UTM_PARAMETER_CONFIG = [
     description: 'どこから来たかを特定します（例：Google検索、Instagram、LINE）',
     placeholder: 'instagram',
     required: true,
-    examples: ['instagram', 'google', 'facebook', 'line', 'twitter', 'youtube', 'newsletter', 'qr-code']
+    examples: [
+      'instagram',
+      'google',
+      'facebook',
+      'line',
+      'twitter',
+      'youtube',
+      'newsletter',
+      'qr-code',
+    ],
   },
   {
     key: 'utm_medium',
@@ -59,7 +63,7 @@ const UTM_PARAMETER_CONFIG = [
     description: 'どのような方法で宣伝したかを分類します',
     placeholder: 'social',
     required: true,
-    examples: ['social', 'cpc', 'email', 'organic', 'referral', 'display', 'print', 'qr']
+    examples: ['social', 'cpc', 'email', 'organic', 'referral', 'display', 'print', 'qr'],
   },
   {
     key: 'utm_campaign',
@@ -67,24 +71,55 @@ const UTM_PARAMETER_CONFIG = [
     description: '具体的なキャンペーンや施策名を設定します',
     placeholder: '春の新規顧客キャンペーン',
     required: false,
-    examples: ['新規顧客獲得', '春キャンペーン', '月末特典', '紹介キャンペーン', '季節限定', 'グランドオープン']
+    examples: [
+      '新規顧客獲得',
+      '春キャンペーン',
+      '月末特典',
+      '紹介キャンペーン',
+      '季節限定',
+      'グランドオープン',
+    ],
   },
   {
     key: 'utm_term',
     label: 'キーワード (Term)',
-    description: '🔍 有料検索広告のキーワードや、ターゲットとする検索語句を設定します。SNS投稿では関連するハッシュタグやキーワードも設定可能です（カンマ区切りで複数可）',
+    description:
+      '🔍 有料検索広告のキーワードや、ターゲットとする検索語句を設定します。SNS投稿では関連するハッシュタグやキーワードも設定可能です（カンマ区切りで複数可）',
     placeholder: '美容室,カット,横浜駅',
     required: false,
-    examples: ['美容室', 'ヘアサロン', 'カット', 'カラー', 'パーマ', 'トリートメント', 'ヘアケア', 'ブリーチ', '縮毛矯正', '白髪染め']
+    examples: [
+      '美容室',
+      'ヘアサロン',
+      'カット',
+      'カラー',
+      'パーマ',
+      'トリートメント',
+      'ヘアケア',
+      'ブリーチ',
+      '縮毛矯正',
+      '白髪染め',
+    ],
   },
   {
     key: 'utm_content',
     label: 'コンテンツ (Content)',
-    description: '📝 同じキャンペーンで複数の広告やコンテンツを使い分ける際に、それぞれを識別するために使用します。A/Bテストや異なる投稿タイプの効果測定に便利です',
+    description:
+      '📝 同じキャンペーンで複数の広告やコンテンツを使い分ける際に、それぞれを識別するために使用します。A/Bテストや異なる投稿タイプの効果測定に便利です',
     placeholder: 'banner-top',
     required: false,
-    examples: ['banner-top', 'sidebar-ad', 'story-post', 'feed-post', 'header-link', 'footer-link', 'popup', 'video-ad', 'carousel-ad', 'text-only']
-  }
+    examples: [
+      'banner-top',
+      'sidebar-ad',
+      'story-post',
+      'feed-post',
+      'header-link',
+      'footer-link',
+      'popup',
+      'video-ad',
+      'carousel-ad',
+      'text-only',
+    ],
+  },
 ] as const
 
 interface UTMPresetsProps {
@@ -238,9 +273,9 @@ export function UTMPresets({ onSelectPreset, selectedPreset }: UTMPresetsProps) 
   )
 
   return (
-    <Card>
+    <Card className="rounded-2xl border-border shadow-sm">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <CardTitle>プリセット管理</CardTitle>
             <CardDescription>よく使うUTMパラメータの組み合わせを保存・管理できます</CardDescription>
@@ -294,8 +329,8 @@ export function UTMPresets({ onSelectPreset, selectedPreset }: UTMPresetsProps) 
                     }`}
                     onClick={() => onSelectPreset?.(preset)}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h5 className="font-medium text-sm">{preset.name}</h5>
                           {preset.is_default && (
@@ -316,11 +351,11 @@ export function UTMPresets({ onSelectPreset, selectedPreset }: UTMPresetsProps) 
                           })}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 ml-3">
+                      <div className="ml-auto flex flex-wrap items-center gap-2">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0"
+                          className="size-11 shrink-0 p-0"
                           onClick={(e) => {
                             e.stopPropagation()
                             duplicatePreset(preset)
@@ -334,7 +369,7 @@ export function UTMPresets({ onSelectPreset, selectedPreset }: UTMPresetsProps) 
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0"
+                              className="size-11 shrink-0 p-0"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 openDialog(preset)
@@ -348,7 +383,7 @@ export function UTMPresets({ onSelectPreset, selectedPreset }: UTMPresetsProps) 
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                  className="size-11 shrink-0 p-0 text-destructive hover:text-destructive"
                                   onClick={(e) => e.stopPropagation()}
                                   title="削除"
                                 >

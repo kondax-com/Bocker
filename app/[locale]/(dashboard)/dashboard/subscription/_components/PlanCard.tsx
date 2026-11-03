@@ -106,20 +106,16 @@ const PlanCard = memo(function PlanCard({
         </div>
       )}
 
-      <Card className={cardStyle}>
+      <Card className={cn(cardStyle, 'flex flex-col rounded-2xl border-border shadow-sm')}>
         <div className={`absolute h-1.5 bg-gradient-to-r ${highlightColor} top-0 left-0 right-0`} />
 
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-center">
-            <CardTitle
-              className={`text-xl font-bold bg-gradient-to-r ${highlightColor} bg-clip-text`}
-            >
-              {title}
-            </CardTitle>
+        <CardHeader className="gap-3 pb-2 pt-7">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <CardTitle className="text-xl font-semibold text-foreground">{title}</CardTitle>
             {isCurrentPlan && isActive && (
               <Badge
                 variant="default"
-                className="bg-neon-foreground border border-neon text-neon px-3 py-1 animate-pulse"
+                className="rounded-full border-0 bg-secondary px-3 py-1 text-secondary-foreground"
               >
                 {t('currentPlan')}
               </Badge>
@@ -128,10 +124,12 @@ const PlanCard = memo(function PlanCard({
           <CardDescription>{description}</CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-4">
+        <CardContent className="flex flex-1 flex-col pt-4">
           <div className="mb-4">
             <div className="flex items-baseline">
-              <span className="text-3xl font-bold">¥{price.toLocaleString()}</span>
+              <span className="text-3xl font-semibold tracking-tight tabular-nums">
+                ¥{price.toLocaleString()}
+              </span>
               <span className="text-sm text-muted-foreground ml-1">
                 {billingPeriod === 'month' ? t('perMonth') : t('perYear')}
               </span>
@@ -150,7 +148,7 @@ const PlanCard = memo(function PlanCard({
 
           <Separator className="my-4" />
 
-          <ul className="space-y-3 my-6">
+          <ul className="my-6 flex-1 space-y-3">
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-2 text-sm">
                 <span className="mt-0.5 text-active flex-shrink-0">
@@ -176,7 +174,7 @@ const PlanCard = memo(function PlanCard({
           />
         </CardContent>
 
-        <CardFooter className="pt-2 pb-4 px-6 text-xs text-muted-foreground text-center">
+        <CardFooter className="justify-center px-6 pb-5 pt-2 text-center text-xs text-muted-foreground">
           <p>{t('trialInfo.daysFreeTrial', { days: PLAN_TRIAL_DAYS })}</p>
         </CardFooter>
       </Card>
@@ -255,7 +253,7 @@ function PlanActionButton({
 
   if (isSubmitting)
     return (
-      <Button disabled className="w-full">
+      <Button disabled className="min-h-11 w-full rounded-lg">
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         {t('processing')}
       </Button>
@@ -266,7 +264,7 @@ function PlanActionButton({
       return (
         <Button
           onClick={handlePortal}
-          className={`w-full bg-gradient-to-r ${highlightColor} hover:brightness-110 ${highlightForeground}`}
+          className={`min-h-11 w-full whitespace-normal rounded-lg bg-gradient-to-r ${highlightColor} hover:brightness-110 ${highlightForeground}`}
         >
           {t('planAction.managePlan')}
         </Button>
@@ -275,7 +273,7 @@ function PlanActionButton({
       return (
         <Button
           onClick={handleSubscribe}
-          className={`w-full bg-gradient-to-r ${highlightColor} hover:brightness-110 ${highlightForeground}`}
+          className={`min-h-11 w-full whitespace-normal rounded-lg bg-gradient-to-r ${highlightColor} hover:brightness-110 ${highlightForeground}`}
         >
           {buttonText}
         </Button>
@@ -284,7 +282,7 @@ function PlanActionButton({
       return (
         <Button
           onClick={handleSubscribe}
-          className={`w-full bg-gradient-to-r ${highlightColor} hover:brightness-110 ${highlightForeground}`}
+          className={`min-h-11 w-full whitespace-normal rounded-lg bg-gradient-to-r ${highlightColor} hover:brightness-110 ${highlightForeground}`}
           disabled={isButtonDisabled}
         >
           {buttonText}
@@ -296,7 +294,7 @@ function PlanActionButton({
   return (
     <Button
       onClick={handleSubscribe}
-      className={`w-full bg-gradient-to-r ${highlightColor} hover:brightness-110 ${highlightForeground}`}
+      className={`min-h-11 w-full whitespace-normal rounded-lg bg-gradient-to-r ${highlightColor} hover:brightness-110 ${highlightForeground}`}
     >
       {t('planAction.startNow')}
       <ArrowRight className="ml-1.5 h-4 w-4" />

@@ -82,7 +82,7 @@ function CouponPreview({ data }: { data: CouponPreviewData }) {
 
   return (
     <div className="w-full">
-      <Card className="shadow-md overflow-hidden">
+      <Card className="admin-panel overflow-hidden">
         <CardHeader className="pb-2 bg-muted">
           <CardTitle className="text-primary flex items-center gap-2 text-xl">
             <Gift size={18} />
@@ -361,16 +361,16 @@ function CouponForm() {
       }}
       className="space-y-8"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Tabs defaultValue="setting" className="md:col-span-2">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <Tabs defaultValue="setting" className="xl:col-span-2">
           <TabsList>
             <TabsTrigger value="setting">{t('basicSettings')}</TabsTrigger>
             <TabsTrigger value="exclusion">{t('excludedMenus')}</TabsTrigger>
           </TabsList>
           <TabsContent value="setting">
             <div className=" space-y-8">
-              <div className="bg-card rounded-lg p-6 shadow-sm border">
-                <div className="flex items-center gap-3 text-xl font-bold text-primary">
+              <div className="admin-panel p-5 sm:p-6">
+                <div className="flex items-center gap-3 text-lg font-semibold text-foreground">
                   <div className="flex items-center justify-center w-6 h-6 bg-primary text-primary-foreground rounded-full font-bold">
                     1
                   </div>
@@ -463,7 +463,7 @@ function CouponForm() {
 
                 <Separator className="my-10 w-2/3 mx-auto" />
 
-                <div className="flex items-center gap-3 text-xl font-bold text-primary mt-6">
+                <div className="flex items-center gap-3 text-lg font-semibold text-foreground mt-6">
                   <div className="flex items-center justify-center w-6 h-6 bg-primary text-primary-foreground rounded-full font-bold">
                     2
                   </div>
@@ -557,7 +557,7 @@ function CouponForm() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3 text-xl font-bold text-primary mt-4">
+                <div className="flex items-center gap-3 text-lg font-semibold text-foreground mt-4">
                   <div className="flex items-center justify-center w-6 h-6 bg-primary text-primary-foreground rounded-full font-bold">
                     3
                   </div>
@@ -570,7 +570,7 @@ function CouponForm() {
                       control={control}
                       name="is_active"
                       render={({ field }) => (
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
                           <Label
                             htmlFor="is_active"
                             className="flex items-center gap-2 text-primary cursor-pointer"
@@ -613,7 +613,7 @@ function CouponForm() {
                             type="single"
                             value={field.value}
                             onValueChange={field.onChange}
-                            className="flex items-center justify-start w-fit gap-4 bg-muted p-3 rounded-md"
+                            className="flex w-full flex-wrap items-center justify-start gap-2 rounded-xl bg-muted p-2"
                           >
                             <ToggleGroupItem value="all">{t('allCustomers')}</ToggleGroupItem>
                             <ToggleGroupItem value="first_time">
@@ -645,8 +645,8 @@ function CouponForm() {
         </Tabs>
 
         {/* プレビュー部分 */}
-        <div className="md:col-span-1">
-          <div className="sticky top-4 space-y-4">
+        <div className="xl:col-span-1">
+          <div className="space-y-4 xl:sticky xl:top-24">
             <CouponPreview data={previewData} />
 
             <div className="mt-6">

@@ -496,12 +496,12 @@ export default function MyWeekScheduleForm() {
 
   return (
     <div>
-      <Card className="border shadow-lg overflow-hidden">
+      <Card className="admin-panel overflow-hidden">
         <CardHeader>
-          <CardTitle className="text-primary text-xl font-bold">{t('title')}</CardTitle>
+          <CardTitle className="text-foreground text-lg font-semibold">{t('title')}</CardTitle>
         </CardHeader>
 
-        <CardContent className="px-6">
+        <CardContent className="px-4 sm:px-6">
           <div className="space-y-8">
             {/* 営業日設定 */}
             <div>
@@ -642,7 +642,7 @@ export default function MyWeekScheduleForm() {
                             value={weekScheduleData.common_start_hour}
                             onValueChange={handleCommonStartHourChange}
                           >
-                            <SelectTrigger className="w-28">
+                            <SelectTrigger className="w-24 sm:w-28">
                               <SelectValue placeholder={t('startTime')} />
                             </SelectTrigger>
                             <SelectContent>
@@ -662,7 +662,7 @@ export default function MyWeekScheduleForm() {
                             value={weekScheduleData.common_end_hour}
                             onValueChange={handleCommonEndHourChange}
                           >
-                            <SelectTrigger className="w-28">
+                            <SelectTrigger className="w-24 sm:w-28">
                               <SelectValue placeholder={t('endTime')} />
                             </SelectTrigger>
                             <SelectContent>
@@ -716,7 +716,7 @@ export default function MyWeekScheduleForm() {
                                         updateDaySchedule(dayId, 'start_hour', value)
                                       }
                                     >
-                                      <SelectTrigger className="w-28">
+                                      <SelectTrigger className="w-24 sm:w-28">
                                         <SelectValue placeholder={t('startTime')} />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -738,7 +738,7 @@ export default function MyWeekScheduleForm() {
                                         updateDaySchedule(dayId, 'end_hour', value)
                                       }
                                     >
-                                      <SelectTrigger className="w-28">
+                                      <SelectTrigger className="w-24 sm:w-28">
                                         <SelectValue placeholder={t('endTime')} />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -767,7 +767,7 @@ export default function MyWeekScheduleForm() {
                           })}
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center justify-center p-8 border rounded-lg bg-muted text-center">
+                      <div className="admin-empty-state flex flex-col items-center text-center">
                         <Coffee className="h-12 w-12 text-muted-foreground mb-3" />
                         <p className="text-muted-foreground mb-2">{t('noWorkingDays')}</p>
                         <p className="text-sm text-muted-foreground">{t('selectWorkingDay')}</p>
@@ -783,7 +783,7 @@ export default function MyWeekScheduleForm() {
             <Button
               type="submit"
               size="lg"
-              className="min-w-[120px]"
+              className="min-h-11 min-w-[120px] rounded-lg px-5"
               onClick={handleSubmit(onSubmit)}
             >
               {isSaving ? (

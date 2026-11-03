@@ -279,11 +279,11 @@ export default function ReservationList() {
   }
 
   return (
-    <div className="min-h-[100vh]">
-      <div className="flex justify-between items-center mb-4">
+    <div className="flex min-w-0 flex-col gap-6">
+      <div className="admin-toolbar justify-between">
         <div className="flex w-fit gap-2 items-end">
           <CardTitle className="text-sm font-medium">予約数</CardTitle>
-          <div className="text-2xl font-bold text-accent-2 flex items-end gap-2">
+          <div className="flex items-end gap-2 text-2xl font-semibold tabular-nums text-primary">
             {filteredReservations.length}{' '}
             <small className="text-sm text-muted-foreground">件</small>
           </div>
@@ -292,7 +292,7 @@ export default function ReservationList() {
         {(role === 'admin' || role === 'owner') && (
           <Dialog open={openCsvDialog} onOpenChange={setOpenCsvDialog}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="gap-2 mt-2">
+              <Button variant="outline" className="min-h-11 gap-2 whitespace-normal text-left">
                 <DownloadIcon className="h-4 w-4" />
                 予約データをダウンロード
               </Button>
@@ -357,15 +357,18 @@ export default function ReservationList() {
       </div>
 
       {/* フィルター */}
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="text-sm font-medium mb-2 block">期間</label>
+      <Card className="admin-panel">
+        <CardContent className="p-4 sm:p-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="min-w-0">
+              <label htmlFor="reservation-date-filter" className="text-sm font-medium mb-2 block">
+                期間
+              </label>
               <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
+                    id="reservation-date-filter"
                     className={cn(
                       'w-full justify-start text-left font-normal',
                       !dateRange && 'text-muted-foreground'
@@ -418,10 +421,12 @@ export default function ReservationList() {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="w-full md:w-48">
-              <label className="text-sm font-medium mb-2 block">ステータス</label>
+            <div className="min-w-0 w-full">
+              <label htmlFor="reservation-status-filter" className="text-sm font-medium mb-2 block">
+                ステータス
+              </label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger>
+                <SelectTrigger id="reservation-status-filter">
                   <SelectValue placeholder="ステータスを選択" />
                 </SelectTrigger>
                 <SelectContent>
@@ -434,10 +439,12 @@ export default function ReservationList() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="w-full md:w-48">
-              <label className="text-sm font-medium mb-2 block">担当スタッフ</label>
+            <div className="min-w-0 w-full">
+              <label htmlFor="reservation-staff-filter" className="text-sm font-medium mb-2 block">
+                担当スタッフ
+              </label>
               <Select value={selectedStaff} onValueChange={setSelectedStaff}>
-                <SelectTrigger>
+                <SelectTrigger id="reservation-staff-filter">
                   <SelectValue placeholder="スタッフを選択" />
                 </SelectTrigger>
                 <SelectContent>
@@ -450,10 +457,15 @@ export default function ReservationList() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="w-full md:w-48">
-              <label className="text-sm font-medium mb-2 block">顧客名</label>
+            <div className="min-w-0 w-full">
+              <label
+                htmlFor="reservation-customer-filter"
+                className="text-sm font-medium mb-2 block"
+              >
+                顧客名
+              </label>
               <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                <SelectTrigger>
+                <SelectTrigger id="reservation-customer-filter">
                   <SelectValue placeholder="顧客を選択" />
                 </SelectTrigger>
                 <SelectContent>
@@ -471,15 +483,21 @@ export default function ReservationList() {
       </Card>
 
       {/* 予約一覧 */}
-      <div className="rounded-md border overflow-hidden shadow-sm">
+      <div className="admin-panel overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-neon-foreground">
-              <TableHead className="px-4 text-nowrap w-fit text-neon">顧客名</TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">予約日時</TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">担当スタッフ</TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">ステータス</TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">支払い</TableHead>
+            <TableRow className="bg-muted">
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">顧客名</TableHead>
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
+                予約日時
+              </TableHead>
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
+                担当スタッフ
+              </TableHead>
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
+                ステータス
+              </TableHead>
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">支払い</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -507,7 +525,7 @@ export default function ReservationList() {
                       <div className="font-medium">
                         {formatReservationDate(reservation.startTimeUnix)}
                       </div>
-                      <div className="text-accent-2 tracking-wide text-sm font-semibold">
+                      <div className="text-primary tabular-nums text-sm font-medium">
                         {formatReservationTime(reservation.startTimeUnix, reservation.endTimeUnix)}
                       </div>
                     </div>

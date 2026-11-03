@@ -82,9 +82,7 @@ function CouponEditPage({ params }: CouponEditPageProps) {
   const unwrappedParams = React.use(params)
   const { coupon_id } = unwrappedParams
 
-  return (
-    <CouponEditWrapper couponId={coupon_id} />
-  )
+  return <CouponEditWrapper couponId={coupon_id} />
 }
 
 // アラート表示機能付きラッパーコンポーネント
@@ -136,11 +134,10 @@ function CouponPreview({
   // 適用外メニューの詳細情報を取得
   const exclusionMenusDetails = useQuery(
     api.menu.query.getDisplayByIds,
-    selectedMenuIds.length > 0
-      ? { menu_ids: selectedMenuIds, option_ids: [] }
-      : 'skip'
+    selectedMenuIds.length > 0 ? { menu_ids: selectedMenuIds, option_ids: [] } : 'skip'
   )
   const t = useTranslations('coupon')
+  const tCommon = useTranslations('common')
   const [formattedStartDate, setFormattedStartDate] = useState('')
   const [formattedEndDate, setFormattedEndDate] = useState('')
 
@@ -165,8 +162,8 @@ function CouponPreview({
 
   return (
     <div className="w-full">
-      <Card className="shadow-md overflow-hidden">
-        <CardHeader className="pb-2 bg-neon-foreground text-neon text-xl">
+      <Card className="admin-panel overflow-hidden">
+        <CardHeader className="border-b border-border bg-muted pb-3 text-foreground">
           <CardTitle className="flex items-center gap-2">
             <Tag size={18} />
             {data.name || t('couponName')}
@@ -231,21 +228,30 @@ function CouponPreview({
               </div>
               <div className="max-h-32 overflow-y-auto space-y-1">
                 {exclusionMenusDetails?.menus?.map((menu) => (
-                  <div key={menu._id} className="flex justify-between items-center text-xs bg-muted/50 p-2 rounded">
+                  <div
+                    key={menu._id}
+                    className="flex justify-between items-center text-xs bg-muted/50 p-2 rounded"
+                  >
                     <span className="font-medium truncate flex-1">{menu.name}</span>
                     <span className="text-muted-foreground ml-2">
-                      ¥{(menu.sale_price && menu.sale_price > 0 ? menu.sale_price : menu.unit_price)?.toLocaleString()}
+                      ¥
+                      {(menu.sale_price && menu.sale_price > 0
+                        ? menu.sale_price
+                        : menu.unit_price
+                      )?.toLocaleString()}
                     </span>
                   </div>
-                )) || (
+                )) ||
                   // データ読み込み中の表示
                   selectedMenuIds.map((id) => (
-                    <div key={id} className="flex justify-between items-center text-xs bg-muted/50 p-2 rounded animate-pulse">
+                    <div
+                      key={id}
+                      className="flex justify-between items-center text-xs bg-muted/50 p-2 rounded animate-pulse"
+                    >
                       <div className="h-3 bg-muted rounded flex-1"></div>
                       <div className="h-3 bg-muted rounded w-16 ml-2"></div>
                     </div>
-                  ))
-                )}
+                  ))}
               </div>
             </div>
           </CardContent>
@@ -253,7 +259,9 @@ function CouponPreview({
 
         <CardFooter className="bg-muted pt-2 pb-2 flex justify-between">
           <div className="text-xs text-muted-foreground">
-            {selectedMenuIds.length === 0 ? t('noExcludedMenus') : `${t('excludedMenus')}: ${selectedMenuIds.length}`}
+            {selectedMenuIds.length === 0
+              ? `${t('excludedMenus')}: ${tCommon('none')}`
+              : `${t('excludedMenus')}: ${selectedMenuIds.length}`}
           </div>
           <div className="flex items-center gap-2">
             {/* 期限切れの場合は警告アイコンを表示 */}
@@ -274,8 +282,7 @@ function CouponPreview({
                 ? t('expired')
                 : data.is_active
                   ? t('active')
-                  : t('inactive')
-              }
+                  : t('inactive')}
             </Badge>
           </div>
         </CardFooter>
@@ -417,7 +424,8 @@ function CouponForm({ couponId }: { couponId: Id<'coupon'> }) {
 
   // 有効期限切れかどうかをチェック
   const isExpired = endDate && endDate <= new Date()
-  const isExpiringSoon = endDate && endDate > new Date() && endDate <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7日以内
+  const isExpiringSoon =
+    endDate && endDate > new Date() && endDate <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7日以内
 
   // フォーム送信ハンドラー
   const onSubmit = async (data: z.infer<typeof couponSchema>) => {
@@ -553,370 +561,378 @@ function CouponForm({ couponId }: { couponId: Id<'coupon'> }) {
           </AlertDescription>
         </Alert>
       )}
-    <div className="space-y-8">
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
-          e.preventDefault()
-        }
-      }}
-      className="space-y-8"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Tabs defaultValue="preview" className="md:col-span-2">
-          <TabsList>
-            <TabsTrigger value="preview">{t('basicSettings')}</TabsTrigger>
-            <TabsTrigger value="detail">{t('excludedMenus')}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="preview">
-            {/* フォーム入力部分 */}
-            <div className="md:col-span-3 space-y-6">
-              <div className="flex flex-col gap-6 bg-background rounded-lg p-4 shadow-sm border">
-                <div className="space-y-4">
-                  <ZodTextField
-                    register={register}
-                    errors={errors}
-                    name="name"
-                    label={t('couponName')}
-                    icon={<Tag size={16} />}
-                    placeholder={t('placeholder.couponName')}
-                  />
-                  <ZodTextField
-                    register={register}
-                    errors={errors}
-                    name="coupon_uid"
-                    label={t('couponCode')}
-                    icon={<Hash size={16} />}
-                    placeholder={t('placeholder.editCouponCode')}
-                  />
-                  <span className="text-xs text-muted-foreground">
-                    {t('description.editCouponCode')}
-                  </span>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 justify-end items-end">
-                    <div className="flex flex-col gap-2 ">
-                      <Label className="flex items-center gap-2 text-primary">
-                        <Percent size={16} />
-                        {t('discountType')}
-                      </Label>
+      <div className="space-y-8">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
+              e.preventDefault()
+            }
+          }}
+          className="space-y-8"
+        >
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <Tabs defaultValue="preview" className="xl:col-span-2">
+              <TabsList>
+                <TabsTrigger value="preview">{t('basicSettings')}</TabsTrigger>
+                <TabsTrigger value="detail">{t('excludedMenus')}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="preview">
+                {/* フォーム入力部分 */}
+                <div className="md:col-span-3 space-y-6">
+                  <div className="admin-panel flex flex-col gap-6 p-5 sm:p-6">
+                    <div className="space-y-4">
+                      <ZodTextField
+                        register={register}
+                        errors={errors}
+                        name="name"
+                        label={t('couponName')}
+                        icon={<Tag size={16} />}
+                        placeholder={t('placeholder.couponName')}
+                      />
+                      <ZodTextField
+                        register={register}
+                        errors={errors}
+                        name="coupon_uid"
+                        label={t('couponCode')}
+                        icon={<Hash size={16} />}
+                        placeholder={t('placeholder.editCouponCode')}
+                      />
                       <span className="text-xs text-muted-foreground">
-                        {t('description.editDiscountType')}
+                        {t('description.editCouponCode')}
                       </span>
-                      <div className="flex items-center gap-3 bg-muted p-2 rounded-md">
-                        <div
-                          className={`flex-1 text-center text-sm p-2 rounded-md ${discountType === 'percentage' ? 'bg-link text-link-foreground font-medium' : 'text-muted-foreground'}`}
-                        >
-                          {t('percentageDiscount')}
-                        </div>
-                        <Controller
-                          control={control}
-                          name="discount_type"
-                          render={({ field }) => (
-                            <Switch
-                              checked={field.value === 'fixed'}
-                              onCheckedChange={(checked) => {
-                                field.onChange(checked ? 'fixed' : 'percentage')
-                              }}
-                              className="data-[state=checked]:bg-accent-2 data-[state=unchecked]:bg-link-foreground"
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 justify-end items-end">
+                        <div className="flex flex-col gap-2 ">
+                          <Label className="flex items-center gap-2 text-primary">
+                            <Percent size={16} />
+                            {t('discountType')}
+                          </Label>
+                          <span className="text-xs text-muted-foreground">
+                            {t('description.editDiscountType')}
+                          </span>
+                          <div className="flex items-center gap-3 bg-muted p-2 rounded-md">
+                            <div
+                              className={`flex-1 text-center text-sm p-2 rounded-md ${discountType === 'percentage' ? 'bg-link text-link-foreground font-medium' : 'text-muted-foreground'}`}
+                            >
+                              {t('percentageDiscount')}
+                            </div>
+                            <Controller
+                              control={control}
+                              name="discount_type"
+                              render={({ field }) => (
+                                <Switch
+                                  checked={field.value === 'fixed'}
+                                  onCheckedChange={(checked) => {
+                                    field.onChange(checked ? 'fixed' : 'percentage')
+                                  }}
+                                  className="data-[state=checked]:bg-accent-2 data-[state=unchecked]:bg-link-foreground"
+                                />
+                              )}
                             />
-                          )}
-                        />
-                        <div
-                          className={`flex-1 text-center text-sm  p-2 rounded-md ${discountType === 'fixed' ? 'bg-accent-2-foreground text-accent-2 font-medium' : 'text-muted-foreground'}`}
-                        >
-                          {t('fixedDiscount')}
+                            <div
+                              className={`flex-1 text-center text-sm  p-2 rounded-md ${discountType === 'fixed' ? 'bg-accent-2-foreground text-accent-2 font-medium' : 'text-muted-foreground'}`}
+                            >
+                              {t('fixedDiscount')}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 割引額入力（常にマウントして値を保持し、表示だけ切り替える） */}
+                        <div className={discountType === 'percentage' ? '' : 'hidden'}>
+                          <ZodTextField
+                            register={register}
+                            errors={errors}
+                            name="percentage_discount_value"
+                            label={t('percentageDiscount')}
+                            type="number"
+                            icon={<Percent size={16} />}
+                            placeholder={t('placeholder.percentage')}
+                          />
+                        </div>
+                        <div className={discountType === 'fixed' ? '' : 'hidden'}>
+                          <ZodTextField
+                            register={register}
+                            errors={errors}
+                            name="fixed_discount_value"
+                            label={t('fixedDiscount')}
+                            type="number"
+                            icon={<PiggyBank size={16} />}
+                            placeholder={t('placeholder.fixed')}
+                          />
                         </div>
                       </div>
                     </div>
 
-                    {/* 割引額入力（常にマウントして値を保持し、表示だけ切り替える） */}
-                    <div className={discountType === 'percentage' ? '' : 'hidden'}>
-                      <ZodTextField
-                        register={register}
-                        errors={errors}
-                        name="percentage_discount_value"
-                        label={t('percentageDiscount')}
-                        type="number"
-                        icon={<Percent size={16} />}
-                        placeholder={t('placeholder.percentage')}
-                      />
-                    </div>
-                    <div className={discountType === 'fixed' ? '' : 'hidden'}>
-                      <ZodTextField
-                        register={register}
-                        errors={errors}
-                        name="fixed_discount_value"
-                        label={t('fixedDiscount')}
-                        type="number"
-                        icon={<PiggyBank size={16} />}
-                        placeholder={t('placeholder.fixed')}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4 py-2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <Label className="flex items-center gap-2 text-primary">
-                        <CalendarIcon size={16} />
-                        {t('startDate')}
-                      </Label>
-                      <Controller
-                        control={control}
-                        name="start_date"
-                        render={({ field }) => (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={`w-full border-border justify-start text-left font-normal bg-input ${
-                                  errors.start_date ? 'border-destructive' : ''
-                                }`}
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {field.value ? (
-                                  <DateDisplay date={field.value} locale={locale} />
-                                ) : (
-                                  <span>{t('selectDate')}</span>
-                                )}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <CalendarComponent
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        )}
-                      />
-                      {errors.start_date && (
-                        <motion.p
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          variants={fadeIn}
-                          className="mt-1 text-sm text-destructive flex items-center gap-1"
-                        >
-                          <AlertCircle size={14} />
-                          {errors.start_date?.message}
-                        </motion.p>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <Label className="flex items-center gap-2 text-primary">
-                        <CalendarIcon size={16} />
-                        {t('endDate')}
-                      </Label>
-                      <Controller
-                        control={control}
-                        name="end_date"
-                        render={({ field }) => (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={`w-full border-border justify-start text-left font-normal bg-input ${
-                                  errors.end_date ? 'border-destructive' : ''
-                                }`}
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {field.value ? (
-                                  <DateDisplay date={field.value} locale={locale} />
-                                ) : (
-                                  <span>{t('selectDate')}</span>
-                                )}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <CalendarComponent
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        )}
-                      />
-                      {errors.end_date && (
-                        <motion.div
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          variants={fadeIn}
-                          className="mt-2"
-                        >
-                          <Alert className="border-destructive bg-destructive/10">
-                            <AlertCircle className="h-4 w-4 text-destructive" />
-                            <AlertDescription className="text-destructive font-medium">
-                              {errors.end_date?.message}
-                            </AlertDescription>
-                          </Alert>
-                        </motion.div>
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {t('description.validPeriod')}
-                    <br />
-                    {t('description.validPeriodSecondary')}
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                    <div className="flex flex-col gap-2">
-                      <Label className="flex items-center gap-2 text-primary">
-                        {t('currentUseCount')}
-                      </Label>
-                      <p className="text-sm">
-                        <span className="text-sm">
-                          {isNaN(formValues.number_of_use) ? 0 : formValues.number_of_use || 0}
-                        </span>{' '}
-                        /
-                        <span className="text-sm ml-1 text-muted-foreground">
-                          {isNaN(formValues.max_use_count)
-                            ? t('unlimited')
-                            : formValues.max_use_count || t('unlimited')}
-                        </span>
-                      </p>
-                    </div>
-                    <ZodTextField
-                      register={register}
-                      errors={errors}
-                      name="max_use_count"
-                      label={t('maxUseCount')}
-                      type="number"
-                      icon={<Hash size={16} />}
-                      placeholder={t('placeholder.maxUseCount')}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4 py-2">
-                  <div className="flex flex-col gap-2 pt-2">
-                    <Controller
-                      control={control}
-                      name="is_active"
-                      render={({ field }) => (
-                        <div className="flex items-center justify-between">
-                          <div className="flex flex-col gap-2">
-                            <Label
-                              htmlFor="is_active"
-                              className="flex items-center gap-2 text-primary cursor-pointer"
-                            >
-                              {t('isActive')}
-                            </Label>
-                            <span className="text-xs text-muted-foreground">
-                              {t('description.editActiveStatus')}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`text-xs px-2 py-0.5 rounded-md font-bold ${field.value ? 'bg-accent-2-foreground text-accent-2' : 'bg-destructive text-destructive-foreground'}`}
-                            >
-                              {field.value ? t('active') : t('inactive')}
-                            </span>
-                            <Switch
-                              id="is_active"
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className="data-[state=checked]:bg-accent-2 data-[state=unchecked]:bg-destructive-foreground"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-4 py-2">
-                  <div className="flex flex-col gap-2 pt-2">
-                    <Controller
-                      control={control}
-                      name="active_customer_type"
-                      render={({ field }) => (
-                        <>
+                    <div className="space-y-4 py-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-2">
                           <Label className="flex items-center gap-2 text-primary">
-                            <User size={14} />
-                            <span>{t('targetCustomer')}:</span>
+                            <CalendarIcon size={16} />
+                            {t('startDate')}
                           </Label>
-                          <ToggleGroup
-                            type="single"
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            className="flex items-center justify-start w-fit gap-4 bg-muted p-3 rounded-md"
-                          >
-                            <ToggleGroupItem value="all">{t('allCustomers')}</ToggleGroupItem>
-                            <ToggleGroupItem value="first_time">
-                              {t('firstTimeCustomers')}
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="repeat">{t('repeatCustomers')}</ToggleGroupItem>
-                          </ToggleGroup>
-                        </>
-                      )}
-                    />
+                          <Controller
+                            control={control}
+                            name="start_date"
+                            render={({ field }) => (
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    className={`w-full border-border justify-start text-left font-normal bg-input ${
+                                      errors.start_date ? 'border-destructive' : ''
+                                    }`}
+                                  >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {field.value ? (
+                                      <DateDisplay date={field.value} locale={locale} />
+                                    ) : (
+                                      <span>{t('selectDate')}</span>
+                                    )}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <CalendarComponent
+                                    mode="single"
+                                    selected={field.value}
+                                    onSelect={field.onChange}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            )}
+                          />
+                          {errors.start_date && (
+                            <motion.p
+                              initial="hidden"
+                              animate="visible"
+                              exit="exit"
+                              variants={fadeIn}
+                              className="mt-1 text-sm text-destructive flex items-center gap-1"
+                            >
+                              <AlertCircle size={14} />
+                              {errors.start_date?.message}
+                            </motion.p>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Label className="flex items-center gap-2 text-primary">
+                            <CalendarIcon size={16} />
+                            {t('endDate')}
+                          </Label>
+                          <Controller
+                            control={control}
+                            name="end_date"
+                            render={({ field }) => (
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    className={`w-full border-border justify-start text-left font-normal bg-input ${
+                                      errors.end_date ? 'border-destructive' : ''
+                                    }`}
+                                  >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {field.value ? (
+                                      <DateDisplay date={field.value} locale={locale} />
+                                    ) : (
+                                      <span>{t('selectDate')}</span>
+                                    )}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <CalendarComponent
+                                    mode="single"
+                                    selected={field.value}
+                                    onSelect={field.onChange}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            )}
+                          />
+                          {errors.end_date && (
+                            <motion.div
+                              initial="hidden"
+                              animate="visible"
+                              exit="exit"
+                              variants={fadeIn}
+                              className="mt-2"
+                            >
+                              <Alert className="border-destructive bg-destructive/10">
+                                <AlertCircle className="h-4 w-4 text-destructive" />
+                                <AlertDescription className="text-destructive font-medium">
+                                  {errors.end_date?.message}
+                                </AlertDescription>
+                              </Alert>
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {t('description.validPeriod')}
+                        <br />
+                        {t('description.validPeriodSecondary')}
+                      </p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                        <div className="flex flex-col gap-2">
+                          <Label className="flex items-center gap-2 text-primary">
+                            {t('currentUseCount')}
+                          </Label>
+                          <p className="text-sm">
+                            <span className="text-sm">
+                              {isNaN(formValues.number_of_use) ? 0 : formValues.number_of_use || 0}
+                            </span>{' '}
+                            /
+                            <span className="text-sm ml-1 text-muted-foreground">
+                              {isNaN(formValues.max_use_count)
+                                ? t('unlimited')
+                                : formValues.max_use_count || t('unlimited')}
+                            </span>
+                          </p>
+                        </div>
+                        <ZodTextField
+                          register={register}
+                          errors={errors}
+                          name="max_use_count"
+                          label={t('maxUseCount')}
+                          type="number"
+                          icon={<Hash size={16} />}
+                          placeholder={t('placeholder.maxUseCount')}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 py-2">
+                      <div className="flex flex-col gap-2 pt-2">
+                        <Controller
+                          control={control}
+                          name="is_active"
+                          render={({ field }) => (
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div className="flex flex-col gap-2">
+                                <Label
+                                  htmlFor="is_active"
+                                  className="flex items-center gap-2 text-primary cursor-pointer"
+                                >
+                                  {t('isActive')}
+                                </Label>
+                                <span className="text-xs text-muted-foreground">
+                                  {t('description.editActiveStatus')}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`text-xs px-2 py-0.5 rounded-md font-bold ${field.value ? 'bg-accent-2-foreground text-accent-2' : 'bg-destructive text-destructive-foreground'}`}
+                                >
+                                  {field.value ? t('active') : t('inactive')}
+                                </span>
+                                <Switch
+                                  id="is_active"
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="data-[state=checked]:bg-accent-2 data-[state=unchecked]:bg-destructive-foreground"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-4 py-2">
+                      <div className="flex flex-col gap-2 pt-2">
+                        <Controller
+                          control={control}
+                          name="active_customer_type"
+                          render={({ field }) => (
+                            <>
+                              <Label className="flex items-center gap-2 text-primary">
+                                <User size={14} />
+                                <span>{t('targetCustomer')}:</span>
+                              </Label>
+                              <ToggleGroup
+                                type="single"
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                className="flex w-full flex-wrap items-center justify-start gap-2 rounded-xl bg-muted p-2"
+                              >
+                                <ToggleGroupItem value="all">{t('allCustomers')}</ToggleGroupItem>
+                                <ToggleGroupItem value="first_time">
+                                  {t('firstTimeCustomers')}
+                                </ToggleGroupItem>
+                                <ToggleGroupItem value="repeat">
+                                  {t('repeatCustomers')}
+                                </ToggleGroupItem>
+                              </ToggleGroup>
+                            </>
+                          )}
+                        />
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {t('description.targetCustomer')}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {t('description.targetCustomer')}
-                  </span>
+                </div>
+              </TabsContent>
+              <TabsContent value="detail">
+                <ExclusionMenu
+                  title={t('excludedMenuDescription')}
+                  selectedMenuIds={selectedMenuIds}
+                  setSelectedMenuIdsAction={async (menuIds: Id<'menu'>[]) => {
+                    setSelectedMenuIds(menuIds)
+                    // フォーム状態を強制的に dirty にするため、名前フィールドを一時的に触る
+                    const currentName = watch('name')
+                    setValue('name', currentName + ' ', { shouldDirty: true })
+                    setValue('name', currentName, { shouldDirty: true })
+                    // バリデーションをトリガー
+                    await trigger()
+                  }}
+                />
+              </TabsContent>
+            </Tabs>
+            {/* プレビュー部分 */}
+            <div className="xl:col-span-1">
+              <div className="space-y-4 xl:sticky xl:top-24">
+                <CouponPreview
+                  data={previewData}
+                  selectedMenuIds={selectedMenuIds}
+                  locale={locale}
+                />
+
+                <div className="mt-6">
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting || !(isDirty || menuIdsChanged)}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {t('adding')}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4" />
+                        {t('updateCoupon')}
+                      </>
+                    )}
+                  </Button>
+
+                  {isDirty && (
+                    <p className="text-xs text-center mt-2 text-muted-foreground">
+                      {t('hasChanges')}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
-          </TabsContent>
-          <TabsContent value="detail">
-            <ExclusionMenu
-              title={t('excludedMenuDescription')}
-              selectedMenuIds={selectedMenuIds}
-              setSelectedMenuIdsAction={async (menuIds: Id<'menu'>[]) => {
-                setSelectedMenuIds(menuIds)
-                // フォーム状態を強制的に dirty にするため、名前フィールドを一時的に触る
-                const currentName = watch('name')
-                setValue('name', currentName + ' ', { shouldDirty: true })
-                setValue('name', currentName, { shouldDirty: true })
-                // バリデーションをトリガー
-                await trigger()
-              }}
-            />
-          </TabsContent>
-        </Tabs>
-        {/* プレビュー部分 */}
-        <div className="md:col-span-1">
-          <div className="sticky top-4 space-y-4">
-            <CouponPreview data={previewData} selectedMenuIds={selectedMenuIds} locale={locale} />
-
-            <div className="mt-6">
-              <Button
-                type="submit"
-                disabled={isSubmitting || !(isDirty || menuIdsChanged)}
-                className="w-full"
-                size="lg"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    {t('adding')}
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    {t('updateCoupon')}
-                  </>
-                )}
-              </Button>
-
-              {isDirty && (
-                <p className="text-xs text-center mt-2 text-muted-foreground">{t('hasChanges')}</p>
-              )}
-            </div>
           </div>
-        </div>
+        </form>
       </div>
-    </form>
-    </div>
     </div>
   )
 }

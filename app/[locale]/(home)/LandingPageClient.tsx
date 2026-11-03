@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { ChannelTalkLoader } from '@/components/common/ChannelTalkLoader'
+import './landing.css'
 import {
   HeroSection,
   FeatureSection,
@@ -67,7 +68,7 @@ export function LandingPageClient() {
   }
 
   return (
-    <div data-testid="landing-page-client">
+    <div data-testid="landing-page-client" className="landing-shell">
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       <div
         style={{
@@ -75,21 +76,22 @@ export function LandingPageClient() {
           visibility: showSplash ? 'hidden' : 'visible',
         }}
       >
-        <Header />
+        <Header variant="landing" />
         <main
+          id="landing-main"
           data-testid="main"
-          className="flex flex-col min-h-screen bg-background text-foreground"
+          className="landing-main flex min-h-screen flex-col bg-background text-foreground"
         >
           <HeroSection />
           <FeatureSection />
-          <Pricing />
+          <Pricing variant="landing" />
           <ContentSection />
-          <CTASection />
-          <FAQ />
-          <HeaderSection />
+          <CTASection variant="landing" />
+          <FAQ variant="landing" />
+          <HeaderSection variant="landing" />
         </main>
 
-        <Footer />
+        <Footer variant="landing" />
       </div>
       <ChannelTalkLoader />
     </div>

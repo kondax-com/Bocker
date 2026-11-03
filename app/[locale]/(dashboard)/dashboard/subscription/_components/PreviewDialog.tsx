@@ -168,9 +168,9 @@ export default function PreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90dvh] max-w-xl overflow-y-auto rounded-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-primary bg-clip-text text-transparent">
+          <DialogTitle className="text-xl font-semibold text-foreground">
             {t('preview.title')}
           </DialogTitle>
         </DialogHeader>
@@ -179,7 +179,7 @@ export default function PreviewDialog({
           {/* 概要 */}
           <div className="p-4 rounded-lg bg-muted">
             <h3 className="font-medium text-xs mb-2">{t('preview.changeDetails')}</h3>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               {currentPlanName && (
                 <div>
                   <div className="text-sm text-muted-foreground">{t('preview.from')}</div>
@@ -219,11 +219,15 @@ export default function PreviewDialog({
           </div>
         </div>
 
-        <DialogFooter className="flex gap-3">
-          <Button variant="outline" className="flex-1" onClick={handleCancel}>
+        <DialogFooter className="flex gap-3 sm:gap-3">
+          <Button variant="outline" className="min-h-11 flex-1 rounded-lg" onClick={handleCancel}>
             {t('confirmDialog.cancel')}
           </Button>
-          <Button className="flex-1" onClick={handleConfirm} disabled={isSubmitting}>
+          <Button
+            className="min-h-11 flex-1 rounded-lg"
+            onClick={handleConfirm}
+            disabled={isSubmitting}
+          >
             {confirmButtonContent}
           </Button>
         </DialogFooter>

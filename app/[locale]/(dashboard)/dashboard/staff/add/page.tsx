@@ -519,9 +519,9 @@ function StaffAddPage() {
       backLink="/dashboard/staff"
       backLinkTitle={t('staff.list.title')}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="admin-form">
         <Tabs defaultValue="basic">
-          <TabsList>
+          <TabsList className="mb-4 h-auto max-w-full flex-wrap justify-start gap-1">
             <TabsTrigger value="basic">{t('staff.add.tabBasicInfo')}</TabsTrigger>
             <TabsTrigger value="exclusion">{t('staff.add.tabExclusionMenu')}</TabsTrigger>
           </TabsList>
@@ -531,12 +531,12 @@ function StaffAddPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="shadow-md border-border overflow-hidden">
-                <CardContent className="space-y-8 pt-6 overflow-x-hidden">
+              <Card className="admin-panel overflow-hidden">
+                <CardContent className="space-y-8 px-4 pt-5 sm:px-6 sm:pt-6 overflow-x-hidden">
                   {/* 基本情報セクション */}
                   <div>
                     {planName !== 'MICRO' ? (
-                      <div className="flex flex-col items-start justify-between space-y-2 mb-4 bg-accent-2-foreground text-accent-2 border border-accent-2 rounded-md p-4">
+                      <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-border bg-secondary p-4 text-secondary-foreground">
                         <div className="flex items-center space-x-2">
                           <Switch
                             id="send_invite_email"
@@ -863,7 +863,7 @@ function StaffAddPage() {
             )}
           </TabsContent>
         </Tabs>
-        <div className="flex justify-between py-4 mt-4">
+        <div className="admin-toolbar justify-between border-t border-border py-5 mt-6">
           <Button
             type="button"
             variant="outline"
@@ -893,4 +893,4 @@ function StaffAddPage() {
   )
 }
 
-export default withOwnerAccess(StaffAddPage);
+export default withOwnerAccess(StaffAddPage)

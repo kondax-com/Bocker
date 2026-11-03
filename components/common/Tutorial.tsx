@@ -15,9 +15,9 @@ import {
   Store,
   Calendar,
   Menu,
+  ArrowUpRight,
   Users,
   AlertCircle,
-  ChevronRight,
 } from 'lucide-react'
 import { useTenantAndOrganization } from '@/hooks/useTenantAndOrganization'
 import { Link } from '@/i18n/navigation'
@@ -114,7 +114,11 @@ export const Tutorial = () => {
 
   // チュートリアル完了時の処理
   useEffect(() => {
-    if (tutorialStatus && !tutorialStatus.tutorialEnd && tutorialStatus.completedSteps.length === tutorialSteps.length) {
+    if (
+      tutorialStatus &&
+      !tutorialStatus.tutorialEnd &&
+      tutorialStatus.completedSteps.length === tutorialSteps.length
+    ) {
       // 全ステップ完了時にフラグを更新
       completeTutorial({
         tenant_id: tenantId!,
@@ -123,11 +127,14 @@ export const Tutorial = () => {
     }
   }, [tutorialStatus, tutorialSteps.length, completeTutorial, tenantId, orgId])
 
-  const isStepCompleted = (stepId: number) => tutorialStatus?.completedSteps.includes(stepId) || false
+  const isStepCompleted = (stepId: number) =>
+    tutorialStatus?.completedSteps.includes(stepId) || false
   const isAllRequiredStepsCompleted = () =>
     tutorialSteps.filter((s) => s.required).every((s) => isStepCompleted(s.id))
 
-  const progress = tutorialStatus ? (tutorialStatus.completedSteps.length / tutorialSteps.length) * 100 : 0
+  const progress = tutorialStatus
+    ? (tutorialStatus.completedSteps.length / tutorialSteps.length) * 100
+    : 0
 
   // チュートリアル完了済みまたはデータ未ロードの場合
   if (!ready || !tutorialStatus) {
@@ -140,115 +147,98 @@ export const Tutorial = () => {
   }
   return (
     <div
-      className={`${subscription && (subscription.status === 'active' || subscription.status === 'trialing') ? 'container max-w-6xl mx-auto' : ' blur-sm pointer-events-none select-none'}`}
+      className={`${subscription && (subscription.status === 'active' || subscription.status === 'trialing') ? 'min-w-0' : 'blur-sm pointer-events-none select-none'}`}
     >
       {!isAllRequiredStepsCompleted() && (
-        <>
-          <div className="my-6 p-4 rounded-lg border border-neon">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-2xl font-bold mb-2 text-neon">{t('setupGuide.title')}</h1>
-                <p className="text-muted-foreground text-sm">{t('setupGuide.subtitle')}</p>
-                <div className="p-2 rounded-md bg-accent-2-foreground text-accent-2  mt-2">
-                  <span className="font-semibold text-xs md:text-sm tracking-wide">
-                    {t('setupGuide.subtitle2')}
-                  </span>
-                </div>
-              </div>
+        <section
+          aria-labelledby="setup-guide-title"
+          className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+        >
+          <div className="flex flex-col gap-5 border-b border-border p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-2">
+              <h2 id="setup-guide-title" className="text-lg font-semibold text-foreground">
+                {t('setupGuide.title')}
+              </h2>
+              <p className="text-sm text-muted-foreground">{t('setupGuide.subtitle')}</p>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {t('setupGuide.subtitle2')}
+              </p>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <Progress value={progress} className="h-2 w-full" />
-              <span className="text-sm font-bold text-nowrap px-2">
-                {progress.toFixed(0)}%
-                <span className="text-muted-foreground font-light ml-1 text-xs">
-                  {t('completed')}
+            <div className="flex w-full shrink-0 flex-col gap-2 lg:w-48">
+              <div className="flex items-baseline justify-between text-sm">
+                <span className="text-muted-foreground">{t('completed')}</span>
+                <span className="font-semibold tabular-nums text-primary">
+                  {progress.toFixed(0)}%
                 </span>
-              </span>
+              </div>
+              <Progress value={progress} aria-label={t('setupGuide.title')} className="h-1.5" />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3  xl:grid-cols-6 gap-2 md:gap-4">
-            {/* Step Cards */}
+          <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 sm:p-5 xl:grid-cols-3">
             {tutorialSteps.map((step, index) => {
               const Icon = step.icon
               const completed = isStepCompleted(step.id)
 
               return (
-                <Card
-                  key={step.id}
-                  className={`${completed ? 'border-accent-2 border' : 'border-destructive border'}`}
-                >
-                  <div className="relative p-2 pt-8 flex flex-col justify-center items-center w-full">
-                    <div
-                      className={`${
-                        completed
-                          ? 'bg-accent-2-foreground text-accent-2 border-accent-2'
-                          : 'bg-destructive-foreground text-destructive border-destructive'
-                      } absolute top-1 left-1 rounded-full px-2 py-1 flex items-center justify-center`}
-                    >
-                      <div className="text-xs">
-                        {completed ? (
-                          <div className="flex items-center gap-2 font-bold">
-                            <CheckCircle2 className="h-4 w-4" />
-                            {t('stepCompleted', { step: index + 1 })}
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 font-bold">
-                            {t('stepIncomplete', { step: index + 1 })}
-                          </div>
-                        )}
+                <Card key={step.id} className="flex flex-col rounded-xl border-border shadow-none">
+                  <div className="flex flex-1 flex-col gap-4 p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+                        <Icon aria-hidden="true" className="size-5" />
                       </div>
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${completed ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}
+                      >
+                        {completed && <CheckCircle2 aria-hidden="true" className="size-3.5" />}
+                        {completed
+                          ? t('stepCompleted', { step: index + 1 })
+                          : t('stepIncomplete', { step: index + 1 })}
+                      </span>
                     </div>
-                    <div className="flex items-start justify-center h-full">
-                      <div className="flex items-center justify-center gap-2">
-                        <div className="h-full">
-                          <div className="text-sm font-bold mt-2 flex items-center gap-1">
-                            <Icon className="min-h-4 min-w-4 max-h-4 max-w-4 text-accent" />
-                            {t(step.titleKey)}
-                          </div>
-                          <div className="mt-2 text-xs text-muted-foreground">
-                            {t(step.descriptionKey)}
-                          </div>
-                        </div>
-                      </div>
+                    <div className="flex flex-col gap-1.5">
+                      <h3 className="text-sm font-semibold text-foreground">{t(step.titleKey)}</h3>
+                      <p className="text-xs leading-relaxed text-muted-foreground">
+                        {t(step.descriptionKey)}
+                      </p>
                     </div>
                   </div>
-                  <CardContent className="p-2">
-                    <Link href={step.href} className="w-full">
-                      <Button
-                        variant={completed ? 'default' : 'destructive'}
-                        className="w-full text-sm"
-                      >
+                  <CardContent className="px-4 pb-4 pt-0">
+                    <Button
+                      asChild
+                      variant={completed ? 'outline' : 'secondary'}
+                      className="min-h-11 w-full justify-between rounded-lg shadow-none"
+                    >
+                      <Link href={step.href}>
                         {completed ? t('checkSettings') : t('configure')}
-                        <ChevronRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
+                        <ArrowUpRight aria-hidden="true" className="size-4" />
+                      </Link>
+                    </Button>
                   </CardContent>
                 </Card>
               )
             })}
-
-            {tutorialStatus.missingItems.length > 0 && tutorialStatus.missingItems.length < 3 && (
-              <Card className="bg-warning border-warning-foreground text-warning-foreground">
-                <CardHeader className="flex items-center gap-2">
-                  <AlertTitle className="flex items-center gap-2 text-warning-foreground font-bold">
-                    <AlertCircle className="h-5 w-5 !text-warning-foreground" />
-                    {t('missingItems.title')}
-                  </AlertTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs">{t('missingItems.description')}</p>
-                  <ul className="list-disc pl-5 mt-2">
-                    {tutorialStatus.missingItems.map((item, index) => (
-                      <li key={index} className="text-sm font-bold">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
           </div>
-        </>
+          {tutorialStatus.missingItems.length > 0 && tutorialStatus.missingItems.length < 3 && (
+            <Card className="mx-4 mb-4 rounded-xl border-warning bg-warning text-warning-foreground shadow-none sm:mx-5 sm:mb-5">
+              <CardHeader className="p-4 pb-2">
+                <AlertTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <AlertCircle aria-hidden="true" className="size-4 shrink-0" />
+                  {t('missingItems.title')}
+                </AlertTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4">
+                <p className="text-xs">{t('missingItems.description')}</p>
+                <ul className="mt-2 list-disc pl-5">
+                  {tutorialStatus.missingItems.map((item, index) => (
+                    <li key={index} className="text-sm">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+        </section>
       )}
     </div>
   )

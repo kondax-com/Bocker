@@ -51,7 +51,7 @@ const TagInput = ({ tags, setTagsAction, errors, title }: TagInputProps) => {
 
   return (
     <div>
-      <Label className="flex items-center gap-2 text-sm mb-2">
+      <Label htmlFor="tags" className="flex items-center gap-2 text-sm mb-2">
         <Tag size={16} className="text-muted-foreground" />
         {title ?? t('title')} {t('maxTags')}
       </Label>

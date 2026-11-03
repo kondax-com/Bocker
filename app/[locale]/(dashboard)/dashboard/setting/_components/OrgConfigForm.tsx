@@ -271,6 +271,7 @@ export default function OrgConfigForm() {
   return (
     <>
       <form
+        className="admin-panel admin-form p-5 sm:p-6"
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
@@ -279,11 +280,11 @@ export default function OrgConfigForm() {
         }}
       >
         <div className="flex items-center gap-2">
-          <h4 className="text-2xl font-bold">{t('title')}</h4>
+          <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
         </div>
         <p className="text-sm text-muted-foreground mt-1">{t('description')}</p>
         <div className="pt-4">
-          <div className="flex flex-col gap-3 space-y-2">
+          <div className="flex flex-col gap-6">
             <ZodTextField
               name="org_name"
               register={register}
@@ -326,6 +327,7 @@ export default function OrgConfigForm() {
                   variant="outline"
                   size="icon"
                   onClick={handleSearchAddress}
+                  aria-label={t('fields.address')}
                   disabled={isSearchingAddress || !postalCode || postalCode.length < 7}
                 >
                   {isSearchingAddress ? (
@@ -353,10 +355,10 @@ export default function OrgConfigForm() {
             </div>
           </div>
         </div>
-        <Separator className="my-10 w-2/3 mx-auto" />
-        <div className="flex flex-col md:flex-row gap-6 items-start my-4 mt-12">
+        <Separator className="my-8" />
+        <div className="my-4 flex flex-col items-start gap-6 md:flex-row">
           <div className="w-full md:w-1/2 flex flex-col gap-4">
-            <h4 className="text-2xl font-bold">{t('fields.storeImage')}</h4>
+            <h4 className="text-lg font-semibold text-foreground">{t('fields.storeImage')}</h4>
             {orgAndConfig?.config?.images && orgAndConfig.config.images.length > 0 && (
               <div className="grid grid-cols-1 gap-2">
                 {orgAndConfig.config.images.map((image, index) => (
@@ -416,8 +418,12 @@ export default function OrgConfigForm() {
             />
           </div>
         </div>
-        <div className="mt-6 flex justify-end">
-          <Button type="submit" disabled={isSubmitting || !isDirty} className="min-w-[120px]">
+        <div className="admin-toolbar mt-8 justify-end border-t border-border pt-5">
+          <Button
+            type="submit"
+            disabled={isSubmitting || !isDirty}
+            className="min-h-11 min-w-[120px] rounded-lg shadow-none"
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />

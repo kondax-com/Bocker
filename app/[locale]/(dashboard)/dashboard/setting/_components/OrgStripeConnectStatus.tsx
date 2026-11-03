@@ -155,15 +155,15 @@ export default function StripeConnectStatus() {
   const isConnected = status !== 'not_connected'
 
   return (
-    <div>
+    <div className="admin-panel p-5 sm:p-6">
       <div className="mb-4">
         <div className="flex items-center gap-2">
-          <h4 className="text-2xl font-bold mb-1">{t('title')}</h4>
+          <h2 className="mb-1 text-lg font-semibold text-foreground">{t('title')}</h2>
         </div>
         <p className="text-sm text-muted-foreground">{t('description')}</p>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-start items-start md:items-center gap-2 my-6">
+      <div className="admin-toolbar my-6">
         {isConnected && (
           <Button onClick={handleViewDashboard} disabled={isLoading}>
             {isLoading ? (

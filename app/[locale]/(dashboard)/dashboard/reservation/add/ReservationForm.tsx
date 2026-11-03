@@ -919,15 +919,15 @@ export default function ReservationForm() {
   return (
     <div>
       {/* プログレスバー */}
-      <div className="mb-8 ">
-        <div className="flex items-center justify-center mb-4">
+      <div className="admin-panel mb-6 overflow-x-auto p-4 sm:p-5">
+        <div className="flex min-w-max items-center justify-center">
           {stepConfig.map((step, index) => (
             <div key={step.id} className="flex items-center justify-center w-fit">
               <div key={step.id} className="flex items-center w-full">
                 <div className="flex flex-col md:flex-row items-center">
                   <div
                     className={cn(
-                      'w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300',
+                      'size-10 rounded-xl bg-muted flex items-center justify-center transition-colors',
                       currentStep >= step.id ? 'text-success-foreground' : 'text-muted-foreground'
                     )}
                   >
@@ -967,11 +967,11 @@ export default function ReservationForm() {
           }
         }}
       >
-        <div className="min-h-[500px] max-w-3xl mx-auto">
+        <div className="admin-form min-h-[500px] max-w-3xl mx-auto">
           {/* ステップ1: メニュー選択 */}
           {currentStep === STEPS.MENU && (
             <div className="space-y-3 md:space-y-6">
-              <div className="bg-background rounded-2xl shadow-sm border border-border p-3 md:p-6">
+              <div className="admin-panel p-4 sm:p-6">
                 {/* フィルタリングセクション */}
                 <div className="mb-6">
                   <Accordion type="single" collapsible className="w-full">
@@ -1216,7 +1216,7 @@ export default function ReservationForm() {
               </div>
               {/* オプション選択（メニュー選択時のみ表示） */}
               {selectedMenus.length > 0 && (
-                <div className="bg-background  rounded-2xl shadow-sm border border-border p-6">
+                <div className="admin-panel p-4 sm:p-6">
                   <h3 className="text-lg font-semibold mb-4">{t('optionsOptional')}</h3>
                   <div className="grid gap-3">
                     {options?.map((option) => {
@@ -1258,7 +1258,7 @@ export default function ReservationForm() {
                                 variant="ghost"
                                 onClick={() => removeOption(option._id)}
                                 disabled={count === 0}
-                                className="h-8 w-8"
+                                className="size-11 shrink-0 rounded-lg"
                               >
                                 <Minus className="w-4 h-4" />
                               </Button>
@@ -1276,7 +1276,7 @@ export default function ReservationForm() {
                                   })
                                 }
                                 disabled={count === 0 && selectedOptions.length >= MAX_OPTION_ITEMS}
-                                className="h-8 w-8"
+                                className="size-11 shrink-0 rounded-lg"
                               >
                                 <Plus className="w-4 h-4" />
                               </Button>
@@ -1294,8 +1294,10 @@ export default function ReservationForm() {
           {/* ステップ2: スタッフ選択 */}
           {currentStep === STEPS.STAFF && (
             <div className="space-y-6">
-              <div className="bg-background  rounded-2xl shadow-sm border border-border p-6">
-                <h2 className="text-2xl font-bold mb-2">{t('staffForTreatment')}</h2>
+              <div className="admin-panel p-4 sm:p-6">
+                <h2 className="text-xl font-semibold text-foreground mb-2">
+                  {t('staffForTreatment')}
+                </h2>
                 <p className="text-muted-foreground mb-6">
                   施術を担当するスタッフを選択してください
                 </p>
@@ -1407,8 +1409,10 @@ export default function ReservationForm() {
           {/* ステップ3: 日時選択 */}
           {currentStep === STEPS.DATETIME && (
             <div className="space-y-6">
-              <div className="flex flex-col items-center justify-center bg-background  rounded-2xl shadow-sm border border-border p-6">
-                <h2 className="text-2xl font-bold mb-2">{t('reservationDate')}</h2>
+              <div className="flex flex-col items-center justify-center admin-panel p-4 sm:p-6">
+                <h2 className="text-xl font-semibold text-foreground mb-2">
+                  {t('reservationDate')}
+                </h2>
                 <p className="text-muted-foreground mb-6">ご希望の日時を選択してください</p>
 
                 {/* カレンダー */}
@@ -1502,7 +1506,7 @@ export default function ReservationForm() {
           {/* ステップ4: 顧客情報 */}
           {currentStep === STEPS.CUSTOMER && (
             <div className="space-y-6">
-              <div className="bg-background  rounded-2xl shadow-sm border border-border p-6">
+              <div className="admin-panel p-4 sm:p-6">
                 <h2 className="text-2xl font-bold mb-6">{t('customerInfo')}</h2>
 
                 {/* 顧客タイプ選択 */}
@@ -1671,7 +1675,7 @@ export default function ReservationForm() {
               </div>
 
               {/* 備考 */}
-              <div className="bg-background  rounded-2xl shadow-sm border border-border p-6">
+              <div className="admin-panel p-4 sm:p-6">
                 <Label className="text-lg font-semibold mb-3 block">{t('notes')}</Label>
                 <Textarea
                   {...register('notes')}

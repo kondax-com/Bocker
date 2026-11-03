@@ -2,6 +2,19 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useTranslations } from 'next-intl'
 import { HeroSection } from '../HeroSection'
+import type { ImgHTMLAttributes } from 'react'
+
+vi.mock('next/image', () => ({
+  default: ({
+    priority,
+    alt,
+    ...props
+  }: ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean }) => {
+    void priority
+    // eslint-disable-next-line @next/next/no-img-element -- Keep the image contract visible in jsdom.
+    return <img alt={alt} {...props} />
+  },
+}))
 
 // Mock useTranslations to return translation keys as-is for testing
 vi.mock('next-intl', () => ({
@@ -67,13 +80,37 @@ describe('HeroSection', () => {
       expect(materialButton.closest('a')).toHaveAttribute('href', '/contact')
     })
 
-    it('CTAボタンがクリック可能である', () => {
+    it('CTAリンクがクリック可能で、操作要素が入れ子になっていない', () => {
       render(<HeroSection />)
 
-      const buttons = screen.getAllByRole('button')
-      buttons.forEach((button) => {
-        expect(() => fireEvent.click(button)).not.toThrow()
+      const links = screen.getAllByRole('link')
+      expect(links).toHaveLength(3)
+      expect(screen.getByTestId('hero-cta')).toHaveAttribute('href', '/contact')
+      expect(document.querySelector('a button, button a')).not.toBeInTheDocument()
+      links.forEach((link) => {
+        const onClick = vi.fn((event: Event) => event.preventDefault())
+        link.addEventListener('click', onClick)
+        fireEvent.click(link)
+        expect(onClick).toHaveBeenCalledOnce()
       })
+    })
+  })
+
+  describe('製品プレビュー', () => {
+    it('顧客情報を含まない公開モックアップを使用し、画像サイズと代替テキストを指定する', () => {
+      render(<HeroSection />)
+
+      const menuPreview = screen.getByRole('img', { name: 'menuManagement.title' })
+      expect(menuPreview).toHaveAttribute('src', '/assets/mockup/pc/menu.png')
+      expect(menuPreview).toHaveAttribute('width', '3020')
+      expect(menuPreview).toHaveAttribute('height', '1646')
+      expect(menuPreview).toHaveAttribute('sizes')
+
+      const bookingPreview = screen.getByRole('img', { name: 'smartReservation.title' })
+      expect(bookingPreview).toHaveAttribute('src', '/assets/mockup/sp/reservation_calendar.jpg')
+      expect(bookingPreview).toHaveAttribute('width', '1125')
+      expect(bookingPreview).toHaveAttribute('height', '1876')
+      expect(bookingPreview).toHaveAttribute('sizes')
     })
   })
 

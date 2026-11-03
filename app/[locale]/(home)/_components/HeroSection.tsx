@@ -3,246 +3,74 @@
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
-import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 
 export function HeroSection() {
   const t = useTranslations('landing.hero')
+  const tFeatures = useTranslations('landing.features.items')
 
   return (
-    <div data-testid="hero-section" className="bg-background">
-      <div className="relative isolate">
-        <svg
-          aria-hidden="true"
-          className="absolute inset-x-0 top-0 -z-10 h-256 w-full mask-[radial-gradient(32rem_32rem_at_center,white,transparent)] stroke-border"
-        >
-          <defs>
-            <pattern
-              x="50%"
-              y={-1}
-              id="1f932ae7-37de-4c0a-a8b0-a6e3b4d44b84"
-              width={200}
-              height={200}
-              patternUnits="userSpaceOnUse"
+    <section data-testid="hero-section" className="bg-background text-foreground">
+      <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-5 pb-20 pt-32 sm:gap-16 sm:px-8 sm:pb-24 sm:pt-40 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 lg:py-36">
+        <div className="min-w-0 max-w-xl">
+          <h1 className="text-balance text-[34px] font-semibold leading-[1.4] tracking-tight sm:text-5xl sm:leading-[1.3]">
+            {t('title')}
+          </h1>
+          <p className="mt-6 max-w-lg text-pretty text-base leading-8 text-muted-foreground">
+            {t('subtitle')}
+          </p>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-auto min-h-12 whitespace-normal rounded-xl border-border bg-background px-5 py-3 text-center text-base font-semibold text-foreground hover:bg-muted motion-reduce:transition-none"
             >
-              <path d="M.5 200V.5H200" fill="none" />
-            </pattern>
-          </defs>
-          <svg x="50%" y={-1} className="overflow-visible fill-background">
-            <path
-              d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z"
-              strokeWidth={0}
-            />
-          </svg>
-          <rect
-            fill="url(#1f932ae7-37de-4c0a-a8b0-a6e3b4d44b84)"
-            width="100%"
-            height="100%"
-            strokeWidth={0}
-          />
-        </svg>
-        <div
-          aria-hidden="true"
-          className="absolute top-0 right-0 left-1/2 -z-10 -ml-24 transform-gpu overflow-hidden blur-3xl lg:ml-24 xl:ml-48"
-        >
-          <div
-            style={{
-              clipPath:
-                'polygon(63.1% 29.5%, 100% 17.1%, 76.6% 3%, 48.4% 0%, 44.6% 4.7%, 54.5% 25.3%, 59.8% 49%, 55.2% 57.8%, 44.4% 57.2%, 27.8% 47.9%, 35.1% 81.5%, 0% 97.7%, 39.2% 100%, 35.2% 81.4%, 97.2% 52.8%, 63.1% 29.5%)',
-            }}
-            className="aspect-801/1036 w-200.25 bg-linear-to-tr from-[neon] to-[accent-2] opacity-30"
-          />
+              <Link href="https://bocker-project.vercel.app/ja/reservation/v5799kb53q14k5tyf4y0kj636d7jhz8p">
+                {t('cta.demo')}
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              className="h-auto min-h-12 whitespace-normal rounded-xl px-5 py-3 text-center text-base font-semibold motion-reduce:transition-none"
+            >
+              <Link data-testid="hero-cta" href="/contact">
+                {t('cta.requestMaterial')}
+              </Link>
+            </Button>
+          </div>
+          <Link
+            href="/sign-up"
+            className="mt-3 inline-flex min-h-11 items-center rounded-md text-base font-medium text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+          >
+            {t('cta.trial')}
+          </Link>
         </div>
-        <div className="overflow-hidden">
-          <div className="mx-auto max-w-7xl px-6 pt-36  sm:pt-60 lg:px-8 lg:pt-32">
-            <div className="mx-auto max-w-2xl gap-x-14 lg:mx-0 lg:flex lg:max-w-none lg:items-center">
-              <div className="relative w-full lg:max-w-xl lg:shrink-0 xl:max-w-2xl">
-                <motion.h1
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
-                  className="text-5xl font-semibold tracking-tight  text-links-foreground sm:text-7xl"
-                >
-                  {t('title')}
-                </motion.h1>
-                <motion.p
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-                  className="mt-8 text- text-pretty text-muted-foreground sm:max-w-md sm:text-xl/8 lg:max-w-none"
-                >
-                  {t('subtitle')}
-                </motion.p>
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.8, ease: 'easeOut', delay: 0.4 }}
-                  className="mt-10 flex items-center gap-x-6 w-full"
-                >
-                  <Link
-                    href="https://bocker-project.vercel.app/ja/reservation/v5799kb53q14k5tyf4y0kj636d7jhz8p"
-                    className="w-2/3"
-                  >
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="w-full text-base font-bold py-2 text-link-foreground border-link-foreground border bg-link"
-                    >
-                      {t('cta.demo')}
-                    </Button>
-                  </Link>
-                  <Link
-                    href="/sign-up"
-                    className="text-sm/6 font-semibold text-foreground underline underline-offset-4 tracking-wide"
-                  >
-                    {t('cta.trial')} <span aria-hidden="true">→</span>
-                  </Link>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.8, ease: 'easeOut', delay: 0.6 }}
-                  className="mt-5 flex items-center gap-x-6 w-full"
-                >
-                  <Link data-testid="hero-cta" href="/contact" className="w-full">
-                    <Button size="lg" className="py-2 w-full text-base font-bold">
-                      {t('cta.requestMaterial')}
-                    </Button>
-                  </Link>
-                </motion.div>
-              </div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 1, ease: 'easeOut', delay: 0.6 }}
-                className="mt-14 flex justify-end gap-8 sm:-mt-44 sm:justify-start sm:pl-20 lg:mt-0 lg:pl-0"
-              >
-                <div className="ml-auto w-44 flex-none space-y-8 pt-32 sm:ml-0 sm:pt-80 lg:order-last lg:pt-36 xl:order-0 xl:pt-80">
-                  <motion.div
-                    className="relative"
-                    animate={{
-                      y: [0, -8, 0],
-                      rotate: [0, 2, 0],
-                    }}
-                    transition={{
-                      duration: 6,
-                      ease: 'easeInOut',
-                      repeat: Infinity,
-                      repeatType: 'loop' as const,
-                    }}
-                  >
-                    <Image
-                      alt=""
-                      width={300}
-                      height={300}
-                      src="/assets/mockup/pc/square.jpg"
-                      className="aspect-2/3 w-full rounded-xl bg-foreground/5 object-cover shadow-lg"
-                    />
-                    <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-border ring-inset" />
-                  </motion.div>
-                </div>
-                <div className="mr-auto w-44 flex-none space-y-8 sm:mr-0 sm:pt-52 lg:pt-36">
-                  <motion.div
-                    className="relative"
-                    animate={{
-                      y: [0, -10, 0],
-                      rotate: [0, -2, 0],
-                    }}
-                    transition={{
-                      duration: 7,
-                      ease: 'easeInOut',
-                      repeat: Infinity,
-                      delay: 0.5,
-                    }}
-                  >
-                    <Image
-                      alt=""
-                      width={300}
-                      height={300}
-                      src="/assets/mockup/pc/menu.png"
-                      className="aspect-2/3 w-full rounded-xl bg-foreground/5 object-cover shadow-lg"
-                    />
-                    <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-border ring-inset" />
-                  </motion.div>
-                  <motion.div
-                    className="relative"
-                    animate={{
-                      y: [0, -6, 0],
-                      rotate: [0, 3, 0],
-                    }}
-                    transition={{
-                      duration: 8,
-                      ease: 'easeInOut',
-                      repeat: Infinity,
-                      delay: 1,
-                    }}
-                  >
-                    <Image
-                      alt=""
-                      width={300}
-                      height={300}
-                      src="/assets/mockup/sp/staff_list.jpg"
-                      className="aspect-2/3 w-full rounded-xl bg-foreground/5 object-cover shadow-lg"
-                    />
-                    <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-border ring-inset" />
-                  </motion.div>
-                </div>
-                <div className="w-44 flex-none space-y-8 pt-32 sm:pt-0">
-                  <motion.div
-                    className="relative"
-                    animate={{
-                      y: [0, -12, 0],
-                      rotate: [0, -3, 0],
-                    }}
-                    transition={{
-                      duration: 9,
-                      ease: 'easeInOut',
-                      repeat: Infinity,
-                      delay: 1.5,
-                    }}
-                  >
-                    <Image
-                      alt=""
-                      width={300}
-                      height={300}
-                      src="/assets/mockup/sp/dashboard.jpg"
-                      className="aspect-2/3 w-full rounded-xl bg-foreground/5 object-cover shadow-lg"
-                    />
-                    <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-border ring-inset" />
-                  </motion.div>
-                  <motion.div
-                    className="relative"
-                    animate={{
-                      y: [0, -7, 0],
-                      rotate: [0, 2, 0],
-                    }}
-                    transition={{
-                      duration: 10,
-                      ease: 'easeInOut',
-                      repeat: Infinity,
-                      delay: 2,
-                    }}
-                  >
-                    <Image
-                      alt=""
-                      width={300}
-                      height={300}
-                      src="/assets/mockup/sp/coupon.jpg"
-                      className="aspect-2/3 w-full rounded-xl bg-foreground/5 object-cover shadow-lg hidden sm:block"
-                    />
-                    <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-border ring-inset" />
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
+        <div className="relative mx-auto w-full min-w-0 max-w-2xl pb-12 pr-10 sm:pb-16 sm:pr-14 lg:pr-10">
+          <div className="overflow-hidden rounded-2xl border border-border bg-background p-1.5 shadow-xl sm:rounded-3xl sm:p-2">
+            <Image
+              alt={tFeatures('menuManagement.title')}
+              width={3020}
+              height={1646}
+              src="/assets/mockup/pc/menu.png"
+              sizes="(min-width: 1280px) 560px, (min-width: 1024px) 48vw, (min-width: 640px) 620px, 100vw"
+              priority
+              className="h-auto w-full rounded-xl sm:rounded-2xl"
+            />
+          </div>
+          <div className="absolute bottom-0 right-0 w-[29%] min-w-[104px] overflow-hidden rounded-2xl border-[5px] border-background bg-background shadow-lg sm:rounded-3xl">
+            <Image
+              alt={tFeatures('smartReservation.title')}
+              width={1125}
+              height={1876}
+              src="/assets/mockup/sp/reservation_calendar.jpg"
+              sizes="(min-width: 1024px) 180px, (min-width: 640px) 190px, 110px"
+              className="h-auto w-full"
+            />
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

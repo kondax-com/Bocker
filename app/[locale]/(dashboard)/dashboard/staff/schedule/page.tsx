@@ -252,15 +252,15 @@ export default function StaffSchedulePage() {
 
   return (
     <DashboardSection title={t('title')} backLink="/dashboard/staff" backLinkTitle="スタッフ一覧">
-      <div className="space-y-3">
-        <div className="flex flex-col justify-end items-end gap-2">
-          <div className="w-fit min-w-[180px]">
+      <div className="space-y-6">
+        <div className="admin-panel flex flex-col items-start justify-between gap-3 p-4 sm:flex-row sm:items-end sm:p-5">
+          <div className="w-full sm:w-64">
             <Label className="mb-2">{t('selectStaffLabel')}</Label>
             <Select
               value={selectedStaffId ?? ''}
               onValueChange={(value) => setSelectedStaffId(value as Id<'staff'>)}
             >
-              <SelectTrigger className="bg-secondary">
+              <SelectTrigger className="bg-card">
                 <SelectValue placeholder={t('selectStaffPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
@@ -294,7 +294,7 @@ export default function StaffSchedulePage() {
               {selectedStaffId ? (
                 <WeekScheduleForm staff_id={selectedStaffId} />
               ) : (
-                <div className="flex justify-start items-center h-32 p-4 bg-muted rounded-lg">
+                <div className="admin-empty-state flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-muted-foreground mr-2" />
                   <p className="text-muted-foreground text-sm">{t('alertSelectStaff')}</p>
                 </div>
@@ -320,7 +320,7 @@ export default function StaffSchedulePage() {
 
                 {/* 選択した日付ごとの時間設定セクション */}
                 {dateTimeSettings.length > 0 && (
-                  <Card>
+                  <Card className="admin-panel">
                     <CardContent className="pt-6">
                       <h3 className="text-base font-semibold mb-4">{t('createdSchedules')}</h3>
 
@@ -423,7 +423,7 @@ export default function StaffSchedulePage() {
                                 <Button
                                   variant="destructive"
                                   size="icon"
-                                  className="scale-75"
+                                  className="size-11 shrink-0 rounded-lg"
                                   onClick={() => handleDelete(index)}
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -456,7 +456,7 @@ export default function StaffSchedulePage() {
             </TabsContent>
           </Tabs>
         </div>
-        <div className="mt-4">
+        <div className="admin-panel mt-6 p-4 sm:p-5">
           <Accordion type="multiple">
             <AccordionItem value="common">
               <AccordionTrigger>スタッフの週間スケジュールについて</AccordionTrigger>

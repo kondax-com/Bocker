@@ -49,20 +49,26 @@ export default function CurrentPlanBanner({
   if (!isActive) return null
 
   return (
-    <div className="w-full max-w-xl mb-8 border border-accent-2 p-4 rounded-lg">
-      <div className="flex items-center justify-between">
+    <div className="admin-panel w-full p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="bg-background border border-accent-2 rounded-full p-1 shadow-md">
-            <Check className="w-5 h-5 text-accent-2 dark:text-accent-2" />
+          <div className="flex size-10 items-center justify-center rounded-xl bg-secondary">
+            <Check className="size-5 text-primary" />
           </div>
           <div>
             <p className="font-semibold text-primary">
               {t('currentPlan')}{' '}
-              <span className="font-bold text-2xl ml-1 text-accent-2">{planName}</span>
+              <span className="ml-2 text-xl font-semibold text-primary">{planName}</span>
             </p>
           </div>
         </div>
-        <Button onClick={handlePortalClick} variant="default" size="sm" disabled={isSubmitting}>
+        <Button
+          onClick={handlePortalClick}
+          variant="default"
+          size="sm"
+          className="min-h-11 rounded-lg shadow-none"
+          disabled={isSubmitting}
+        >
           {buttonContent}
         </Button>
       </div>

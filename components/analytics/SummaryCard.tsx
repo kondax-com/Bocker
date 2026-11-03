@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import React, { useState } from 'react'
 import {
@@ -151,7 +151,7 @@ export function SummaryCard({
 
   if (loading) {
     return (
-      <Card className={cn('h-full transition-all duration-200', className)}>
+      <Card className={cn('admin-panel h-full shadow-sm', className)}>
         <CardHeader
           className={cn(
             'flex flex-row items-center justify-between space-y-0 pb-3 px-4 sm:px-6',
@@ -187,18 +187,19 @@ export function SummaryCard({
   return (
     <Card
       className={cn(
-        'group w-full relative overflow-hidden border-0 bg-gradient-to-br from-background via-background to-muted',
-        'backdrop-blur-sm',
-        isSingleStaff &&
-          'border-l-primary bg-gradient-to-br from-primary/10 via-background to-primary/10',
-        isMultiStaff &&
-          'border-l-success-foreground bg-gradient-to-br from-success/50 via-background to-success/50',
+        'group relative w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm',
+        'text-card-foreground',
+        isSingleStaff && 'border-l-primary',
+        isMultiStaff && 'border-l-success-foreground',
         expandable && '',
         className
       )}
     >
       {/* Subtle animated background effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-border"
+      />
 
       <CardHeader
         className={cn(
@@ -212,8 +213,7 @@ export function SummaryCard({
             className={cn(
               'flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200',
               isSingleStaff && 'bg-primary/10 text-primary group-hover:bg-primary/20',
-              isMultiStaff &&
-                'bg-success text-success-foreground group-hover:bg-success/70',
+              isMultiStaff && 'bg-success text-success-foreground group-hover:bg-success/70',
               !isSingleStaff &&
                 !isMultiStaff &&
                 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
@@ -232,8 +232,8 @@ export function SummaryCard({
           <div className="min-w-0 flex-1">
             <CardTitle
               className={cn(
-                'font-semibold tracking-tight transition-colors duration-200 truncate',
-                isCompact ? 'text-sm' : 'text-base sm:text-lg',
+                'break-words font-medium leading-relaxed text-foreground',
+                isCompact ? 'text-sm' : 'text-base',
                 isSingleStaff
                   ? 'text-primary'
                   : isMultiStaff
@@ -246,7 +246,7 @@ export function SummaryCard({
             {subtitle && (
               <p
                 className={cn(
-                  'text-xs mt-1 text-muted-foreground/80 truncate',
+                  'mt-1 break-words text-xs leading-relaxed text-muted-foreground',
                   isSingleStaff && 'text-primary/60',
                   isMultiStaff && 'text-success-foreground/70'
                 )}
@@ -262,11 +262,12 @@ export function SummaryCard({
             <Button
               variant="ghost"
               size="sm"
+              aria-label={isExpanded ? '詳細を折りたたむ' : '詳細を表示'}
+              aria-expanded={isExpanded}
               className={cn(
                 'h-8 w-8 p-0 rounded-full transition-all duration-200 hover:bg-primary/10',
                 isSingleStaff && 'hover:bg-primary/20 text-primary',
-                isMultiStaff &&
-                  'hover:bg-success text-success-foreground'
+                isMultiStaff && 'hover:bg-success text-success-foreground'
               )}
             >
               {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -283,8 +284,8 @@ export function SummaryCard({
             <div className="flex items-baseline gap-2 mb-2">
               <div
                 className={cn(
-                  'font-bold tracking-tight transition-colors duration-200',
-                  isCompact ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl lg:text-5xl',
+                  'break-words font-semibold tracking-tight tabular-nums',
+                  isCompact ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl',
                   isSingleStaff && 'text-primary',
                   isMultiStaff && 'text-success-foreground',
                   !isSingleStaff && !isMultiStaff && 'text-foreground'
@@ -430,12 +431,9 @@ export function SummaryCard({
                 key={index}
                 className={cn(
                   'flex items-start gap-2 p-2 rounded-md text-xs',
-                  insight.type === 'positive' &&
-                    'bg-success text-success-foreground',
-                  insight.type === 'negative' &&
-                    'bg-destructive/10 text-destructive',
-                  insight.type === 'neutral' &&
-                    'bg-info text-info-foreground'
+                  insight.type === 'positive' && 'bg-success text-success-foreground',
+                  insight.type === 'negative' && 'bg-destructive/10 text-destructive',
+                  insight.type === 'neutral' && 'bg-info text-info-foreground'
                 )}
               >
                 {insight.icon || (
@@ -461,8 +459,7 @@ export function SummaryCard({
               className={cn(
                 'p-3 rounded-lg border-l-4',
                 actionable.priority === 'high' && 'bg-destructive/10 border-l-destructive',
-                actionable.priority === 'medium' &&
-                  'bg-warning border-l-warning-foreground',
+                actionable.priority === 'medium' && 'bg-warning border-l-warning-foreground',
                 actionable.priority === 'low' && 'bg-info border-l-info-foreground'
               )}
             >
@@ -586,7 +583,7 @@ export function SummaryCardGrid({
   staffSelectionMode = 'auto',
 }: SummaryCardGridProps) {
   const gridCols = {
-    1: 'w-full flex pb-5 overflow-x-auto gap-3 md:grid md:grid-cols-4 snap-x snap-mandatory px-4 scrollbar-hide',
+    1: 'w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4',
     2: 'grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4',
     3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4',
     4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4',
@@ -604,7 +601,7 @@ export function SummaryCardGrid({
         }
 
         return (
-          <div key={card.id} className={cn(columns === 1 && 'flex-shrink-0 snap-start')}>
+          <div key={card.id} className={cn(columns === 1 && 'min-w-0')}>
             <SummaryCard
               {...card}
               loading={loading}
@@ -619,4 +616,4 @@ export function SummaryCardGrid({
   )
 }
 
-export default SummaryCard;
+export default SummaryCard

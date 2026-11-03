@@ -164,7 +164,7 @@ export function TrackingURLGenerator({
       </div>
 
       <Tabs defaultValue="manual" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 p-1.5">
           <TabsTrigger value="presets">プリセット</TabsTrigger>
           <TabsTrigger value="manual">手動設定</TabsTrigger>
         </TabsList>
@@ -187,11 +187,11 @@ export function TrackingURLGenerator({
       </Tabs>
 
       {/* 生成ボタンとオプション */}
-      <Card>
+      <Card className="rounded-2xl border-border shadow-sm">
         <CardContent className="pt-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
                 <Switch id="generate-qr" checked={generateQR} onCheckedChange={setGenerateQR} />
                 <Label htmlFor="generate-qr">QRコードも生成する</Label>
               </div>

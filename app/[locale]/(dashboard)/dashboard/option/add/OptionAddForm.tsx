@@ -286,12 +286,14 @@ function OptionAddForm() {
   return (
     <>
       <div className="mb-6">
-        <div className="bg-info-foreground border border-info rounded-lg p-4 mb-4">
+        <div className="rounded-xl border border-border bg-secondary p-5 mb-4">
           <div className="flex items-start gap-3">
-            <Info size={20} className="text-info mt-0.5 flex-shrink-0" />
+            <Info size={20} className="text-secondary-foreground mt-0.5 flex-shrink-0" />
             <div className="space-y-2">
-              <h3 className="font-semibold text-info text-sm">オプション機能について</h3>
-              <div className="text-sm text-info space-y-1">
+              <h3 className="font-semibold text-secondary-foreground text-sm">
+                オプション機能について
+              </h3>
+              <div className="text-sm text-secondary-foreground space-y-2 leading-relaxed">
                 <p>
                   • <strong>物販対応：</strong>{' '}
                   在庫数を設定することで、シャンプーやトリートメントなどの商品販売が可能です
@@ -312,6 +314,7 @@ function OptionAddForm() {
         </div>
       </div>
       <form
+        className="admin-form p-5 sm:p-6"
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
@@ -322,7 +325,7 @@ function OptionAddForm() {
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="md:col-span-1">
-              <Card className="border border-dashed h-full flex flex-col">
+              <Card className="flex h-full flex-col rounded-xl border border-dashed border-input bg-muted shadow-none">
                 <CardHeader className="pb-0">
                   <CardTitle className="text-base flex items-center gap-2 mb-2">
                     <ImageIcon size={18} className="text-muted-foreground" />
@@ -458,7 +461,7 @@ function OptionAddForm() {
             <p className="text-destructive text-sm mt-1">{errors.description.message}</p>
           )}
 
-          <div className="flex items-center justify-between p-4 bg-muted rounded-md mb-6 mt-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-muted p-4 mb-6 mt-4">
             <div>
               <p className="text-sm font-bold">{t('form.publishToggle')}</p>
               <p className="text-xs text-muted-foreground">{t('form.publishHelp')}</p>
@@ -471,7 +474,7 @@ function OptionAddForm() {
             />
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end border-t border-border pt-5">
             <Button
               variant="default"
               type="submit"

@@ -286,10 +286,13 @@ function SubscriptionForm({
   }, [])
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-20vh)]">
+    <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-6">
       {/* ヘッダー部分 */}
-      <div className="mb-4 text-center mt-6">
-        <p className="text-muted-foreground font-bold max-w-md mx-auto text-sm mb-6">
+      <div className="w-full text-center">
+        <h1 className="mb-3 text-balance text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+          {t('title')}
+        </h1>
+        <p className="mx-auto mb-5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           {t('subtitle')}
         </p>
 
@@ -309,7 +312,7 @@ function SubscriptionForm({
           isSubmitting={isSubmitting}
         />
       )}
-      <Separator className="mb-10 md:mb-16 mt-4 w-1/4" />
+      <Separator className="w-full" />
 
       {/* プレビューダイアログ */}
       <PreviewDialog
@@ -326,7 +329,7 @@ function SubscriptionForm({
       />
 
       {/* プラン一覧 */}
-      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-3">
         {/* Micro プラン */}
         <PlanCard
           title={t('microPlan')}
@@ -418,7 +421,7 @@ function SubscriptionForm({
       )}
 
       {/* フッター部分 */}
-      <div className="mt-12 text-center text-sm text-muted-foreground max-w-md">
+      <div className="max-w-lg text-center text-sm leading-relaxed text-muted-foreground">
         <p>
           {t('trialInfo.allPlansIncludeTrial', { days: PLAN_TRIAL_DAYS })}
           <br />

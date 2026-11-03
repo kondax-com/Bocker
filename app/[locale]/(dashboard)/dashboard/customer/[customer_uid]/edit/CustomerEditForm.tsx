@@ -296,18 +296,18 @@ function CustomerEditForm() {
   const displayAge = calculateAge(watch('birthday'))
 
   return (
-    <div className="container mx-auto py-4">
+    <div className="mx-auto w-full min-w-0">
       {completeCustomer.customer?.line_user_name && (
-        <p className="text-sm text-active mb-4 p-2 border border-active rounded-md w-fit">
+        <p className="mb-5 w-fit rounded-lg bg-secondary px-4 py-3 text-sm text-secondary-foreground">
           <span className="font-bold">{t('lineUserName')} </span>{' '}
           <span className="text-muted-foreground ml-2 tracking-wider font-bold">
             {completeCustomer.customer.line_user_name}
           </span>
         </p>
       )}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="admin-form p-5 sm:p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="grid grid-cols-2 gap-6 col-span-1">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 col-span-1">
             <ZodTextField
               label={t('lastName')}
               register={register}
@@ -379,9 +379,12 @@ function CustomerEditForm() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label
+                htmlFor="gender"
+                className="block text-sm font-medium text-muted-foreground mb-1"
+              >
                 {t('gender')}
               </label>
               <Select
@@ -390,7 +393,7 @@ function CustomerEditForm() {
                 }}
                 value={watch('gender') || 'unselected'}
               >
-                <SelectTrigger className={errors.gender ? 'border-destructive' : ''}>
+                <SelectTrigger id="gender" className={errors.gender ? 'border-destructive' : ''}>
                   <SelectValue placeholder={t('selectGender')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -410,10 +413,15 @@ function CustomerEditForm() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label
+                htmlFor="birthday"
+                className="block text-sm font-medium text-muted-foreground mb-1"
+              >
                 {t('birthday')}
               </label>
               <DatePicker
+                id="birthday"
+                className="min-h-11 bg-background hover:bg-muted"
                 value={watch('birthday') ? new Date(watch('birthday')!) : undefined}
                 onChange={(date) => {
                   const dateString = date ? format(date, 'yyyy-MM-dd') : ''
@@ -445,10 +453,11 @@ function CustomerEditForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">
+          <label htmlFor="notes" className="block text-sm font-medium text-muted-foreground mb-1">
             {t('notes')}
           </label>
           <Textarea
+            id="notes"
             {...register('notes')}
             rows={8}
             placeholder={t('memoPlaceholder')}
@@ -460,7 +469,7 @@ function CustomerEditForm() {
           )}
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end border-t border-border pt-5">
           <Button type="submit" disabled={isSubmitting || !isDirty}>
             {isSubmitting ? (
               <>

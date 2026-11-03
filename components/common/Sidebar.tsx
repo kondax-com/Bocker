@@ -8,8 +8,14 @@ import { Separator } from '@/components/ui/separator'
 import { Loading } from './'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
-import { MenuIcon, XIcon } from 'lucide-react'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+  TransitionChild,
+} from '@headlessui/react'
+import { ChevronRight, MenuIcon, XIcon } from 'lucide-react'
 import { UserButton } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 import { useTheme } from 'next-themes'
@@ -75,35 +81,27 @@ const SidebarHeader = memo(
   }) => {
     const t = useTranslations('sidebar')
     return (
-      <div className={`${isMobile ? 'relative' : ''} flex flex-col ${isMobile ? 'mt-2' : 'mt-2'}`}>
-        <div className="flex items-center gap-x-2">
+      <div className="relative flex flex-col gap-3 px-2 pb-1 pt-6">
+        <div className="flex items-center gap-2.5">
           <Image
             src={
               mounted && resolvedTheme === 'dark'
                 ? '/assets/images/logo-white.png'
                 : '/assets/images/logo-darkgreen.png'
             }
-            alt="Bocker"
-            width={42}
-            height={42}
+            alt=""
+            width={34}
+            height={34}
             priority
           />
-          <h1
-            className={`${isMobile ? 'text-xl bg-background bg-clip-text text-foreground font-thin' : 'text-2xl font-bold text-primary'}`}
-          >
+          <p className="text-2xl font-semibold tracking-tight text-foreground" translate="no">
             Bocker
-          </h1>
-        </div>
-        <div className="flex items-center gap-x-2">
-          <p className={`text-xs ${isMobile ? 'text-primary' : 'text-muted-foreground'}`}>
-            {t('tagline')}
           </p>
         </div>
+        <p className="text-xs leading-relaxed text-muted-foreground">{t('tagline')}</p>
         {isMobile && showModeToggle && (
-          <div className="absolute right-1 top-2">
-            <div className="relative lg:hidden">
-              <ModeToggle />
-            </div>
+          <div className="absolute right-0 top-6 lg:hidden">
+            <ModeToggle />
           </div>
         )}
       </div>
@@ -156,52 +154,39 @@ const SidebarNavigation = memo(
     }, [getOpenGroups])
 
     return (
-      <nav className="flex flex-1 flex-col">
+      <nav className="flex flex-1 flex-col" aria-label={tNav('dashboard')}>
         {!isSubscriptionActive ? (
           <>
-            <div className="flex flex-col my-2 bg-muted p-2 rounded-md">
+            <div className="my-2 flex flex-col rounded-xl bg-muted p-4">
               <p className="text-xs text-muted-foreground">
                 <span className="inline-block font-bold mb-2">{t('subscriptionRequired')}</span>
                 <br />
                 {t('subscriptionRequiredDetail')}
               </p>
             </div>
-            <Link
-              href="/dashboard/subscription"
-              className="text-sm text-primary hover:text-primary-foreground"
-            >
-              <Button className="text-xs w-full">{t('goToSubscription')}</Button>
-            </Link>
+            <Button asChild className="mt-2 min-h-11 w-full whitespace-normal text-xs">
+              <Link href="/dashboard/subscription">{t('goToSubscription')}</Link>
+            </Button>
           </>
         ) : (
           <div className="flex flex-1 flex-col">
             {/* マイページ */}
             {staffId && (
-              <div className="mb-4">
+              <div className="mb-3">
                 <Link
                   href={`/dashboard/staff/${staffId}/my-page`}
+                  aria-current={
+                    pathname === `/dashboard/staff/${staffId}/my-page` ? 'page' : undefined
+                  }
                   className={classNames(
                     pathname === `/dashboard/staff/${staffId}/my-page`
-                      ? 'text-accent-foreground bg-accent'
-                      : 'text-primary bg-background border border-border font-light',
-                    'w-full group flex gap-x-3 rounded-md p-2 text-sm/6 items-center'
+                      ? 'bg-primary font-semibold text-primary-foreground'
+                      : 'bg-muted/60 text-foreground hover:bg-muted',
+                    'group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card'
                   )}
                 >
-                  <UserIcon
-                    aria-hidden="true"
-                    className={classNames(
-                      pathname === `/dashboard/staff/${staffId}/my-page`
-                        ? 'text-accent-foreground bg-accent'
-                        : 'text-primary',
-                      'size-4 shrink-0'
-                    )}
-                  />
-                  <p className="w-full text-nowrap">{tNav('myPage')}</p>
-                  {pathname === `/dashboard/staff/${staffId}/my-page` && (
-                    <div className="w-full flex justify-end items-center pr-2">
-                      <div className="h-3 w-3 bg-accent border-ring border rounded-full" />
-                    </div>
-                  )}
+                  <UserIcon aria-hidden="true" className="size-[18px] shrink-0" />
+                  <span className="min-w-0 break-words">{tNav('myPage')}</span>
                 </Link>
               </div>
             )}
@@ -216,28 +201,16 @@ const SidebarNavigation = memo(
               <div className="mb-2">
                 <Link
                   href={DASHBOARD_ITEM.href}
+                  aria-current={pathname === DASHBOARD_ITEM.href ? 'page' : undefined}
                   className={classNames(
                     pathname === DASHBOARD_ITEM.href
-                      ? 'text-accent-foreground bg-accent'
-                      : 'text-primary hover:bg-primary-foreground hover:text-primary font-light',
-                    'w-full group flex gap-x-3 rounded-md p-2 border border-border items-center'
+                      ? 'bg-primary font-semibold text-primary-foreground'
+                      : 'text-foreground hover:bg-muted',
+                    'group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card'
                   )}
                 >
-                  <DASHBOARD_ITEM.icon
-                    aria-hidden="true"
-                    className={classNames(
-                      pathname === DASHBOARD_ITEM.href
-                        ? 'text-accent-foreground bg-accent'
-                        : 'text-primary',
-                      'size-4 shrink-0'
-                    )}
-                  />
-                  <p className="w-full text-nowrap">{tNav(DASHBOARD_ITEM.name)}</p>
-                  {pathname === DASHBOARD_ITEM.href && (
-                    <div className="w-full flex justify-end items-center pr-2">
-                      <div className="h-3 w-3 bg-accent border-ring border rounded-full" />
-                    </div>
-                  )}
+                  <DASHBOARD_ITEM.icon aria-hidden="true" className="size-[18px] shrink-0" />
+                  <span className="min-w-0 break-words">{tNav(DASHBOARD_ITEM.name)}</span>
                 </Link>
               </div>
             )}
@@ -247,42 +220,37 @@ const SidebarNavigation = memo(
               type="multiple"
               value={openGroups}
               onValueChange={setOpenGroups}
-              className="w-full space-y-2"
+              className="flex w-full flex-col gap-2"
             >
               {filteredGroups.map((group) => {
                 return (
                   <AccordionItem key={group.id} value={group.id} className="border-b-0">
                     <AccordionTrigger
                       className={classNames(
-                        'hover:no-underline py-2 px-2 text-sm font-medium rounded-md transition-colors',
-                        isMobile ? 'text-base' : ''
+                        'min-h-11 rounded-lg px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                        isMobile ? 'text-sm' : ''
                       )}
                     >
                       <div className="flex items-center gap-2">{tGroups(group.name)}</div>
                     </AccordionTrigger>
-                    <AccordionContent>
-                      <ul className="space-y-2">
+                    <AccordionContent className="pb-1 pt-1">
+                      <ul className="flex flex-col gap-1">
                         {group.items.map((item) => {
                           const isCurrent = pathname === item.href
                           return (
                             <li key={item.name}>
                               <Link
                                 href={item.href}
+                                aria-current={isCurrent ? 'page' : undefined}
                                 className={classNames(
                                   isCurrent
-                                    ? 'text-accent-foreground bg-accent'
-                                    : 'text-primary hover:bg-primary-foreground hover:text-primary font-light',
-                                  'w-full group flex gap-x-3 p-2 text-sm items-center border border-border rounded-md'
+                                    ? 'bg-primary font-semibold text-primary-foreground'
+                                    : 'text-foreground hover:bg-muted',
+                                  'group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card'
                                 )}
                               >
-                                <item.icon
-                                  aria-hidden="true"
-                                  className={classNames(
-                                    isCurrent ? 'text-accent-foreground bg-accent' : 'text-primary',
-                                    'size-4 shrink-0'
-                                  )}
-                                />
-                                <p className="w-full text-nowrap">{tNav(item.name)}</p>
+                                <item.icon aria-hidden="true" className="size-[18px] shrink-0" />
+                                <span className="min-w-0 break-words">{tNav(item.name)}</span>
                               </Link>
                             </li>
                           )
@@ -307,6 +275,7 @@ interface SidebarProps {
 
 export default function Sidebar({ children }: SidebarProps) {
   const t = useTranslations('sidebar')
+  const tNav = useTranslations('navigation')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { role, isLoaded, ready, staffId, subscription } = useTenantAndOrganization()
@@ -375,41 +344,63 @@ export default function Sidebar({ children }: SidebarProps) {
   const isSubscriptionActive =
     subscription?.status === 'active' || subscription?.status === 'trialing'
 
+  const currentNavItem = filteredGroups
+    .flatMap((group) => group.items)
+    .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+    .sort((a, b) => b.href.length - a.href.length)[0]
+  const currentPageTitle =
+    staffId && pathname === `/dashboard/staff/${staffId}/my-page`
+      ? tNav('myPage')
+      : pathname.startsWith('/dashboard/subscription')
+        ? tNav('subscription')
+        : tNav(currentNavItem?.name ?? DASHBOARD_ITEM.name)
+
   return (
-    <div>
+    <div className="admin-shell min-h-dvh bg-background text-foreground">
+      <a
+        href="#dashboard-main"
+        className="fixed -top-24 left-4 z-[60] rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground focus:top-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
+        {t('skipToContent')}
+      </a>
       {/* モバイル用ダイアログ */}
-      <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
+      <Dialog
+        open={sidebarOpen}
+        onClose={setSidebarOpen}
+        className="admin-shell relative z-50 lg:hidden"
+      >
+        <DialogTitle className="sr-only">{t('openSidebar')}</DialogTitle>
         <DialogBackdrop
           transition
-          className="fixed inset-0 bg-primary opacity-60 transition-opacity duration-300 ease-linear data-closed:opacity-0"
+          className="fixed inset-0 bg-overlay transition-opacity duration-200 ease-out data-[closed]:opacity-0 motion-reduce:transition-none"
         />
 
         <div className="fixed inset-0 flex">
           <DialogPanel
             transition
-            className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-closed:-translate-x-full"
+            className="relative mr-16 flex w-full max-w-xs flex-1 transform transition-transform duration-200 ease-out data-[closed]:-translate-x-full motion-reduce:transition-none"
           >
             <TransitionChild>
-              <div className="absolute top-0 left-full flex w-16 justify-center pt-5 duration-300 ease-in-out data-closed:opacity-0">
+              <div className="absolute left-full top-0 flex w-16 justify-center pt-4 transition-opacity duration-200 data-[closed]:opacity-0 motion-reduce:transition-none">
                 <button
                   type="button"
                   onClick={() => setSidebarOpen(false)}
-                  className="-m-2.5 p-2.5"
+                  className="flex size-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 >
                   <span className="sr-only">{t('closeSidebar')}</span>
-                  <XIcon aria-hidden="true" className="size-6 text-primary-foreground" />
+                  <XIcon aria-hidden="true" className="size-5" />
                 </button>
               </div>
             </TransitionChild>
             {/* Sidebar for mobile */}
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-background px-6 pb-4">
+            <div className="flex grow flex-col gap-5 overflow-y-auto overscroll-contain bg-card px-5 pb-6">
               <SidebarHeader
                 mounted={mounted}
                 resolvedTheme={resolvedTheme}
                 isMobile={true}
                 showModeToggle={true}
               />
-              <Separator className="my-2 w-2/3 mx-auto" />
+              <Separator />
               <SidebarNavigation
                 staffId={staffId}
                 role={role}
@@ -426,15 +417,15 @@ export default function Sidebar({ children }: SidebarProps) {
       </Dialog>
 
       {/* デスクトップ用固定サイドバー */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r bg-background px-6 pb-4">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col">
+        <div className="flex grow flex-col gap-5 overflow-y-auto border-r border-border bg-card px-4 pb-6">
           <SidebarHeader
             mounted={mounted}
             resolvedTheme={resolvedTheme}
             isMobile={false}
             showModeToggle={false}
           />
-          <Separator className="my-2" />
+          <Separator />
           <SidebarNavigation
             staffId={staffId}
             role={role}
@@ -448,38 +439,53 @@ export default function Sidebar({ children }: SidebarProps) {
       </div>
 
       {/* メインコンテンツ */}
-      <div className="lg:pl-72 relative">
-        <div className="sticky top-0 z-40 lg:mx-auto lg:px-8">
-          <div className="flex h-16 items-center gap-x-1 md:gap-x-4 border-b border-primary bg-background px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none">
+      <div className="relative min-w-0 lg:pl-64">
+        <div className="sticky top-0 z-30 border-b border-border bg-card">
+          <div className="mx-auto flex h-[72px] max-w-[1600px] items-center gap-3 px-4 sm:gap-5 sm:px-6 lg:px-8">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="-m-2.5 p-2.5  lg:hidden"
+              className="flex size-11 shrink-0 items-center justify-center rounded-xl text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
             >
               <span className="sr-only">{t('openSidebar')}</span>
-              <MenuIcon aria-hidden="true" className="size-6 text-primary" />
+              <MenuIcon aria-hidden="true" className="size-5" />
             </button>
 
-            <div aria-hidden="true" className="h-6 w-px bg-primary lg:hidden" />
-
-            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <div className="flex items-center justify-start w-full"></div>
-              <div className="flex items-center gap-x-4 lg:gap-x-6">
+            <div className="flex min-w-0 flex-1 items-center gap-2 text-sm">
+              <span className="hidden text-muted-foreground sm:inline" translate="no">
+                Bocker
+              </span>
+              <ChevronRight
+                aria-hidden="true"
+                className="hidden size-3.5 shrink-0 text-muted-foreground sm:block"
+              />
+              <span className="truncate font-medium" title={currentPageTitle}>
+                {currentPageTitle}
+              </span>
+            </div>
+            <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 {subscription?.plan_name && (
-                  <div className="flex items-center gap-x-4 lg:gap-x-6">
+                  <div className="flex items-center">
                     {isSubscriptionActive ? (
-                      <p className="text-xs tracking-widest w-fit text-center font-bold border border-muted-foreground rounded-full px-4 py-1 bg-primary text-primary-foreground [writing-mode:horizontal-tb] [text-orientation:mixed]">
+                      <p
+                        className="max-w-[112px] truncate rounded-full bg-muted px-3 py-1.5 text-center text-xs font-semibold text-primary"
+                        title={subscription.plan_name}
+                      >
                         {subscription.plan_name}
                       </p>
                     ) : (
-                      <p className="text-xs tracking-widest w-[100px] text-center font-bold border border-destructive rounded-full px-4 py-1 bg-destructive-foreground text-destructive [writing-mode:horizontal-tb] [text-orientation:mixed]">
+                      <p
+                        className="max-w-[112px] truncate rounded-full border border-destructive px-3 py-1.5 text-center text-xs font-semibold text-destructive"
+                        title={t('subscriptionExpired')}
+                      >
                         {t('subscriptionExpired')}
                       </p>
                     )}
                   </div>
                 )}
 
-                <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px" />
+                <div aria-hidden="true" className="hidden h-5 w-px bg-border lg:block" />
 
                 <UserButton
                   appearance={{
@@ -497,8 +503,10 @@ export default function Sidebar({ children }: SidebarProps) {
             </div>
           </div>
         </div>
-        <main className="py-4 lg:py-8">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8 mb-12 md:mb-16">{children}</div>
+        <main id="dashboard-main" tabIndex={-1} className="min-w-0 scroll-mt-24 py-6 lg:py-8">
+          <div className="mx-auto mb-12 max-w-[1600px] px-4 sm:px-6 lg:px-8 md:mb-16">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -49,52 +49,64 @@ export default function OptionList() {
 
   return (
     <div className="mt-2 flow-root">
-      <div className="-mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8 px-4 md:px-0">
-        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <div className="overflow-hidden border border-border rounded-lg">
+      <div className="w-full overflow-x-auto">
+        <div className="inline-block min-w-full align-middle">
+          <div className="admin-panel overflow-hidden">
             <table className="min-w-full divide-y divide-border">
-              <thead className="bg-neon-foreground text-nowrap px-2">
+              <thead className="bg-muted text-nowrap px-2">
                 <tr>
                   <th
                     scope="col"
-                    className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-neon sm:pl-6"
+                    className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-muted-foreground sm:pl-6"
                   >
                     {t('list.table.status')}
                   </th>
                   <th
                     scope="col"
-                    className="py-3.5 pr-3 pl-4 text-lefts text-sm font-semibold text-neon sm:pl-6"
+                    className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-muted-foreground sm:pl-6"
                   >
                     {t('list.table.image')}
                   </th>
                   <th
                     scope="col"
-                    className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-neon sm:pl-6"
+                    className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-muted-foreground sm:pl-6"
                   >
                     {t('list.table.name')}
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-neon">
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-muted-foreground"
+                  >
                     {t('list.table.price')}
                   </th>
 
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-neon">
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-muted-foreground"
+                  >
                     {t('list.table.orderLimit')}
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-neon">
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-muted-foreground"
+                  >
                     {t('list.table.totalDuration')}
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-neon">
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-muted-foreground"
+                  >
                     {t('list.table.tags')}
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border bg-background text-nowrap">
+              <tbody className="divide-y divide-border bg-card text-nowrap">
                 {allOptions && allOptions.length > 0 ? (
                   allOptions.map((option: Doc<'option'>) => (
                     <tr
                       key={option._id}
                       onClick={() => router.push(`/dashboard/option/${option._id}`)}
-                      className="cursor-pointer hover:bg-secondary"
+                      className="cursor-pointer transition-colors hover:bg-muted"
                     >
                       <td
                         className={`py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-primary sm:pl-6 `}

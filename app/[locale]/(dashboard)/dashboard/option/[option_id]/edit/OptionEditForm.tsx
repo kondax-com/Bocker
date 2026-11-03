@@ -233,13 +233,7 @@ export default function OptionEditForm() {
       if (currentFile) {
         try {
           setIsUploading(true)
-          const result = await uploadImage(
-            currentFile,
-            orgId,
-            'option',
-            'square',
-            'medium'
-          )
+          const result = await uploadImage(currentFile, orgId, 'option', 'square', 'medium')
 
           newUploadedImageUrls = [
             {
@@ -406,6 +400,7 @@ export default function OptionEditForm() {
   return (
     <div>
       <form
+        className="admin-form p-5 sm:p-6"
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
@@ -413,13 +408,13 @@ export default function OptionEditForm() {
           }
         }}
       >
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
-          <div className="md:col-span-3">
-            <Card className="border border-dashed h-full flex flex-col">
-              <CardContent className="flex-grow flex items-center justify-center">
-                <div className="w-full flex flex-col lg:flex-row lg:gap-4 lg:items-start py-4">
+        <div className="mb-8 grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
+          <div className="min-w-0">
+            <Card className="mx-auto flex w-full max-w-md flex-col rounded-xl border border-dashed border-input bg-muted shadow-none xl:max-w-none">
+              <CardContent className="flex items-center justify-center p-4 sm:p-6">
+                <div className="flex w-full max-w-sm flex-col gap-4 py-2">
                   {existingImageUrls[0]?.original_url && (
-                    <div className="relative w-full lg:w-[50%] max-w-xs flex-shrink-0 mb-2 lg:mb-0">
+                    <div className="relative mx-auto w-full max-w-xs shrink-0">
                       <Image
                         src={existingImageUrls[0].original_url}
                         alt="option image"
@@ -440,9 +435,7 @@ export default function OptionEditForm() {
                       </Button>
                     </div>
                   )}
-                  <div
-                    className={`w-full ${existingImageUrls[0]?.original_url ? 'lg:w-[50%]' : ''} flex items-center justify-center`}
-                  >
+                  <div className="flex w-full items-center justify-center">
                     <SingleImageDrop
                       onFileSelect={(file) => {
                         setCurrentFile(file)
@@ -463,9 +456,9 @@ export default function OptionEditForm() {
             </Card>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="min-w-0">
             <div className="space-y-6">
-              <div className="flex flex-col md:flex-row gap-4 w-full">
+              <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
                 <ZodTextField
                   name="name"
                   label={t('form.optionName')}
@@ -474,7 +467,7 @@ export default function OptionEditForm() {
                   register={register}
                   errors={errors}
                   required
-                  className="border-border w-full"
+                  className="min-w-0 w-full border-border sm:col-span-2"
                 />
 
                 <ZodTextField
@@ -486,7 +479,7 @@ export default function OptionEditForm() {
                   register={register}
                   errors={errors}
                   required
-                  className="border-border min-w-[120px]"
+                  className="min-w-0 w-full border-border"
                 />
                 <ZodTextField
                   name="in_stock"
@@ -497,7 +490,7 @@ export default function OptionEditForm() {
                   register={register}
                   errors={errors}
                   required
-                  className="border-border min-w-[120px]"
+                  className="min-w-0 w-full border-border"
                 />
               </div>
 
@@ -589,7 +582,7 @@ export default function OptionEditForm() {
         {errors.description && <ErrorMessage message={errors.description?.message} />}
 
         {/* 公開/非公開スイッチ */}
-        <div className="flex items-center justify-between p-4 bg-muted rounded-md mb-6 mt-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-muted p-4 mb-6 mt-6">
           <div>
             <p className="text-sm font-medium">{t('form.publishToggle')}</p>
             <p className="text-xs text-muted-foreground mt-1">{t('form.publishHelp')}</p>
@@ -604,7 +597,7 @@ export default function OptionEditForm() {
           />
         </div>
 
-        <div className="flex justify-end mt-6 w-full">
+        <div className="flex w-full justify-end border-t border-border pt-5 mt-6">
           <div className="flex justify-between gap-3 w-full">
             <Button
               type="button"

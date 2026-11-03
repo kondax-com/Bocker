@@ -1,9 +1,9 @@
-'use client';
+'use client'
 
-import { DashboardSection } from '@/components/common';
-import { withOwnerAccess } from '@/components/common';
-import { useTranslations } from 'next-intl';
-import StaffList from './StaffList';
+import { DashboardSection } from '@/components/common'
+import { withOwnerAccess } from '@/components/common'
+import { useTranslations } from 'next-intl'
+import StaffList from './StaffList'
 
 function StaffPage() {
   const t = useTranslations('staff')
@@ -24,4 +24,4 @@ function StaffPage() {
   )
 }
 
-export default withOwnerAccess(StaffPage);
+export default withOwnerAccess(StaffPage)

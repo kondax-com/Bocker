@@ -837,7 +837,7 @@ function MenuAnalyticsPage() {
       backLink="/dashboard"
       backLinkTitle="ダッシュボード"
     >
-      <div className="relative space-y-6">
+      <div className="admin-analytics relative min-w-0 space-y-6">
         <Dialog open={openCsvDialog} onOpenChange={setOpenCsvDialog}>
           <DialogContent>
             <DialogHeader>
@@ -867,8 +867,8 @@ function MenuAnalyticsPage() {
             <AlertDescription className="text-destructive">{error}</AlertDescription>
           </Alert>
         )}
-        <div className="flex justify-end gap-4">
-          <div className="flex items-end gap-2">
+        <div className="admin-toolbar justify-end">
+          <div className="flex flex-wrap items-end gap-3">
             <Button
               onClick={() => setOpenCsvDialog(true)}
               variant="outline"
@@ -922,7 +922,7 @@ function MenuAnalyticsPage() {
 
         {/* タブ式のダッシュボード */}
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="w-fit flex justify-center gap-4">
+          <TabsList className="flex h-auto max-w-full flex-wrap gap-1 p-1.5">
             <TabsTrigger value="overview">概要</TabsTrigger>
             <TabsTrigger value="pricing">価格帯分析</TabsTrigger>
             <TabsTrigger value="performance">パフォーマンス</TabsTrigger>
@@ -947,9 +947,9 @@ function MenuAnalyticsPage() {
 
               {/* 詳細ランキング */}
 
-              <Card>
+              <Card className="rounded-2xl border-border shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
+                  <CardTitle className="flex flex-wrap items-center gap-2 text-base font-semibold">
                     <BarChart3 className="w-5 h-5" />
                     メニュー売上詳細ランキング
                   </CardTitle>
@@ -961,7 +961,7 @@ function MenuAnalyticsPage() {
                       menuRanking.map((menu, index) => (
                         <div
                           key={`menu-ranking-${menu.id}-${index}`}
-                          className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-4 transition-colors hover:bg-muted"
                         >
                           <div className="flex items-center gap-3">
                             <Badge
@@ -1070,9 +1070,9 @@ function MenuAnalyticsPage() {
 
               {/* 価格戦略インサイト */}
               {priceTierAnalysis && priceTierAnalysis.insights.mostProfitableTier && (
-                <Card>
+                <Card className="rounded-2xl border-border shadow-sm">
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="flex flex-wrap items-center gap-2 text-base font-semibold">
                       <PieChartIcon className="w-5 h-5" />
                       価格戦略インサイト
                     </CardTitle>
@@ -1123,7 +1123,7 @@ function MenuAnalyticsPage() {
 
             {/* 価格帯詳細テーブル */}
             {priceTierAnalysis && priceTierAnalysis.priceTiers.length > 0 ? (
-              <Card>
+              <Card className="rounded-2xl border-border shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg">価格帯別詳細データ</CardTitle>
                 </CardHeader>
@@ -1179,7 +1179,7 @@ function MenuAnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* メニューパフォーマンス統計 */}
               {performanceAnalysis && performanceAnalysis.performanceDistribution.high > 0 ? (
-                <Card>
+                <Card className="rounded-2xl border-border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg">メニューパフォーマンス統計</CardTitle>
                     <p className="text-sm text-muted-foreground">

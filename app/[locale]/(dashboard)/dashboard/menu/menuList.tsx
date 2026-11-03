@@ -135,19 +135,19 @@ export const MenuList = memo(() => {
   const renderMenus = useCallback(() => {
     if (!menusToDisplay || menusToDisplay.length === 0) {
       return (
-        <div className="text-center py-8">
+        <div className="admin-empty-state">
           <p className="text-muted-foreground">{t('messages.noMenus')}</p>
         </div>
       )
     }
 
     return (
-      <div className="space-y-4">
+      <div className="flex flex-col gap-3">
         {menusToDisplay.map((menu: Doc<'menu'>) => (
           <Link key={menu._id} href={`/dashboard/menu/${menu._id}`}>
-            <div className="p-4 border-b border-border hover:bg-secondary cursor-pointer">
+            <div className="admin-panel cursor-pointer p-4 transition-colors hover:bg-muted sm:p-5">
               <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-                <div className="relative h-16 w-16 rounded-lg overflow-hidden flex-shrink-0 shadow-md">
+                <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-border">
                   {menu.images && menu.images.length > 0 && menu.images[0]?.thumbnail_url ? (
                     <Image
                       src={menu.images[0]?.thumbnail_url || ''}
@@ -165,7 +165,7 @@ export const MenuList = memo(() => {
                     </div>
                   )}
                 </div>
-                <div className="space-y-1 w-full flex flex-col sm:flex-row items-end">
+                <div className="flex min-w-0 w-full flex-col gap-4 sm:flex-row sm:items-center">
                   <div className="w-full">
                     <div className="flex flex-wrap gap-1">
                       {menu.categories?.map((category) => (
@@ -174,7 +174,9 @@ export const MenuList = memo(() => {
                         </Badge>
                       ))}
                     </div>
-                    <h3 className="font-semibold text-lg truncate text-foreground">{menu.name}</h3>
+                    <h3 className="break-words text-base font-semibold text-foreground">
+                      {menu.name}
+                    </h3>
                   </div>
                   <div className="flex flex-col items-start md:items-end md:justify-end w-full gap-2">
                     <div className="flex flex-wrap justify-start md:justify-end w-full gap-x-6 gap-y-2 h-full text-sm">
@@ -210,13 +212,13 @@ export const MenuList = memo(() => {
                       )}
                     </div>
 
-                    <div className="flex  w-fit gap-2">
+                    <div className="flex max-w-full flex-wrap gap-2">
                       {menu.tags &&
                         menu.tags.length > 0 &&
                         menu.tags.map((tag: string, idx: number) => (
                           <div
                             key={idx}
-                            className="md:ml-3 px-2 py-1 bg-primary text-primary-foreground rounded-md"
+                            className="rounded-md bg-secondary px-2 py-1 text-secondary-foreground"
                           >
                             <p className="text-xs font-semibold text-center text-nowrap">{tag}</p>
                           </div>
@@ -234,10 +236,10 @@ export const MenuList = memo(() => {
 
   return (
     <div className="space-y-6">
-      <Card className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <Card className="admin-panel flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <CardContent className="flex-1 space-y-2 p-4">
           {/* カテゴリフィルター */}
-          <div className="grid grid-cols-2 gap-4 items-start">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-start">
             <div>
               <div className="flex items-center gap-1 mb-2">
                 <span className="text-xs font-medium">{t('messages.filterByCategory')}</span>
@@ -309,7 +311,7 @@ export const MenuList = memo(() => {
               )}
             </div>
             {/* 性別フィルター */}
-            <div className="flex flex-col sm:flex-row gap-2 items-end justify-end">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-end">
               <div className="flex flex-col gap-2 items-start">
                 <div className="flex items-start gap-1">
                   <span className="text-xs font-medium">性別で絞り込み</span>

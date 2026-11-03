@@ -51,11 +51,19 @@ export default function BillingPeriodToggle({
   )
 
   return (
-    <div className="inline-flex items-center bg-secondary p-1 rounded-full shadow-sm mb-4">
-      <button onClick={monthlyClickHandler} className={monthlyButtonClasses}>
+    <div className="inline-flex max-w-full flex-wrap items-center gap-1 rounded-xl border border-border bg-card p-1.5">
+      <button
+        onClick={monthlyClickHandler}
+        aria-pressed={billingPeriod === 'month'}
+        className={cn(monthlyButtonClasses, 'min-h-11 rounded-lg')}
+      >
         {t('monthlyPayment')}
       </button>
-      <button onClick={yearlyClickHandler} className={yearlyButtonClasses}>
+      <button
+        onClick={yearlyClickHandler}
+        aria-pressed={billingPeriod === 'year'}
+        className={cn(yearlyButtonClasses, 'min-h-11 rounded-lg')}
+      >
         {t('yearlyPayment')}{' '}
         <span
           className={cn(

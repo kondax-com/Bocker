@@ -219,10 +219,10 @@ export default function OrgExceptionScheduleForm() {
   }
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-0">
+    <div className="admin-panel admin-form w-full p-5 sm:p-6">
       <div className="mb-4">
         <div className="flex items-center gap-2">
-          <h4 className="text-2xl font-bold text-primary">{t('title')}</h4>
+          <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
         </div>
         <div>
           <p className="text-xs sm:text-sm mt-1 text-muted-foreground">{t('description')}</p>
@@ -232,7 +232,7 @@ export default function OrgExceptionScheduleForm() {
       <div className=" space-y-4 sm:space-y-6">
         {/* カレンダーとリスト表示のグリッドレイアウト */}
         <div className="w-full">
-          <div className="bg-background rounded-lg border shadow-sm p-3 sm:p-4">
+          <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
             <h3 className="text-sm sm:text-base font-semibold flex items-center gap-1.5 sm:gap-2 mb-3 sm:mb-4 text-primary">
               {t('selectHolidays')}
             </h3>
@@ -254,11 +254,11 @@ export default function OrgExceptionScheduleForm() {
         </div>
       </div>
 
-      <div className="bg-background border-t p-3 sm:p-4 flex justify-end items-center flex-wrap gap-2">
+      <div className="admin-toolbar mt-6 justify-end border-t border-border py-5">
         <Button
           onClick={handleSave}
           disabled={!isDirty || isSaving}
-          className="shadow-md text-xs sm:text-sm"
+          className="min-h-11 rounded-lg text-sm shadow-none"
           size="default"
           // モバイル向けにサイズを調整
           style={{

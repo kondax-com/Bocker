@@ -308,9 +308,9 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
       backLinkTitle={tCarte('detail.backToSearch')}
     >
       <div className="min-h-screen pb-8">
-        <div className="space-y-3 md:space-y-6">
+        <div className="space-y-6">
           {/* 顧客基本情報 - Uber風デザイン */}
-          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="bg-muted p-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center gap-4">
@@ -352,7 +352,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                     <div className="p-2 rounded-lg bg-palette-4">
                       <Info className="w-5 h-5 text-primary-foreground" />
                     </div>
-                    <h5 className="text-base md:text-xl font-bold text-primary">
+                    <h5 className="text-base md:text-lg font-semibold text-foreground">
                       {tCarte('detail.customerInfo')}
                     </h5>
                   </div>
@@ -367,7 +367,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                             <Mail className="w-4 h-4 text-muted-foreground" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            <p className="text-xs font-medium text-muted-foreground leading-relaxed">
                               {tCarte('detail.email')}
                             </p>
                             <p className="text-sm font-semibold text-primary truncate">
@@ -382,7 +382,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                           <Phone className="w-4 h-4 text-muted-foreground" />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          <p className="text-xs font-medium text-muted-foreground leading-relaxed">
                             {tCarte('detail.phone')}
                           </p>
                           <p className="text-sm font-semibold text-primary">
@@ -398,7 +398,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                             <CalendarDays className="w-4 h-4 text-muted-foreground" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            <p className="text-xs font-medium text-muted-foreground leading-relaxed">
                               {tCarte('detail.birthday')}
                             </p>
                             <p className="text-sm font-semibold text-primary">
@@ -421,7 +421,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                             <CreditCard className="w-4 h-4" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            <p className="text-xs font-medium text-muted-foreground leading-relaxed">
                               {tCarte('detail.totalPoints')}
                             </p>
                             <p className="text-lg font-bold text-muted-foreground">
@@ -437,7 +437,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                           <CalendarDays className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          <p className="text-xs font-medium text-muted-foreground leading-relaxed">
                             {tCarte('detail.totalReservationCount')}
                           </p>
                           <p className="text-lg font-bold text-muted-foreground">
@@ -453,7 +453,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                             <CreditCard className="w-4 h-4 text-palette-1-foreground" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-palette-1-foreground uppercase tracking-wide">
+                            <p className="text-xs font-medium text-palette-1-foreground leading-relaxed">
                               {tCarte('detail.ltv')}
                             </p>
                             <p className="text-lg font-bold text-palette-1-foreground">
@@ -466,7 +466,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                     {/* タグ */}
                     {customerData.customer?.tags && customerData.customer.tags.length > 0 && (
                       <div className="mt-6">
-                        <p className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                        <p className="text-sm font-medium text-muted-foreground mb-3 leading-relaxed">
                           {tCarte('table.tags')}
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -489,7 +489,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
           </div>
 
           {/* カルテ情報 - モダンタブデザイン */}
-          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <Accordion type="single" collapsible>
               <AccordionItem value="item-2">
                 <AccordionTrigger className="px-4">
@@ -497,7 +497,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                     <div className="p-2 rounded-lg bg-palette-4">
                       <FileText className="w-5 h-5 text-primary-foreground" />
                     </div>
-                    <h2 className="text-base md:text-xl font-bold text-primary">
+                    <h2 className="text-base md:text-lg font-semibold text-foreground">
                       {tCarte('detail.carteInfo')}
                     </h2>
                   </div>
@@ -509,21 +509,21 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                         <TabsList className="grid w-full grid-cols-3 h-12 bg-secondary border border-border rounded-xl">
                           <TabsTrigger
                             value="customer"
-                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 font-medium"
+                            className="min-h-11 rounded-lg px-3 text-sm font-medium transition-colors data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm"
                           >
                             <UserCheck className="w-4 h-4 mr-2" />
                             {tCarte('edit.tabs.customer')}
                           </TabsTrigger>
                           <TabsTrigger
                             value="store"
-                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 font-medium"
+                            className="min-h-11 rounded-lg px-3 text-sm font-medium transition-colors data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm"
                           >
                             <Scissors className="w-4 h-4 mr-2" />
                             {tCarte('edit.tabs.store')}
                           </TabsTrigger>
                           <TabsTrigger
                             value="medical"
-                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 font-medium"
+                            className="min-h-11 rounded-lg px-3 text-sm font-medium transition-colors data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm"
                           >
                             <FileText className="w-4 h-4 mr-2" />
                             {tCarte('edit.tabs.medical')}
@@ -570,7 +570,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                                 <div key={item.key} className="group relative overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary rounded-xl" />
                                   <div className="relative p-4 rounded-xl border border-border bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-primary">
-                                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3 font-medium">
+                                    <p className="text-xs text-muted-foreground leading-relaxed mb-3 font-medium">
                                       {item.label}
                                     </p>
                                     <div className="flex items-center gap-3">
@@ -596,7 +596,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                                     <div className="p-2 rounded-lg bg-palette-2">
                                       <CalendarDays className="w-4 h-4 text-palette-2-foreground" />
                                     </div>
-                                    <p className="text-xs text-palette-2-foreground uppercase tracking-wide font-medium">
+                                    <p className="text-xs text-palette-2-foreground leading-relaxed font-medium">
                                       {tCarte('edit.customerPrefs.dailyStylingTime')}
                                     </p>
                                   </div>
@@ -615,7 +615,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                                     <div className="p-2 rounded-lg bg-warning">
                                       <AlertCircle className="w-4 h-4 text-warning-foreground" />
                                     </div>
-                                    <p className="text-xs text-warning-foreground uppercase tracking-wide font-medium">
+                                    <p className="text-xs text-warning-foreground leading-relaxed font-medium">
                                       {tCarte('edit.customerPrefs.avoidChemicals')}
                                     </p>
                                   </div>
@@ -657,7 +657,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                                   <div key={item.key} className="group relative overflow-hidden">
                                     <div className="absolute inset-0 bg-gradient-to-r from-warning to-warning rounded-xl" />
                                     <div className="relative p-4 rounded-xl border border-warning bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-warning">
-                                      <p className="text-xs text-warning-foreground uppercase tracking-wide mb-3 font-medium">
+                                      <p className="text-xs text-warning-foreground leading-relaxed mb-3 font-medium">
                                         {item.label}
                                       </p>
                                       <div className="flex items-center gap-3">
@@ -683,7 +683,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                                       <div className="p-2 rounded-lg bg-destructive">
                                         <AlertCircle className="w-4 h-4 text-destructive-foreground" />
                                       </div>
-                                      <p className="text-xs text-destructive-foreground uppercase tracking-wide font-medium">
+                                      <p className="text-xs text-destructive-foreground leading-relaxed font-medium">
                                         {tCarte('edit.sharedPrefs.sensitiveSkinDetail')}
                                       </p>
                                     </div>
@@ -712,7 +712,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                               <div className="group relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-palette-5/20 to-palette-5/30 rounded-xl" />
                                 <div className="relative p-4 rounded-xl border border-palette-5/20 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-5/40">
-                                  <p className="text-xs text-palette-5-foreground/80 uppercase tracking-wide mb-3 font-medium">
+                                  <p className="text-xs text-palette-5-foreground/80 leading-relaxed mb-3 font-medium">
                                     {tCarte('edit.storeAssessment.hairThickness')}
                                   </p>
                                   <p className="text-sm font-semibold text-palette-5-foreground">
@@ -728,8 +728,8 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                               </div>
                               <div className="group relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-palette-1 to-palette-1 rounded-xl" />
-                                <div className="relative p-4 rounded-xl border border-palette-1 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-1/40">
-                                  <p className="text-xs text-palette-1-foreground uppercase tracking-wide mb-3 font-medium">
+                                <div className="relative rounded-xl border border-border bg-card p-4">
+                                  <p className="text-xs text-palette-1-foreground leading-relaxed mb-3 font-medium">
                                     {tCarte('edit.storeAssessment.hairVolume')}
                                   </p>
                                   <p className="text-sm font-semibold text-palette-1-foreground">
@@ -745,8 +745,8 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                               </div>
                               <div className="group relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-palette-2 to-palette-2 rounded-xl" />
-                                <div className="relative p-4 rounded-xl border border-palette-2 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-2/40">
-                                  <p className="text-xs text-palette-2-foreground uppercase tracking-wide mb-3 font-medium">
+                                <div className="relative rounded-xl border border-border bg-card p-4">
+                                  <p className="text-xs text-palette-2-foreground leading-relaxed mb-3 font-medium">
                                     {tCarte('edit.storeAssessment.hairWaveLevel')}
                                   </p>
                                   <p className="text-sm font-semibold text-palette-2-foreground">
@@ -769,8 +769,8 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="group relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-palette-3 to-palette-3 rounded-xl" />
-                                <div className="relative p-4 rounded-xl border border-palette-3 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-3/40">
-                                  <p className="text-xs text-palette-3-foreground uppercase tracking-wide mb-3 font-medium">
+                                <div className="relative rounded-xl border border-border bg-card p-4">
+                                  <p className="text-xs text-palette-3-foreground leading-relaxed mb-3 font-medium">
                                     {tCarte('edit.storeAssessment.hairDamageTendency')}
                                   </p>
                                   <p className="text-sm font-semibold text-palette-3-foreground">
@@ -787,7 +787,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                               <div className="group relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-palette-4/20 to-palette-4/30 rounded-xl" />
                                 <div className="relative p-4 rounded-xl border border-palette-4/20 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-4/40">
-                                  <p className="text-xs text-palette-4-foreground/80 uppercase tracking-wide mb-3 font-medium">
+                                  <p className="text-xs text-palette-4-foreground/80 leading-relaxed mb-3 font-medium">
                                     {tCarte('edit.storeAssessment.poorDyePerm')}
                                   </p>
                                   <div className="flex items-center gap-3">
@@ -804,8 +804,8 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                               </div>
                               <div className="group relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-palette-1 to-palette-1 rounded-xl" />
-                                <div className="relative p-4 rounded-xl border border-palette-1 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-1/40">
-                                  <p className="text-xs text-palette-1-foreground uppercase tracking-wide mb-3 font-medium">
+                                <div className="relative rounded-xl border border-border bg-card p-4">
+                                  <p className="text-xs text-palette-1-foreground leading-relaxed mb-3 font-medium">
                                     {tCarte('edit.storeAssessment.quickColorFade')}
                                   </p>
                                   <div className="flex items-center gap-3">
@@ -822,8 +822,8 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                               </div>
                               <div className="group relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-palette-2 to-palette-2 rounded-xl" />
-                                <div className="relative p-4 rounded-xl border border-palette-2 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-2/40">
-                                  <p className="text-xs text-palette-2-foreground uppercase tracking-wide mb-3 font-medium">
+                                <div className="relative rounded-xl border border-border bg-card p-4">
+                                  <p className="text-xs text-palette-2-foreground leading-relaxed mb-3 font-medium">
                                     {tCarte('edit.storeAssessment.hairDryness')}
                                   </p>
                                   <p className="text-sm font-semibold text-palette-2-foreground">
@@ -844,7 +844,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                             <div className="group relative overflow-hidden">
                               <div className="absolute inset-0 bg-gradient-to-r from-palette-5/20 to-palette-5/30 rounded-xl" />
                               <div className="relative p-4 rounded-xl border border-palette-5/20 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-5/40">
-                                <p className="text-xs text-palette-5-foreground/80 uppercase tracking-wide mb-3 font-medium">
+                                <p className="text-xs text-palette-5-foreground/80 leading-relaxed mb-3 font-medium">
                                   {tCarte('edit.storeAssessment.scalpCondition')}
                                 </p>
                                 <p className="text-sm font-semibold text-palette-5-foreground">
@@ -869,7 +869,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                                     <div className="p-2 rounded-lg bg-warning">
                                       <AlertCircle className="w-4 h-4 text-warning-foreground" />
                                     </div>
-                                    <p className="text-xs text-warning-foreground uppercase tracking-wide font-medium">
+                                    <p className="text-xs text-warning-foreground leading-relaxed font-medium">
                                       {tCarte('edit.storeAssessment.scalpTroubleDetail')}
                                     </p>
                                   </div>
@@ -902,7 +902,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                                     <div className="p-2 rounded-lg bg-destructive-foreground">
                                       <AlertCircle className="w-4 h-4 text-destructive" />
                                     </div>
-                                    <p className="text-xs text-destructive uppercase tracking-wide font-medium">
+                                    <p className="text-xs text-destructive leading-relaxed font-medium">
                                       {tCarte('edit.medicalInfo.allergyHistory')}
                                     </p>
                                   </div>
@@ -919,7 +919,7 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
                                     <div className="p-2 rounded-lg bg-warning">
                                       <FileText className="w-4 h-4 text-warning-foreground" />
                                     </div>
-                                    <p className="text-xs text-warning-foreground uppercase tracking-wide font-medium">
+                                    <p className="text-xs text-warning-foreground leading-relaxed font-medium">
                                       {tCarte('edit.medicalInfo.medicalHistory')}
                                     </p>
                                   </div>
@@ -944,13 +944,13 @@ export default function CartePage({ params: paramsPromise }: CartePageProps) {
           </div>
 
           {/* 施術履歴 - モダンデザイン */}
-          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="p-3 md:p-6 border-b border-border">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-palette-3">
                   <CalendarDays className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <h2 className="text-base md:text-xl font-bold text-primary">
+                <h2 className="text-base md:text-lg font-semibold text-foreground">
                   {tCarte('detail.reservationHistory')}
                 </h2>
               </div>
