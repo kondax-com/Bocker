@@ -175,11 +175,11 @@ export default function StaffDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/5 pb-8">
+    <div className="min-w-0 pb-8">
       {/* スタッフヘッダーカード - 改良版 */}
-      <div className="max-w-6xl mx-auto md:px-4">
+      <div className="mx-auto w-full min-w-0">
         <div className="mb-8">
-          <div className="bg-card rounded-2xl shadow-lg border border-border/50 overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="flex flex-col lg:flex-row">
               {/* サムネイル部分 - スタイル改良 */}
               <div className="lg:w-1/3 flex md:items-start md:mt-4 justify-center p-4">
@@ -190,12 +190,12 @@ export default function StaffDetails() {
                       alt={staffAllData.name || ''}
                       width={400}
                       height={400}
-                      className="object-cover rounded-2xl shadow-lg"
+                      className="object-cover rounded-xl"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-2xl" />
                   </div>
                 ) : (
-                  <div className="w-full max-w-sm aspect-square bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl flex items-center justify-center border-2 border-dashed border-primary/20">
+                  <div className="w-full max-w-sm aspect-square rounded-xl flex items-center justify-center border border-border bg-muted">
                     <div className="text-4xl font-bold text-primary/40">
                       {getInitials(staffAllData.name || '')}
                     </div>
@@ -204,11 +204,13 @@ export default function StaffDetails() {
               </div>
 
               {/* 情報部分 - レイアウト改良 */}
-              <div className="flex-1 p-4 md:p-8 space-y-6">
+              <div className="min-w-0 flex-1 p-4 md:p-8 space-y-6">
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start">
                   <div className="space-y-4">
                     <div>
-                      <h1 className="text-3xl font-bold text-primary mb-2">{staffAllData.name}</h1>
+                      <h2 className="break-words text-2xl font-semibold text-foreground mb-2">
+                        {staffAllData.name}
+                      </h2>
                       <div className="flex flex-wrap gap-2 mb-4">
                         <Badge variant={staffAllData.is_active ? 'default' : 'outline'}>
                           {staffAllData.is_active ? t('common.active') : t('common.inactive')}
@@ -232,10 +234,10 @@ export default function StaffDetails() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary border border-border">
+                      <div className="flex items-center gap-3 rounded-xl bg-muted p-4">
                         <User className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          <p className="text-xs font-medium text-muted-foreground">
                             {t('staff.add.gender')}
                           </p>
                           <p className="text-sm font-semibold text-primary">
@@ -243,10 +245,10 @@ export default function StaffDetails() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary border border-border">
+                      <div className="flex items-center gap-3 rounded-xl bg-muted p-4">
                         <Calendar className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          <p className="text-xs font-medium text-muted-foreground">
                             {t('staff.add.age')}
                           </p>
                           <p className="text-sm font-semibold text-primary">
@@ -265,7 +267,7 @@ export default function StaffDetails() {
                         href={staffAllData.instagram_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                        className="flex min-h-11 items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-muted"
                       >
                         <Instagram className="h-5 w-5" />
                         <span className="text-sm font-medium">Instagram</span>
@@ -275,15 +277,13 @@ export default function StaffDetails() {
                 </div>
 
                 {userEmail && (
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary border border-border">
+                  <div className="flex items-center gap-3 rounded-xl bg-muted p-4">
                     <Mail className="h-5 w-5 text-muted-foreground" />
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Email
-                      </p>
+                      <p className="text-xs font-medium text-muted-foreground">Email</p>
                       <Link
                         href={`mailto:${userEmail}`}
-                        className="text-sm font-semibold text-link-foreground hover:text-link-foreground transition-colors"
+                        className="break-all text-sm font-semibold text-link-foreground hover:text-link-foreground transition-colors"
                       >
                         {userEmail}
                       </Link>
@@ -294,7 +294,7 @@ export default function StaffDetails() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <FileEdit className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">
+                    <h3 className="text-sm font-semibold text-foreground">
                       {t('staff.details.introduction')}
                     </h3>
                   </div>
@@ -309,9 +309,7 @@ export default function StaffDetails() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Tag className="h-4 w-4 text-muted-foreground" />
-                      <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">
-                        Tags
-                      </h3>
+                      <h3 className="text-sm font-semibold text-foreground">Tags</h3>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {staffAllData.tags.map((tag) => (
@@ -330,22 +328,22 @@ export default function StaffDetails() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* 指名料金 */}
                   <div className="relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-palette-1/20 to-palette-1/30 rounded-xl" />
-                    <div className="relative p-6 rounded-xl border border-palette-1-foreground/20 bg-palette-1/10 backdrop-blur-sm transition-all duration-300 hover:shadow-lg group-hover:border-palette-1-foreground/40">
+                    <div className="hidden" />
+                    <div className="relative rounded-xl border border-border bg-secondary p-5">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 rounded-lg bg-palette-1-foreground/10">
-                          <PiggyBank className="h-5 w-5 text-palette-1-foreground" />
+                        <div className="p-2 rounded-lg bg-card">
+                          <PiggyBank className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-palette-1-foreground/80 uppercase tracking-wide">
+                          <p className="text-xs font-medium text-muted-foreground">
                             {t('staff.add.nominationFee')}
                           </p>
-                          <p className="text-2xl font-bold text-palette-1-foreground">
+                          <p className="text-2xl font-semibold tabular-nums text-primary">
                             ¥{staffAllData.extra_charge?.toLocaleString() || 0}
                           </p>
                         </div>
                       </div>
-                      <p className="text-xs text-palette-1-foreground/70 leading-relaxed">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
                         {t('staff.add.nominationFeeHelp')}
                       </p>
                     </div>
@@ -353,25 +351,25 @@ export default function StaffDetails() {
 
                   {/* 優先度 */}
                   <div className="relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-palette-2/20 to-palette-2/30 rounded-xl" />
-                    <div className="relative p-6 rounded-xl border border-palette-2-foreground/20 bg-palette-2/10 backdrop-blur-sm transition-all duration-300 hover:shadow-lg group-hover:border-palette-2-foreground/40">
+                    <div className="hidden" />
+                    <div className="relative rounded-xl border border-border bg-muted p-5">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 rounded-lg bg-palette-2-foreground/10">
-                          <Star className="h-5 w-5 text-palette-2-foreground" />
+                        <div className="p-2 rounded-lg bg-card">
+                          <Star className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-palette-2-foreground/80 uppercase tracking-wide">
+                          <p className="text-xs font-medium text-muted-foreground">
                             {t('staff.add.priority')}
                           </p>
-                          <p className="text-2xl font-bold text-palette-2-foreground">
+                          <p className="text-2xl font-semibold tabular-nums text-primary">
                             {staffAllData.priority || 0}
-                            <span className="text-sm text-palette-2-foreground/70 ml-1">
+                            <span className="text-sm text-muted-foreground ml-1">
                               /{MAX_PRIORITY}
                             </span>
                           </p>
                         </div>
                       </div>
-                      <p className="text-xs text-palette-2-foreground/70 leading-relaxed">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
                         {t('staff.add.priorityHelp')}
                       </p>
                     </div>
@@ -383,7 +381,7 @@ export default function StaffDetails() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Tag className="h-4 w-4 text-muted-foreground" />
-                      <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">
+                      <h3 className="text-sm font-semibold text-foreground">
                         {t('staff.add.exclusionMenuTitle')}
                       </h3>
                     </div>
@@ -406,7 +404,7 @@ export default function StaffDetails() {
             </div>
           </div>
 
-          <div className="mt-8 p-3 bg-secondary rounded-xl border border-border">
+          <div className="mt-6 rounded-xl border border-border bg-card p-4">
             <div className="flex flex-wrap justify-between items-start sm:items-center gap-3">
               <div className="text-xs text-muted-foreground tracking-wider font-medium">
                 <span>{t('staff.details.createdAt')}: </span>
@@ -428,7 +426,7 @@ export default function StaffDetails() {
                   <Button
                     size="sm"
                     variant="edit"
-                    className="gap-2 hover:bg-primary/10 transition-all duration-200"
+                    className="gap-2 hover:bg-muted transition-colors"
                   >
                     <FileEdit className="h-4 w-4" />
                     {t('common.edit')}
@@ -436,9 +434,9 @@ export default function StaffDetails() {
                 </Link>
                 <Link href={`/dashboard/staff/schedule?staffId=${staff_id}`}>
                   <Button
-                    variant="info"
+                    variant="default"
                     size="sm"
-                    className="gap-2 transition-all duration-200 shadow-sm"
+                    className="min-h-11 gap-2 transition-colors shadow-none"
                   >
                     <CalendarDays className="h-4 w-4" />
                     {t('common.schedule')}
@@ -475,7 +473,7 @@ export default function StaffDetails() {
             <Button
               variant="destructive"
               onClick={handleDeleteStaff}
-              className="flex-1 sm:flex-none bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 transition-all duration-200"
+              className="min-h-11 flex-1 sm:flex-none"
             >
               {t('staff.edit.delete')}
             </Button>

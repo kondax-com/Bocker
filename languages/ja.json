@@ -1321,6 +1321,11 @@
     },
     "myPage": {
       "title": "マイページ",
+      "staffNotLinked": {
+        "title": "スタッフ情報が登録されていません",
+        "description": "マイページは、このアカウントに紐づくスタッフ情報を表示する画面です。スタッフ情報が登録されていないアカウントでは利用できません。ダッシュボードからスタッフ管理などの機能をご利用ください。",
+        "backToDashboard": "ダッシュボードへ戻る"
+      },
       "active": "アクティブ",
       "inactive": "非アクティブ",
       "authenticatedStaff": "認証スタッフ",
@@ -1958,6 +1963,7 @@
     }
   },
   "sidebar": {
+    "skipToContent": "メインコンテンツへ移動",
     "tagline": "サロンの運営をもっと便利に。",
     "openSidebar": "サイドバーを開く",
     "closeSidebar": "閉じる",

@@ -1502,11 +1502,11 @@ export default function ReservationTimeLine() {
   return (
     <div className={`h-fit w-full ${subscription === null ? 'hidden' : ''}`}>
       {/* ヘッダー部分 */}
-      <div className="w-full md:space-y-2 md:p-4">
+      <div className="w-full space-y-3 pb-4">
         {/* 日付選択とビュー切り替え */}
         {/* 今日から2週間後までの予約件数を表示 */}
-        <div className="pb-2 mt-2">
-          <div className="w-full flex gap-2 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide">
+        <div className="pb-1">
+          <div className="flex w-full gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin">
             {reservationCounts.map((item) => {
               const date = new Date(item.date)
               const dateFnsLocale = locale === 'ja' ? ja : locale === 'th' ? th : enUS
@@ -1521,14 +1521,16 @@ export default function ReservationTimeLine() {
               return (
                 <button
                   key={item.date}
+                  aria-pressed={isSelected}
+                  title={format(date, 'PPPP', { locale: dateFnsLocale })}
                   onClick={() => setSelectedDate(date)}
                   className={cn(
-                    'flex flex-col items-center justify-center p-2 rounded-lg transition-all min-w-[52px] w-full snap-start',
-                    'border hover:border-secondary hover:shadow-sm',
+                    'flex min-h-20 min-w-[52px] w-full snap-start flex-col items-center justify-center rounded-xl p-2 transition-colors',
+                    'border border-border hover:border-primary',
                     isSelected
                       ? isHoliday
                         ? 'bg-warning text-warning-foreground border-warning-foreground'
-                        : 'bg-accent text-accent-foreground border-accent-foreground shadow-md'
+                        : 'bg-primary text-primary-foreground border-primary'
                       : null,
                     isToday && !isSelected && 'font-semibold',
                     item.count > 0 && !isSelected && 'bg-background',
@@ -1536,7 +1538,7 @@ export default function ReservationTimeLine() {
                     isHoliday && !isSelected && 'bg-warning text-warning-foreground'
                   )}
                 >
-                  <span className="text-[10px] opacity-70">{dayOfWeek}</span>
+                  <span className="text-xs opacity-80">{dayOfWeek}</span>
                   <span className="text-sm font-medium">{format(date, 'd')}</span>
                   <div className="flex items-center justify-center gap-1">
                     {item.count > 0 && (
@@ -1547,7 +1549,9 @@ export default function ReservationTimeLine() {
                         'text-xs',
                         item.count > 0
                           ? 'font-bold'
-                          : `text-muted-foreground opacity-50 ${isSelected ? 'text-muted-foreground' : ''}`
+                          : isSelected
+                            ? 'text-current'
+                            : 'text-muted-foreground'
                       )}
                     >
                       {item.count}
@@ -1558,11 +1562,17 @@ export default function ReservationTimeLine() {
             })}
           </div>
         </div>
-        <div className="flex items-center justify-between w-full my-4 ">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-4 w-full">
-              <div className="flex items-center justify-end md:justify-start gap-2 w-full">
-                <Button variant="outline" size="sm" onClick={() => handleDateChange(-1)}>
+        <div className="flex w-full flex-wrap items-center justify-between gap-3 py-1">
+          <div className="flex min-w-0 items-center">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex flex-wrap items-center justify-start gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="size-11 rounded-lg"
+                  aria-label={t('previousDay')}
+                  onClick={() => handleDateChange(-1)}
+                >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
 
@@ -1576,13 +1586,19 @@ export default function ReservationTimeLine() {
                     .map((item) => item.date)}
                   reservationCounts={reservationCounts}
                 />
-                <Button variant="outline" size="sm" onClick={() => handleDateChange(1)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="size-11 rounded-lg"
+                  aria-label={t('nextDay')}
+                  onClick={() => handleDateChange(1)}
+                >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
             </div>
           </div>
-          <div className="flex items-center justify-end gap-4 w-full md:mt-0">
+          <div className="flex items-center justify-end gap-3">
             <Button variant="outline" onClick={() => setSelectedDate(new Date())}>
               {t('today')}
             </Button>
@@ -1600,7 +1616,7 @@ export default function ReservationTimeLine() {
 
       {/* メインコンテンツ */}
       <div className="overflow-hidden">
-        <div className="overflow-x-auto  bg-background border-t border-x border-border">
+        <div className="overflow-x-auto rounded-xl bg-card border border-border">
           <div className="relative max-h-[calc(100vh-200px)] min-w-max">
             {/* タイムラインヘッダー */}
             <TimelineHeader timeSlots={halfHourSlots} />
@@ -1713,7 +1729,7 @@ function EnhancedDatePicker({
         <Button
           variant="outline"
           className={cn(
-            'w-fit justify-start text-left font-normal h-9 bg-input',
+            'w-fit justify-start rounded-lg bg-card text-left font-medium h-11',
             !value && 'text-muted-foreground',
             className
           )}

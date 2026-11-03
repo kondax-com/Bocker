@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import React, { useState } from 'react';
-import { Calendar, ChevronDown } from 'lucide-react';
+import React, { useState } from 'react'
+import { Calendar, ChevronDown } from 'lucide-react'
 import { format, subDays, subMonths, startOfDay, endOfDay } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
@@ -202,13 +202,16 @@ export function DateRangeSelector({
   const dayCount = calculateDayCount(value)
 
   return (
-    <div className={cn('flex items-center gap-2', className)}>
+    <div className={cn('flex flex-wrap items-center gap-3', className)}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             disabled={disabled}
-            className={cn('justify-start text-left font-normal', !value && 'text-muted-foreground')}
+            className={cn(
+              'min-h-11 max-w-full justify-start rounded-lg text-left font-normal',
+              !value && 'text-muted-foreground'
+            )}
           >
             <Calendar className="mr-2 h-4 w-4" />
             {formatDateRange(value)}
@@ -263,12 +266,12 @@ export function DateRangeSelector({
  * 前期間比較のための期間選択
  */
 interface PeriodComparisonSelectorProps {
-  currentRange: DateRange;
-  comparisonType: 'previous' | 'same_period_last_year' | 'custom';
-  onComparisonTypeChange: (type: 'previous' | 'same_period_last_year' | 'custom') => void;
-  customComparisonRange?: DateRange;
-  onCustomComparisonRangeChange?: (range: DateRange) => void;
-  className?: string;
+  currentRange: DateRange
+  comparisonType: 'previous' | 'same_period_last_year' | 'custom'
+  onComparisonTypeChange: (type: 'previous' | 'same_period_last_year' | 'custom') => void
+  customComparisonRange?: DateRange
+  onCustomComparisonRangeChange?: (range: DateRange) => void
+  className?: string
 }
 
 export function PeriodComparisonSelector({
@@ -323,7 +326,7 @@ export function PeriodComparisonSelector({
   const comparisonRange = getComparisonRange()
 
   return (
-    <Card className={cn('p-4', className)}>
+    <Card className={cn('admin-panel p-5', className)}>
       <div className="space-y-3">
         <div className="text-sm font-medium">期間比較</div>
 
@@ -360,4 +363,4 @@ export function PeriodComparisonSelector({
   )
 }
 
-export default DateRangeSelector;
+export default DateRangeSelector

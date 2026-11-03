@@ -4,7 +4,15 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -22,14 +30,10 @@ interface UTMBuilderProps {
   onReset?: () => void
 }
 
-export function UTMBuilder({
-  initialValues = {},
-  onChange,
-  onReset,
-}: UTMBuilderProps) {
+export function UTMBuilder({ initialValues = {}, onChange, onReset }: UTMBuilderProps) {
   const [showSuggestions, setShowSuggestions] = useState<string | null>(null)
   const [keywords, setKeywords] = useState<string[]>(
-    initialValues.utm_term ? initialValues.utm_term.split(',').map(k => k.trim()) : []
+    initialValues.utm_term ? initialValues.utm_term.split(',').map((k) => k.trim()) : []
   )
   const [newKeyword, setNewKeyword] = useState('')
 
@@ -123,9 +127,9 @@ export function UTMBuilder({
   }
 
   return (
-    <Card>
+    <Card className="rounded-2xl border-border shadow-sm">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2">UTMパラメータ設定</CardTitle>
             <CardDescription>トラッキング用のUTMパラメータを設定してください</CardDescription>
@@ -170,7 +174,7 @@ export function UTMBuilder({
                           <FormControl>
                             <div className="space-y-3">
                               {/* キーワード追加入力 */}
-                              <div className="flex gap-2">
+                              <div className="flex flex-wrap gap-2">
                                 <Input
                                   placeholder="キーワードを入力"
                                   value={newKeyword}
@@ -181,7 +185,7 @@ export function UTMBuilder({
                                       addKeyword()
                                     }
                                   }}
-                                  className="flex-1"
+                                  className="min-w-0 flex-1"
                                 />
                                 <Button
                                   type="button"

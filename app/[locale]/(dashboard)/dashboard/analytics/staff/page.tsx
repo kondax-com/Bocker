@@ -760,7 +760,7 @@ function StaffAnalyticsPage() {
       backLink="/dashboard"
       backLinkTitle="ダッシュボード"
     >
-      <div className="relative space-y-6">
+      <div className="admin-analytics relative min-w-0 space-y-6">
         <Dialog open={openCsvDialog} onOpenChange={setOpenCsvDialog}>
           <DialogContent>
             <DialogHeader>
@@ -790,8 +790,8 @@ function StaffAnalyticsPage() {
             <AlertDescription className="text-destructive">{error}</AlertDescription>
           </Alert>
         )}
-        <div className="flex justify-end gap-4">
-          <div className="flex items-end gap-2">
+        <div className="admin-toolbar justify-end">
+          <div className="flex flex-wrap items-end gap-3">
             <Button
               onClick={() => setOpenCsvDialog(true)}
               variant="outline"
@@ -857,9 +857,9 @@ function StaffAnalyticsPage() {
           />
 
           {/* 詳細ランキングテーブル */}
-          <Card>
+          <Card className="rounded-2xl border-border shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="flex flex-wrap items-center gap-2 text-base font-semibold">
                 <BarChart3 className="w-5 h-5" />
                 詳細ランキング
               </CardTitle>
@@ -870,7 +870,7 @@ function StaffAnalyticsPage() {
                   staffRanking.map((staff, index) => (
                     <div
                       key={`staff-ranking-${staff.id}-${index}`}
-                      className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-4 transition-colors hover:bg-muted"
                     >
                       <div className="flex items-center gap-3">
                         <Badge
@@ -945,9 +945,9 @@ function StaffAnalyticsPage() {
 
           {/* チーム戦略インサイト */}
           {performanceComparison && staffRanking.length > 0 && (
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
+                <CardTitle className="flex flex-wrap items-center gap-2 text-base font-semibold">
                   <Users className="w-5 h-5" />
                   チーム戦略インサイト
                 </CardTitle>

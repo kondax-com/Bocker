@@ -42,46 +42,46 @@ export default function StaffList() {
 
       {/* スタッフ一覧テーブル */}
       <div className="mt-2 flow-root">
-        <div className="-mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8 px-4 md:px-0">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden border border-border rounded-lg">
+        <div className="min-w-0 overflow-x-auto rounded-2xl border border-border bg-card">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden">
               <table className="min-w-full divide-y divide-border">
-                <thead className="bg-neon-foreground text-nowrap px-2">
+                <thead className="bg-muted text-nowrap px-2">
                   <tr>
                     <th
                       scope="col"
-                      className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-neon sm:pl-6"
+                      className="py-3.5 pr-3 pl-4 text-left text-sm font-medium text-muted-foreground sm:pl-6"
                     >
                       {t('list.status')}
                     </th>
 
                     <th
                       scope="col"
-                      className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-neon sm:pl-6"
+                      className="py-3.5 pr-3 pl-4 text-left text-sm font-medium text-muted-foreground sm:pl-6"
                     >
                       {t('list.image')}
                     </th>
                     <th
                       scope="col"
-                      className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-neon sm:pl-6"
+                      className="py-3.5 pr-3 pl-4 text-left text-sm font-medium text-muted-foreground sm:pl-6"
                     >
                       {t('list.name')}
                     </th>
                     <th
                       scope="col"
-                      className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-neon sm:pl-6"
+                      className="py-3.5 pr-3 pl-4 text-left text-sm font-medium text-muted-foreground sm:pl-6"
                     >
                       {t('list.description')}
                     </th>
                     <th
                       scope="col"
-                      className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-neon sm:pl-6"
+                      className="py-3.5 pr-3 pl-4 text-left text-sm font-medium text-muted-foreground sm:pl-6"
                     >
                       {t('list.connectClerk')}
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border bg-background text-nowrap">
+                <tbody className="divide-y divide-border bg-card text-nowrap">
                   {staffsWithInvitation && staffsWithInvitation.length > 0 ? (
                     staffsWithInvitation.map((staff, index: number) => (
                       <tr
@@ -109,7 +109,7 @@ export default function StaffList() {
                                 alt={staff.name ?? ''}
                                 layout="fill"
                                 objectFit="cover"
-                                className="object-cover rounded-md shadow-md"
+                                className="object-cover rounded-xl"
                               />
                               {staff.connect_clerk ? (
                                 <div className="bg-success-foreground text-success border-success p-1 rounded-full absolute -top-2 -right-2">
@@ -150,7 +150,7 @@ export default function StaffList() {
                       </tr>
                     ))
                   ) : (
-                    <tr className="h-24 text-center">
+                    <tr className="h-36 text-center">
                       <td colSpan={12} className="text-sm text-muted-foreground">
                         {t('list.noStaff')}
                       </td>

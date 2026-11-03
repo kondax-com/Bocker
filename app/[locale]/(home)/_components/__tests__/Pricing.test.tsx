@@ -44,6 +44,27 @@ describe('Pricing', () => {
   })
 
   describe('料金プラン切り替え', () => {
+    it.each(['default', 'landing'] as const)(
+      '%s表示で全プランの月額と年額を切り替えられる',
+      (variant) => {
+        render(<Pricing variant={variant} />)
+
+        const expectPrices = (frequency: 'monthly' | 'annually') => {
+          for (const tier of ['micro', 'lite', 'pro']) {
+            expect(document.querySelector(`[data-tier="${tier}"]`)).toHaveTextContent(
+              `subscription.${tier}.price.${frequency}`
+            )
+          }
+        }
+
+        expectPrices('monthly')
+        fireEvent.click(screen.getByRole('checkbox'))
+        expectPrices('annually')
+        fireEvent.click(screen.getByRole('checkbox'))
+        expectPrices('monthly')
+      }
+    )
+
     it('月額・年額切り替えスイッチが表示される', () => {
       render(<Pricing />)
 

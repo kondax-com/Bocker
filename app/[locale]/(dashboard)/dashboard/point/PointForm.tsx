@@ -175,6 +175,7 @@ export default function PointForm() {
 
   return (
     <form
+      className="min-w-0"
       onSubmit={handleSubmit(onSubmit)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
@@ -184,9 +185,9 @@ export default function PointForm() {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-5">
-          <div className="border border-border rounded-lg overflow-hidden">
-            <div className="p-3 bg-muted">
-              <h5 className="flex items-center text-xl font-bold gap-2 text-muted-foreground">
+          <div className="admin-panel overflow-hidden">
+            <div className="border-b border-border bg-muted p-5">
+              <h5 className="flex items-center gap-2 text-lg font-semibold text-foreground">
                 <Coins className="h-5 w-5 text-muted-foreground" />
                 {t('basicSettings.title')}
               </h5>
@@ -197,7 +198,7 @@ export default function PointForm() {
               </p>
             </div>
 
-            <div className="space-y-6 p-3 my-3">
+            <div className="space-y-6 p-5 sm:p-6">
               <div className="flex flex-col items-start gap-2">
                 <div
                   className={`px-2 py-1 rounded-md ${
@@ -337,9 +338,9 @@ export default function PointForm() {
 
         <div className="lg:col-span-7">
           <div>
-            <div className="h-full shadow-md hover:shadow-lg transition-shadow duration-300 border border-border rounded-lg overflow-hidden">
-              <div className="bg-muted p-3">
-                <h5 className="flex items-center text-xl font-bold gap-2 text-muted-foreground">
+            <div className="admin-panel h-full overflow-hidden">
+              <div className="border-b border-border bg-muted p-5">
+                <h5 className="flex items-center gap-2 text-lg font-semibold text-foreground">
                   <Gift className="h-5 w-5 text-muted-foreground" />
                   {t('summary.title')}
                 </h5>
@@ -391,7 +392,7 @@ export default function PointForm() {
                   </div>
                   <Separator className="" />
                   <div className="space-y-4 py-4">
-                    <div className=" bg-background  rounded shadow-sm">
+                    <div className="rounded-xl bg-muted p-4">
                       <p className="text-sm text-muted-foreground">
                         {t('summary.forPayment', { amount: '1,000' })}
                       </p>
@@ -406,7 +407,7 @@ export default function PointForm() {
                         </span>
                       </p>
                     </div>
-                    <div className=" bg-background  rounded shadow-sm">
+                    <div className="rounded-xl bg-muted p-4">
                       <p className="text-sm text-muted-foreground">
                         {t('summary.forPayment', { amount: '5,000' })}
                       </p>
@@ -430,7 +431,11 @@ export default function PointForm() {
       </div>
 
       <div className="flex justify-end mt-4">
-        <Button type="submit" className="px-8 gap-2" disabled={isSubmitting || !isDirty}>
+        <Button
+          type="submit"
+          className="min-h-11 rounded-lg px-6 gap-2"
+          disabled={isSubmitting || !isDirty}
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />

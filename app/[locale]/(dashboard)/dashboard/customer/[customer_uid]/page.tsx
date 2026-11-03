@@ -222,16 +222,16 @@ function CustomerDetailPage() {
           : undefined
       }
     >
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary pb-8">
-        <div className="space-y-4 md:space-y-8">
-          <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
+      <div className="min-w-0 pb-4">
+        <div className="space-y-6">
+          <div className="admin-panel overflow-hidden">
             <div className="p-4 md:p-8">
-              <div className="flex items-center gap-3 mb-4 md:mb-6">
-                <div className="flex items-center gap-3 justify-start w-full">
+              <div className="flex flex-wrap items-center gap-3 mb-5">
+                <div className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-3">
                   <div className="p-2 rounded-lg bg-primary">
                     <User className="h-5 w-5 text-primary-foreground" />
                   </div>
-                  <h2 className="text-xl font-bold text-primary">{t('basicInfo')}</h2>
+                  <h2 className="text-lg font-semibold text-foreground">{t('basicInfo')}</h2>
                   {completeCustomer.customer.line_user_name && (
                     <div className="flex items-center gap-2">
                       <Badge
@@ -257,54 +257,54 @@ function CustomerDetailPage() {
                 )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <User className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('lastName')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">
+                    <p className="break-words text-sm font-medium text-foreground">
                       {completeCustomer.customer.last_name || t('notRegistered')}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <User className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('firstName')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">
+                    <p className="break-words text-sm font-medium text-foreground">
                       {completeCustomer.customer.first_name || t('notRegistered')}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('phone')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">
+                    <p className="break-words text-sm font-medium text-foreground">
                       {completeCustomer.customer.phone || t('notRegistered')}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <Mail className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('email')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">
+                    <p className="break-words text-sm font-medium text-foreground">
                       {completeCustomer.customer.email || t('notRegistered')}
                     </p>
                   </div>
@@ -312,35 +312,37 @@ function CustomerDetailPage() {
               </div>
             </div>
           </div>
-          <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="p-4 md:p-8">
-              <div className="flex items-center gap-3 mb-4 md:mb-6">
+              <div className="flex flex-wrap items-center gap-3 mb-5">
                 <div className="p-2 rounded-lg bg-palette-1">
                   <NotebookPen className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <h2 className="text-xl font-bold text-primary">{t('additionalInfo')}</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t('additionalInfo')}</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <Cake className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('birthday')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">{formattedBirthday}</p>
+                    <p className="break-words text-sm font-medium text-foreground">
+                      {formattedBirthday}
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <User className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('age')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">
+                    <p className="break-words text-sm font-medium text-foreground">
                       {completeCustomer.customerDetail?.birthday
                         ? new Date().getFullYear() -
                           new Date(completeCustomer.customerDetail.birthday).getFullYear() +
@@ -350,15 +352,15 @@ function CustomerDetailPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <User className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('gender')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">
+                    <p className="break-words text-sm font-medium text-foreground">
                       {completeCustomer.customerDetail?.gender === 'male'
                         ? t('male')
                         : completeCustomer.customerDetail?.gender === 'female'
@@ -370,7 +372,7 @@ function CustomerDetailPage() {
                 <div className="md:col-span-2 space-y-2 md:space-y-3">
                   <div className="flex items-center gap-2">
                     <NotebookPen className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">
+                    <h3 className="break-words text-sm font-medium text-foreground uppercase tracking-wide">
                       {t('notes')}
                     </h3>
                   </div>
@@ -391,37 +393,37 @@ function CustomerDetailPage() {
               </div>
             </div>
           </div>
-          <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="p-4 md:p-8">
-              <div className="flex items-center gap-3 mb-4 md:mb-6">
+              <div className="flex flex-wrap items-center gap-3 mb-5">
                 <div className="p-2 rounded-lg bg-palette-2">
                   <History className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <h2 className="text-xl font-bold text-primary">{t('usageInfo')}</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t('usageInfo')}</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <CalendarDays className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('lastVisit')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">
+                    <p className="break-words text-sm font-medium text-foreground">
                       {formattedLastReservationDate}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-2 md:p-4 rounded-lg bg-secondary border border-border">
+                <div className="flex min-w-0 items-start gap-3 rounded-xl border border-border p-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <TrendingUp className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                       {t('visitCount')}
                     </p>
-                    <p className="text-sm font-semibold text-primary">
+                    <p className="break-words text-sm font-medium text-foreground">
                       {t('visitCountValue', {
                         count: completeCustomer.customer.total_reservation_count || 0,
                       })}
@@ -432,13 +434,13 @@ function CustomerDetailPage() {
             </div>
           </div>
 
-          <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="p-4 md:p-8">
-              <div className="flex items-center gap-3 mb-4 md:mb-6">
+              <div className="flex flex-wrap items-center gap-3 mb-5">
                 <div className="p-2 rounded-lg bg-palette-4">
                   <Tag className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <h2 className="text-xl font-bold text-primary">{t('tags')}</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t('tags')}</h2>
               </div>
               {completeCustomer.customer.tags && completeCustomer.customer.tags.length > 0 ? (
                 <div className="flex flex-wrap gap-3">
@@ -462,15 +464,15 @@ function CustomerDetailPage() {
           </div>
           {/* --- End Tags Section --- */}
 
-          <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="p-4 md:p-8">
-              <div className="flex items-end justify-between mb-4 md:mb-6">
+              <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
                 <div className="flex flex-col items-center gap-3">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-palette-5">
                       <Coins className="h-5 w-5 text-primary-foreground" />
                     </div>
-                    <h2 className="text-xl font-bold text-primary">{t('pointHistory')}</h2>
+                    <h2 className="text-lg font-semibold text-foreground">{t('pointHistory')}</h2>
                   </div>
                   <div className="flex items-center justify-start  w-full">
                     <div className="text-right flex items-center gap-2">
@@ -489,7 +491,7 @@ function CustomerDetailPage() {
                   size="sm"
                   onClick={toggleTransactionHistory}
                   disabled={isLoadingTransactions}
-                  className="transition-all duration-200"
+                  className="transition-colors duration-200"
                 >
                   {showTransactions ? t('hideHistory') : t('showHistory')}
                 </Button>
@@ -546,7 +548,7 @@ function CustomerDetailPage() {
                                       <div className="p-1 rounded-full bg-success">
                                         <TrendingUp className="h-3 w-3 text-success-foreground" />
                                       </div>
-                                      <span className="text-success font-medium">
+                                      <span className="text-success-foreground font-medium">
                                         {t('earned')}
                                       </span>
                                     </>
@@ -569,7 +571,7 @@ function CustomerDetailPage() {
                               </TableCell>
                               <TableCell className="text-right font-bold">
                                 {transaction.points && transaction.points > 0 ? (
-                                  <span className="text-success text-lg">
+                                  <span className="text-success-foreground text-lg">
                                     +{transaction.points}
                                   </span>
                                 ) : (
@@ -589,7 +591,7 @@ function CustomerDetailPage() {
             </div>
           </div>
         </div>
-        <div className="md:px-4 space-y-4 md:space-y-8">
+        <div className="md:px-4 space-y-6">
           <div className="p-4 md:p-6 ">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
@@ -597,10 +599,12 @@ function CustomerDetailPage() {
                   <CalendarDays className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                     {t('registrationDate')}
                   </p>
-                  <p className="text-sm font-semibold text-primary">{formattedCreationTime}</p>
+                  <p className="break-words text-sm font-medium text-foreground">
+                    {formattedCreationTime}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -608,7 +612,7 @@ function CustomerDetailPage() {
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <p className="text-xs font-medium leading-relaxed text-muted-foreground">
                     {t('customerId')}
                   </p>
                   <TooltipProvider>

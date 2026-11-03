@@ -11,10 +11,11 @@ function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export function Pricing() {
+export function Pricing({ variant = 'default' }: { variant?: 'default' | 'landing' }) {
   const [isAnnual, setIsAnnual] = useState(false)
   const t = useTranslations('landing.pricing')
   const tSubscription = useTranslations('subscription')
+  const tCommon = useTranslations('common')
 
   const tiers = [
     {
@@ -174,6 +175,106 @@ export function Pricing() {
     if (value === 'true') return true
     if (value === 'false') return false
     return value
+  }
+
+  if (variant === 'landing') {
+    return (
+      <section data-testid="pricing" id="pricing" className="landing-section landing-pricing">
+        <div className="landing-container">
+          <div className="landing-pricing-heading">
+            <div className="max-w-2xl">
+              <h2 className="landing-heading">{t('title')}</h2>
+              <p className="landing-description mt-5">{t('subtitle')}</p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {t('disclaimer')}
+              </p>
+            </div>
+            <fieldset
+              aria-label={`${t('type.monthly')} / ${t('type.annually')}`}
+              className="landing-billing-toggle"
+            >
+              <span className={!isAnnual ? 'font-semibold' : ''}>{t('type.monthly')}</span>
+              <label htmlFor="frequency">
+                <Switch
+                  role="checkbox"
+                  id="frequency"
+                  name="frequency"
+                  value="monthly"
+                  checked={isAnnual}
+                  aria-label={`${t('type.monthly')} / ${t('type.annually')}`}
+                  className="shrink-0 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted-foreground"
+                  onCheckedChange={setIsAnnual}
+                />
+              </label>
+              <span className={isAnnual ? 'font-semibold' : ''}>{t('type.annually')}</span>
+            </fieldset>
+          </div>
+
+          <div className="landing-price-grid">
+            {tiers.map((tier) => (
+              <article
+                key={tier.id}
+                className={classNames(
+                  'landing-price-plan',
+                  tier.featured && 'landing-price-plan-featured'
+                )}
+              >
+                <div className="landing-price-plan-header">
+                  <h3 className="text-xl font-semibold text-foreground">{tier.name}</h3>
+                  <p className="mt-3 min-h-12 text-sm leading-relaxed text-muted-foreground">
+                    {tier.description}
+                  </p>
+                  <div data-tier={tier.id} className="landing-price-value">
+                    <span>{isAnnual ? tier.price.annually : tier.price.monthly}</span>
+                    <span className="text-sm font-normal text-muted-foreground">
+                      {isAnnual ? tSubscription('annual') : tSubscription('monthly')}
+                    </span>
+                  </div>
+                </div>
+
+                {sections.map((section) => (
+                  <div key={section.name} className="landing-price-feature-group">
+                    <h4 className="text-sm font-semibold text-foreground">{section.name}</h4>
+                    <dl className="mt-3">
+                      {section.features.map((feature) => {
+                        const tierKey = tier.id.toUpperCase() as keyof typeof feature.tiers
+                        const value = evaluateTierValue(feature.tiers[tierKey])
+
+                        return (
+                          <div key={feature.name} className="landing-price-feature">
+                            <dt>{feature.name}</dt>
+                            <dd>
+                              {typeof value === 'boolean' ? (
+                                <>
+                                  {value ? (
+                                    <CheckIcon aria-hidden="true" className="size-5 text-primary" />
+                                  ) : (
+                                    <XMarkIcon
+                                      aria-hidden="true"
+                                      className="size-5 text-muted-foreground"
+                                    />
+                                  )}
+                                  <span className="sr-only">{tCommon(value ? 'yes' : 'no')}</span>
+                                </>
+                              ) : (
+                                value
+                              )}
+                            </dd>
+                          </div>
+                        )
+                      })}
+                    </dl>
+                  </div>
+                ))}
+              </article>
+            ))}
+          </div>
+          <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
+            {t('section.feature.title')}：{t('section.feature.description')}
+          </p>
+        </div>
+      </section>
+    )
   }
 
   return (

@@ -1,0 +1,37 @@
+# Local dependencies and build caches
+.git/
+.vercel/
+node_modules/
+.next/
+out/
+build/
+.pnp*
+.pnpm-store/
+.codebase-memory/
+*.tsbuildinfo
+
+# Environment files, credentials, and browser authentication state
+.env*
+**/.env*
+.clerk/
+.bocker-storage-service-account.json
+*.pem
+*.key
+*.p12
+*.pfx
+**/.auth/
+**/*storage-state*.json
+**/*storageState*.json
+**/*auth-state*.json
+
+# Local verification artifacts
+coverage/
+test-results/
+playwright-report/
+blob-report/
+output/
+.playwright-mcp/
+bocker-home-light.png
+bocker-ja-error.png
+*.log
+.DS_Store

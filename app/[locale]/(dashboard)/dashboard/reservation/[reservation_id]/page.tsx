@@ -326,7 +326,7 @@ export default function ReservationPage() {
         link: `/dashboard/reservation`,
       }}
     >
-      <div className="flex flex-col gap-4 bg-background">
+      <div className="admin-panel flex min-w-0 flex-col gap-6 p-4 sm:p-6">
         <div className="border-b pb-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div className="flex items-center gap-2">
@@ -356,13 +356,13 @@ export default function ReservationPage() {
 
             <div>
               <p className="text-muted-foreground text-sm">{t('dateTime')}:</p>
-              <p className="font-medium text-base">
+              <p className="font-medium text-base tabular-nums break-words">
                 {formatUnixTimestamp(reservationData.startTimeUnix ?? 0)} -{' '}
                 {format(new Date(reservationData.endTimeUnix ?? 0), 'HH:mm')}
               </p>
               <Separator className="my-6 mx-auto w-1/2" />
               <div
-                className={`flex flex-col justify-start bg-neon-foreground border border-neon rounded-md shadow-sm my-3 p-5 w-full ${
+                className={`flex flex-col justify-start bg-secondary border border-border rounded-xl my-3 p-4 w-full ${
                   reservationData.status === 'completed' ||
                   reservationData.status === 'cancelled' ||
                   reservationData.status === 'refunded'
@@ -370,8 +370,10 @@ export default function ReservationPage() {
                     : ''
                 }`}
               >
-                <p className=" text-xs font-bold text-neon mb-2">予約ステータスを更新する</p>
-                <div className="flex gap-4">
+                <p className="text-sm font-medium text-secondary-foreground mb-3">
+                  予約ステータスを更新する
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
                   <Select
                     value={status}
                     onValueChange={(value) => setStatus(value as ReservationStatus)}
@@ -455,7 +457,7 @@ export default function ReservationPage() {
             </div>
             <div>
               <p className="text-muted-foreground text-sm">{t('paymentMethod')}:</p>
-              <p className="font-medium text-base">
+              <p className="font-medium text-base tabular-nums break-words">
                 {convertPaymentMethod(reservationData.detail?.paymentMethod as PaymentMethod)}
               </p>
             </div>
@@ -463,7 +465,7 @@ export default function ReservationPage() {
         </div>
 
         <div className="border-b pb-4">
-          <h2 className="text-xl font-semibold mb-3">{t('customerInfo')}</h2>
+          <h2 className="text-lg font-semibold mb-4 text-foreground">{t('customerInfo')}</h2>
           {reservationData?.customerUid ? (
             <>
               {customerLoading && (
@@ -532,12 +534,12 @@ export default function ReservationPage() {
           )}
         </div>
         <div className="border-b pb-4">
-          <h2 className="text-xl font-semibold mb-3">{t('assignedStaff')}</h2>
+          <h2 className="text-lg font-semibold mb-4 text-foreground">{t('assignedStaff')}</h2>
 
           {staff || assignedStaff ? (
             <div className="flex items-start gap-4">
               <div>
-                <p className="font-medium text-lg">
+                <p className="font-medium text-base break-words">
                   {reservationData.isFreeNomination && assignedStaff
                     ? `${assignedStaff.name} (自動割り当て)`
                     : (staff || assignedStaff)?.name}
@@ -600,7 +602,7 @@ export default function ReservationPage() {
           )}
         </div>
         <div className="border-b pb-4">
-          <h2 className="text-xl font-semibold mb-3">{t('reservationContent')}</h2>
+          <h2 className="text-lg font-semibold mb-4 text-foreground">{t('reservationContent')}</h2>
           {reservationMenuDetails?.menus?.length && reservationMenuDetails?.menus?.length > 0 && (
             <div className="flex flex-col gap-3">
               {reservationData.detail?.menus?.map((reservationMenuItem, index) => {
@@ -611,8 +613,8 @@ export default function ReservationPage() {
                 if (!menuDetail) return null
 
                 return (
-                  <div key={index} className="border rounded-lg p-3">
-                    <p className="font-medium text-lg">{menuDetail.name}</p>
+                  <div key={index} className="rounded-xl border border-border bg-muted p-4">
+                    <p className="font-medium text-base break-words">{menuDetail.name}</p>
                     <p className="text-muted-foreground text-sm">
                       {t('quantity')}: {reservationMenuItem.quantity}
                     </p>
@@ -651,7 +653,7 @@ export default function ReservationPage() {
         </div>
         {reservationData.detail?.notes && reservationData.detail?.notes.trim() !== '' && (
           <div>
-            <h2 className="text-xl font-semibold mb-3">{t('notes')}</h2>
+            <h2 className="text-lg font-semibold mb-4 text-foreground">{t('notes')}</h2>
             <div className="bg-muted p-3 rounded-lg text-muted-foreground">
               {reservationData.detail?.notes}
             </div>

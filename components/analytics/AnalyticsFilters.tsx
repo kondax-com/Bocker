@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react'
 import { CalendarIcon } from 'lucide-react'
 import {
   format,
@@ -254,8 +254,8 @@ export function AnalyticsFilters({
   )
 
   return (
-    <Card className={className}>
-      <CardContent className="space-y-4 pt-4">
+    <Card className={`${className ?? ''} admin-panel min-w-0 shadow-none`}>
+      <CardContent className="space-y-4 p-5 sm:p-6">
         {/* 日付範囲選択 */}
         <div className="space-y-2">
           <label className="text-sm font-medium">期間</label>
@@ -265,7 +265,7 @@ export function AnalyticsFilters({
                 <Button
                   variant="outline"
                   className={cn(
-                    'justify-start text-left font-normal w-full',
+                    'min-h-11 w-full justify-start rounded-lg text-left font-normal',
                     !filters.dateRange && 'text-muted-foreground'
                   )}
                   disabled={loading}
@@ -342,4 +342,4 @@ export function AnalyticsFilters({
   )
 }
 
-export default AnalyticsFilters;
+export default AnalyticsFilters

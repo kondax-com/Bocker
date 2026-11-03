@@ -223,11 +223,12 @@ body {
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/20 rounded-full;
+    background-color: color-mix(in srgb, var(--muted-foreground) 20%, transparent);
+    border-radius: 9999px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/30;
+    background-color: color-mix(in srgb, var(--muted-foreground) 30%, transparent);
   }
 
   /* スクロールバーを完全に非表示 */

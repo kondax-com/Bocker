@@ -4,8 +4,34 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 
-export function CTASection() {
+export function CTASection({ variant = 'default' }: { variant?: 'default' | 'landing' }) {
   const t = useTranslations('landing.cta')
+
+  if (variant === 'landing') {
+    return (
+      <section data-testid="cta-section" className="landing-cta">
+        <div className="landing-container landing-cta-layout">
+          <h2 className="max-w-2xl text-balance text-3xl font-semibold leading-snug tracking-tight sm:text-4xl">
+            {t('title')}
+            <br />
+            {t('title2')}
+          </h2>
+          <div className="flex flex-wrap items-center gap-5 lg:shrink-0">
+            <Link href="/sign-up" role="button" className="landing-cta-button">
+              {t('button')}
+            </Link>
+            <Link
+              href="/features"
+              className="inline-flex min-h-12 items-center text-sm font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white"
+            >
+              {t('button2')}
+            </Link>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <motion.div
       data-testid="cta-section"

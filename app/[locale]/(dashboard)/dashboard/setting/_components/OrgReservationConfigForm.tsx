@@ -243,9 +243,9 @@ export default function OrgReservationConfigForm() {
   }
 
   return (
-    <div>
+    <div className="admin-panel admin-form p-5 sm:p-6">
       <div className="flex items-center gap-2">
-        <h4 className="text-2xl font-bold">{t('title')}</h4>
+        <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
       </div>
       <p className="text-sm text-muted-foreground mt-1">{t('description')}</p>
       <form
@@ -258,7 +258,7 @@ export default function OrgReservationConfigForm() {
         }}
       >
         <div className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col gap-6 md:flex-row">
             <div className="w-full md:w-1/2">
               <Select
                 value={reservationLimitDaysValue || defaultReservationConfig.reservation_limit_days}
@@ -313,7 +313,7 @@ export default function OrgReservationConfigForm() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col gap-6 md:flex-row">
             <div className="w-full md:w-1/2">
               <Select
                 value={
@@ -370,7 +370,7 @@ export default function OrgReservationConfigForm() {
               )}
             </div>
           </div>
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col gap-6 md:flex-row">
             <div className="w-full md:w-1/2">
               <Select
                 value={
@@ -400,7 +400,7 @@ export default function OrgReservationConfigForm() {
               )}
             </div>
           </div>
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col gap-6 md:flex-row">
             <div className="w-full md:w-1/2">
               <div className="w-full">
                 <div className="flex items-center gap-2">
@@ -440,8 +440,12 @@ export default function OrgReservationConfigForm() {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
-          <Button type="submit" disabled={isSubmitting || !isDirty} className="min-w-[120px]">
+        <div className="admin-toolbar mt-8 justify-end border-t border-border pt-5">
+          <Button
+            type="submit"
+            disabled={isSubmitting || !isDirty}
+            className="min-h-11 min-w-[120px] rounded-lg shadow-none"
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />

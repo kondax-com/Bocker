@@ -24,9 +24,9 @@ function SettingPage() {
   const [currentTab, setCurrentTab] = useState('basic')
 
   return (
-    <Tabs value={currentTab} onValueChange={setCurrentTab}>
-      <div className="overflow-x-scroll">
-        <TabsList className="flex w-fit gap-2 mb-6">
+    <Tabs value={currentTab} onValueChange={setCurrentTab} className="min-w-0">
+      <div className="mb-6 min-w-0 overflow-x-auto pb-1">
+        <TabsList className="inline-flex h-auto min-w-max gap-1 p-1.5">
           <TabsTrigger value="basic">{t('organizationSettings')}</TabsTrigger>
           <TabsTrigger value="api">{t('apiSettings')}</TabsTrigger>
           <TabsTrigger value="reservation-setting">{t('reservationSettings')}</TabsTrigger>
@@ -37,10 +37,10 @@ function SettingPage() {
       </div>
 
       <TabsContent value="basic">
-        <Accordion type="single" collapsible className="mb-4">
+        <Accordion type="single" collapsible className="admin-panel mb-6 px-4 sm:px-5">
           <AccordionItem value="referral">
             <AccordionTrigger>
-              <p className="text-sm font-bold text-accent-2">
+              <p className="text-sm font-medium text-foreground">
                 友達紹介で特典ゲット！最大2,4000円お得
               </p>
             </AccordionTrigger>
@@ -50,12 +50,10 @@ function SettingPage() {
           </AccordionItem>
           <AccordionItem value="feature-request">
             <AccordionTrigger>
-              <p className="text-sm font-bold text-accent-2">
-                機能改善リクエスト
-              </p>
+              <p className="text-sm font-medium text-foreground">機能改善リクエスト</p>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="p-4 border rounded-lg">
+              <div className="rounded-xl bg-muted p-4">
                 <p className="text-sm text-muted-foreground mb-3">
                   Bockerをより使いやすくするための機能改善やご要望をお聞かせください。
                 </p>
@@ -63,7 +61,7 @@ function SettingPage() {
                   href="https://forms.gle/4C7mMJPdn4axGEPY7"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 min-h-11 px-4 py-2"
                 >
                   機能改善リクエストフォームを開く
                 </a>
@@ -93,4 +91,4 @@ function SettingPage() {
   )
 }
 
-export default withOwnerAccess(SettingPage);
+export default withOwnerAccess(SettingPage)

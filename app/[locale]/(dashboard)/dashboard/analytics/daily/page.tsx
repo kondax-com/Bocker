@@ -973,7 +973,7 @@ function DailyAnalyticsPage() {
 
   return (
     <DashboardSection title="日別売上分析" backLink="/dashboard" backLinkTitle="ダッシュボード">
-      <div className="relative space-y-6">
+      <div className="admin-analytics relative min-w-0 space-y-6">
         <Dialog open={openCsvDialog} onOpenChange={setOpenCsvDialog}>
           <DialogContent>
             <DialogHeader>
@@ -1006,7 +1006,7 @@ function DailyAnalyticsPage() {
 
         <div className="relative">
           {/* フィルター */}
-          <div className="flex items-end justify-end gap-4 mb-4">
+          <div className="admin-toolbar mb-4 justify-end">
             <Button
               onClick={() => setOpenCsvDialog(true)}
               variant="outline"
@@ -1048,7 +1048,7 @@ function DailyAnalyticsPage() {
 
         {/* メインコンテンツ */}
         <Tabs defaultValue="trend" className="space-y-4">
-          <TabsList className="flex w-fit overflow-x-auto space-x-2 p-1">
+          <TabsList className="flex h-auto max-w-full flex-wrap gap-1 p-1.5">
             <TabsTrigger value="trend">売上推移</TabsTrigger>
             <TabsTrigger value="weekday">曜日別分析</TabsTrigger>
             <TabsTrigger value="monthly">月別分析</TabsTrigger>
@@ -1069,11 +1069,11 @@ function DailyAnalyticsPage() {
             {/* 期間比較カード */}
             {periodComparison && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="relative">
+                <Card className="relative rounded-2xl border-border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg">前期間との比較</CardTitle>
                   </CardHeader>
-                  <CardContent className="flex items-center justify-around gap-4">
+                  <CardContent className="flex flex-wrap items-center justify-around gap-4 tabular-nums">
                     <div className="flex flex-col justify-between items-center">
                       <span className="font-bold text-lg">
                         ¥{periodComparison.previous.total_amount.toLocaleString()}
@@ -1105,11 +1105,11 @@ function DailyAnalyticsPage() {
                   </Badge>
                 </Card>
 
-                <Card className="relative">
+                <Card className="relative rounded-2xl border-border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg">予約数比較</CardTitle>
                   </CardHeader>
-                  <CardContent className="flex items-center justify-around gap-4">
+                  <CardContent className="flex flex-wrap items-center justify-around gap-4 tabular-nums">
                     <div className="flex flex-col justify-between items-center">
                       <span className="font-bold text-lg">
                         {periodComparison.previous.booking_count.toLocaleString()}件
@@ -1147,9 +1147,9 @@ function DailyAnalyticsPage() {
             {periodComparison &&
               salesSummary &&
               periodComparison.growth.amount_percentage !== 0 && (
-                <Card>
+                <Card className="rounded-2xl border-border shadow-sm">
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="flex flex-wrap items-center gap-2 text-base font-semibold">
                       <TrendingUp className="w-5 h-5" />
                       売上トレンド戦略インサイト
                     </CardTitle>
@@ -1388,7 +1388,7 @@ function DailyAnalyticsPage() {
             </div>
 
             {/* 曜日別詳細テーブル */}
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg">曜日別詳細データ</CardTitle>
               </CardHeader>
@@ -1449,9 +1449,9 @@ function DailyAnalyticsPage() {
 
             {/* 曜日別運営戦略インサイト */}
             {weekdayAnalysis.bestItem && weekdayAnalysis.worstItem && (
-              <Card>
+              <Card className="rounded-2xl border-border shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
+                  <CardTitle className="flex flex-wrap items-center gap-2 text-base font-semibold">
                     <Calendar className="w-5 h-5" />
                     曜日別運営戦略インサイト
                   </CardTitle>
@@ -1667,7 +1667,7 @@ function DailyAnalyticsPage() {
             </div>
 
             {/* 月別詳細テーブル */}
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg">月別詳細データ</CardTitle>
               </CardHeader>
@@ -1719,9 +1719,9 @@ function DailyAnalyticsPage() {
 
             {/* 月別成長戦略インサイト */}
             {monthlyAnalysis.bestItem && monthlyAnalysis.worstItem && monthlyData.length > 0 && (
-              <Card>
+              <Card className="rounded-2xl border-border shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
+                  <CardTitle className="flex flex-wrap items-center gap-2 text-base font-semibold">
                     <Activity className="w-5 h-5" />
                     月別成長戦略インサイト
                   </CardTitle>

@@ -241,11 +241,11 @@ export default function CustomerAddForm() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="admin-form p-5 sm:p-6 space-y-7">
         <div>
-          <h4 className="text-sm font-bold mb-1">{t('customerInfo')}</h4>
+          <h4 className="text-base font-semibold text-foreground mb-1">{t('customerInfo')}</h4>
           <p className="text-xs text-muted-foreground mb-4">{t('customerInfoDesc')}</p>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <ZodTextField
               label={t('lastName')}
               name="last_name"
@@ -259,26 +259,26 @@ export default function CustomerAddForm() {
               errors={errors}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4">
             <ZodTextField label={t('phone')} name="phone" register={register} errors={errors} />
           </div>
         </div>
 
         <div>
-          <h4 className="text-sm font-bold mb-1">{t('marketingInfo')}</h4>
+          <h4 className="text-base font-semibold text-foreground mb-1">{t('marketingInfo')}</h4>
           <p className="text-xs text-muted-foreground mb-4">{t('marketingInfoDesc')}</p>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <ZodTextField label={t('email')} name="email" register={register} errors={errors} />
             <div>
-              <Label>{t('gender')}</Label>
+              <Label htmlFor="gender">{t('gender')}</Label>
               <Select
                 value={watch('gender') ?? 'unselect'}
                 onValueChange={(value) => {
                   setValue('gender', value as Gender)
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger id="gender">
                   <SelectValue placeholder={t('selectGender')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -291,12 +291,14 @@ export default function CustomerAddForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="birthday" className="text-sm font-medium text-primary">
               {t('birthday')}
             </Label>
             <DatePicker
+              id="birthday"
+              className="min-h-11 bg-background hover:bg-muted"
               value={watch('birthday') ? new Date(watch('birthday')!) : undefined}
               onChange={(date) => setValue('birthday', date ? format(date, 'yyyy-MM-dd') : '')}
               placeholder={t('birthdayPlaceholder')}
@@ -329,9 +331,9 @@ export default function CustomerAddForm() {
         </div>
 
         <div>
-          <h4 className="text-sm font-bold mb-1">{t('points')}</h4>
+          <h4 className="text-base font-semibold text-foreground mb-1">{t('points')}</h4>
           <p className="text-xs text-muted-foreground mb-4">{t('pointNote')}</p>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <ZodTextField
               label={t('points')}
               type="number"
@@ -342,7 +344,7 @@ export default function CustomerAddForm() {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end border-t border-border pt-5">
           <Button type="submit" disabled={isSubmitting || !isDirty}>
             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : t('addCustomerButton')}
           </Button>

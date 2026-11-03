@@ -28,17 +28,28 @@ export default function StaffMyPage() {
   const t = useTranslations('staff.myPage')
 
   const [userEmail, setUserEmail] = useState<string | null>(null)
-  const staff = useQuery(api.staff.query.getRelatedTables, {
-    tenant_id: tenantId as Id<'tenant'>,
-    org_id: orgId as Id<'organization'>,
-    staff_id: staffId as Id<'staff'>,
-  })
+  const canQueryStaff = ready && !!tenantId && !!orgId && !!staffId
+  const staff = useQuery(
+    api.staff.query.getRelatedTables,
+    canQueryStaff
+      ? {
+          tenant_id: tenantId as Id<'tenant'>,
+          org_id: orgId as Id<'organization'>,
+          staff_id: staffId as Id<'staff'>,
+        }
+      : 'skip'
+  )
 
-  const exclusionMenus = useQuery(api.menu.menu_exclusion_staff.query.getExclusionMenus, {
-    tenant_id: tenantId as Id<'tenant'>,
-    org_id: orgId as Id<'organization'>,
-    staff_id: staffId as Id<'staff'>,
-  })
+  const exclusionMenus = useQuery(
+    api.menu.menu_exclusion_staff.query.getExclusionMenus,
+    canQueryStaff
+      ? {
+          tenant_id: tenantId as Id<'tenant'>,
+          org_id: orgId as Id<'organization'>,
+          staff_id: staffId as Id<'staff'>,
+        }
+      : 'skip'
+  )
 
   const fetchUserEmail = useAction(api.staff.action.fetchUserEmail)
 
@@ -75,16 +86,37 @@ export default function StaffMyPage() {
   }
 
   if (!staffId || !tenantId || !orgId) {
-    return <div>Error: Staff ID, Tenant ID, or Organization ID is missing</div>
+    return (
+      <div className="min-w-0 pb-8">
+        <h1 className="mb-6 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+          {t('title')}
+        </h1>
+        <div className="admin-panel max-w-2xl p-6 sm:p-8">
+          <div className="mb-5 flex size-12 items-center justify-center rounded-xl bg-muted text-primary">
+            <User aria-hidden="true" className="size-6" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground">{t('staffNotLinked.title')}</h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {t('staffNotLinked.description')}
+          </p>
+          <Button asChild className="mt-6 min-h-11 rounded-lg">
+            <Link href="/dashboard">{t('staffNotLinked.backToDashboard')}</Link>
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="pb-8">
+    <div className="min-w-0 pb-8">
+      <h1 className="mb-6 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+        {t('title')}
+      </h1>
       {/* スタッフヘッダーカード - 改良版 */}
       <div>
         <div className="mb-6">
-          <div className="p-0">
-            <div className="flex flex-col md:flex-row w-full">
+          <div className="admin-panel p-4 sm:p-6">
+            <div className="flex w-full min-w-0 flex-col gap-5 md:flex-row">
               {/* サムネイル部分 - スタイル改良 */}
               <div className="flex items-center justify-center mx-auto overflow-hidden md:w-1/3">
                 {staff?.images && staff?.images.length > 0 ? (
@@ -105,11 +137,13 @@ export default function StaffMyPage() {
               </div>
 
               {/* 情報部分 - レイアウト改良 */}
-              <div className="py-6 md:w-2/3 xl:ml-10">
+              <div className="min-w-0 flex-1 py-2">
                 <div className="flex flex-col xl:flex-row justify-between items-start mb-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-primary">{staff?.name}</h2>
-                    <div className="flex items-center gap-4 mt-2">
+                    <h2 className="break-words text-2xl font-semibold text-foreground">
+                      {staff?.name}
+                    </h2>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
                       <Badge variant={staff?.is_active ? 'default' : 'outline'}>
                         {staff?.is_active ? t('active') : t('inactive')}
                       </Badge>
@@ -128,7 +162,7 @@ export default function StaffMyPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 text-sm text-muted-foreground mt-4 xl:mt-0">
+                  <div className="mt-4 flex flex-wrap gap-3 text-sm text-muted-foreground xl:mt-0">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-muted-foreground" />
                       <span className="text-primary font-bold text-lg">
@@ -179,33 +213,33 @@ export default function StaffMyPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                   {/* 指名料金 */}
-                  <div className="flex justify-between  p-3 rounded-lg border border-palette-1-foreground bg-palette-1 transition-shadow">
+                  <div className="flex justify-between rounded-xl border border-border bg-secondary p-4">
                     <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 text-palette-1-foreground">
+                      <div className="flex items-center gap-2 text-secondary-foreground">
                         <Tag className="h-4 w-4" />
                         <p className="text-xs font-bold">{t('nominationFee')}</p>
                       </div>
-                      <p className="font-bold text-lg text-palette-1-foreground">
+                      <p className="font-bold text-lg text-secondary-foreground">
                         ¥{staff?.extra_charge || 0}
                       </p>
-                      <p className="mt-1 text-xs text-palette-1-foreground max-w-xs">
+                      <p className="mt-1 text-xs text-secondary-foreground max-w-xs">
                         {t('nominationFeeDescription')}
                       </p>
                     </div>
                   </div>
 
                   {/* 優先度 */}
-                  <div className="flex justify-between  p-3 rounded-lg border border-palette-2-foreground bg-palette-2 transition-shadow">
+                  <div className="flex justify-between rounded-xl border border-border bg-muted p-4">
                     <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 text-palette-2-foreground">
+                      <div className="flex items-center gap-2 text-foreground">
                         <Star className="h-4 w-4" />
                         <p className="text-xs font-bold">{t('priority')}</p>
                       </div>
-                      <p className="font-bold text-lg text-palette-2-foreground">
+                      <p className="font-bold text-lg text-foreground">
                         {staff?.priority || 0}
-                        <span className="text-xs text-palette-2-foreground">/{MAX_PRIORITY}</span>
+                        <span className="text-xs text-foreground">/{MAX_PRIORITY}</span>
                       </p>
-                      <p className="mt-1 text-xs text-palette-2-foreground max-w-xs">
+                      <p className="mt-1 text-xs text-foreground max-w-xs">
                         {t('priorityDescription')}
                       </p>
                     </div>
@@ -235,7 +269,7 @@ export default function StaffMyPage() {
             </div>
           </div>
 
-          <div className=" py-3 flex justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border py-4">
             <div className="text-xs text-muted-foreground tracking-wider">
               <span>{t('createdDate')}: </span>
               {new Date(staff?._creationTime ?? '').toLocaleDateString()}
@@ -254,7 +288,7 @@ export default function StaffMyPage() {
 
       <div className="mt-6">
         <Tabs defaultValue="week" className="w-full">
-          <TabsList className="mb-4 w-full max-w-[500px]">
+          <TabsList className="mb-5 h-auto w-full max-w-[500px] flex-wrap gap-1">
             <TabsTrigger value="week" className="w-full">
               {t('tabs.weekSchedule')}
             </TabsTrigger>

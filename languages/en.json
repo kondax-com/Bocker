@@ -678,6 +678,7 @@
     "systemSupport": "System & Support"
   },
   "sidebar": {
+    "skipToContent": "Skip to main content",
     "tagline": "Make salon management easier.",
     "openSidebar": "Open sidebar",
     "closeSidebar": "Close",
@@ -1913,6 +1914,11 @@
     "scheduleUpdated": "Schedule updated",
     "myPage": {
       "title": "My Page",
+      "staffNotLinked": {
+        "title": "No staff profile is linked",
+        "description": "My Page shows the staff profile linked to this account. This account does not have a staff profile. Return to the dashboard to use staff management and other features.",
+        "backToDashboard": "Back to dashboard"
+      },
       "active": "Active",
       "inactive": "Inactive",
       "authenticatedStaff": "Authenticated Staff",

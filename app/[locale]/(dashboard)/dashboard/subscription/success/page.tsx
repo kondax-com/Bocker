@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { CheckCircle, Home } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { Separator } from "@/components/ui/separator";
-import { useTranslations } from 'next-intl';
+import Link from 'next/link'
+import { CheckCircle, Home } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { motion } from 'framer-motion'
+import { Separator } from '@/components/ui/separator'
+import { useTranslations } from 'next-intl'
 
 export default function SuccessSubscriptionPage() {
   const t = useTranslations('subscription')
@@ -26,25 +26,25 @@ export default function SuccessSubscriptionPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-20vh)] flex items-center justify-center ">
+    <div className="flex min-h-[65dvh] items-center justify-center py-6">
       <motion.div
         className="w-full max-w-3xl"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
-        <Card className="border-0 shadow-lg overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-success-foreground to-chart-2"></div>
-          <CardContent className="pt-10 pb-8 px-8">
+        <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+          <div className="h-1 bg-primary"></div>
+          <CardContent className="px-5 pb-8 pt-8 sm:px-8">
             <motion.div className="text-center space-y-6" variants={containerVariants}>
               <motion.div className="inline-flex p-4 rounded-full bg-success-foreground">
                 <CheckCircle className="w-16 h-16 text-success" />
               </motion.div>
 
               <motion.div>
-                <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl bg-gradient-to-r from-success to-accent-2 bg-clip-text text-transparent">
+                <h1 className="text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                   {t('success.title')}
-                </h2>
+                </h1>
               </motion.div>
 
               <Separator className="my-6" />
@@ -56,10 +56,7 @@ export default function SuccessSubscriptionPage() {
               </motion.p>
 
               <motion.div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-                <Button
-                  asChild
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                >
+                <Button asChild className="min-h-11 rounded-lg text-primary-foreground shadow-none">
                   <Link href={`/dashboard`}>
                     <span className="flex items-center">
                       <Home className="w-4 h-4 mr-2" />

@@ -1,0 +1,244 @@
+.admin-shell,
+body:has(.admin-shell) [data-admin-portal] {
+  --background: #f4f7f8;
+  --foreground: #18383b;
+  --card: #ffffff;
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --destructive: #b83c35;
+  --destructive-foreground: #ffffff;
+  --primary: #176b63;
+  --primary-foreground: #ffffff;
+  --button: var(--primary);
+  --button-foreground: var(--primary-foreground);
+  --secondary: #e8f1ef;
+  --secondary-foreground: #245b55;
+  --muted: #edf2f3;
+  --muted-foreground: #52696b;
+  --accent: #e3f0ed;
+  --accent-foreground: #245b55;
+  --border: #dde7e7;
+  --input: #c7d5d6;
+  --ring: #176b63;
+  --sidebar: #ffffff;
+  --sidebar-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  color: var(--foreground);
+  background: var(--background);
+  line-height: 1.6;
+}
+
+.dark .admin-shell,
+.dark body:has(.admin-shell) [data-admin-portal] {
+  --background: #112326;
+  --foreground: #e6efef;
+  --card: #192f32;
+  --destructive: #f28a80;
+  --destructive-foreground: #461916;
+  --primary: #8bd4c6;
+  --primary-foreground: #123b35;
+  --secondary: #233f41;
+  --secondary-foreground: #c0e0da;
+  --muted: #20373a;
+  --muted-foreground: #a4bbbd;
+  --accent: #284b48;
+  --accent-foreground: #c6ebe3;
+  --border: #345054;
+  --input: #4d6b70;
+  --ring: #8bd4c6;
+  --sidebar: #162b2e;
+  color-scheme: dark;
+}
+
+.admin-shell :is(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+.admin-shell :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.admin-shell :is(th, td) {
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-shell main {
+  scroll-margin-top: 5.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell *,
+  .admin-shell *::before,
+  .admin-shell *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Shared surfaces stay inside the management area, including Radix portals. */
+.admin-shell .admin-panel,
+.admin-shell .admin-form {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--card);
+  color: var(--card-foreground);
+  box-shadow: 0 1px 2px rgb(18 51 54 / 4%);
+}
+
+.admin-shell .admin-toolbar {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-shell .admin-empty-state {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: 1px dashed var(--input);
+  border-radius: 1rem;
+  padding: 2.5rem 1.25rem;
+  background: var(--card);
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+:is(.admin-shell, body:has(.admin-shell) [data-admin-portal]) [data-admin-ui='card'] {
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgb(18 51 54 / 4%);
+}
+
+:is(.admin-shell, body:has(.admin-shell) [data-admin-portal])
+  :is([data-admin-ui='input'], [data-admin-ui='textarea'], [data-admin-ui='select-trigger']) {
+  border-radius: 0.625rem;
+  background-color: var(--card);
+  box-shadow: none;
+}
+
+.admin-shell
+  :is(.admin-form, .admin-toolbar)
+  :is([data-admin-ui='input'], [data-admin-ui='select-trigger']) {
+  min-height: 2.75rem;
+}
+
+.admin-shell .admin-form label {
+  line-height: 1.5;
+}
+
+:is(.admin-shell, body:has(.admin-shell) [data-admin-portal]) [data-admin-ui='button'] {
+  border-radius: 0.625rem;
+  box-shadow: none;
+  transition-property: background-color, color, border-color, opacity, box-shadow;
+}
+
+:is(.admin-shell, body:has(.admin-shell) [data-admin-portal])
+  [data-admin-ui='button'][data-variant='default']:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--primary), var(--foreground) 12%);
+}
+
+:is(.admin-shell, body:has(.admin-shell) [data-admin-portal])
+  [data-admin-ui='button'][data-variant='destructive'] {
+  color: var(--destructive-foreground);
+}
+
+.admin-shell [data-admin-ui='table'] {
+  background: var(--card);
+}
+
+.admin-shell [data-admin-ui='table-header'] {
+  background: var(--muted);
+}
+
+.admin-shell [data-admin-ui='table-head'] {
+  height: 3rem;
+  padding: 0.75rem 1rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.admin-shell [data-admin-ui='table-cell'] {
+  padding: 1rem;
+  line-height: 1.6;
+}
+
+.admin-shell [data-admin-ui='table-row']:hover {
+  background-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.admin-shell [data-admin-ui='tabs-list'] {
+  height: auto;
+  min-height: 2.75rem;
+  max-width: 100%;
+  gap: 0.25rem;
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+}
+
+.admin-shell [data-admin-ui='tabs-trigger'] {
+  min-height: 2.25rem;
+  border-radius: 0.5rem;
+  transition-property: background-color, color, box-shadow;
+}
+
+.admin-shell [data-admin-ui='tabs-trigger'][data-state='active'] {
+  background: var(--card);
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgb(18 51 54 / 8%);
+}
+
+body:has(.admin-shell) [data-admin-ui='dialog'] {
+  width: calc(100% - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 1rem;
+  background: var(--card);
+  box-shadow: 0 20px 64px rgb(0 0 0 / 18%);
+}
+
+body:has(.admin-shell)
+  :is([data-admin-ui='popover'], [data-admin-ui='select-content'], [data-admin-ui='dropdown']) {
+  border-radius: 0.75rem;
+  background: var(--card);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 12%);
+}
+
+body:has(.admin-shell) [data-admin-ui='select-item'] {
+  min-height: 2.25rem;
+  border-radius: 0.5rem;
+}
+
+body:has(.admin-shell) [data-admin-portal] :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+@media (max-width: 639px) {
+  .admin-shell .admin-form :is([data-admin-ui='input'], [data-admin-ui='textarea']) {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.admin-shell) [data-admin-portal],
+  body:has(.admin-shell) [data-admin-portal] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

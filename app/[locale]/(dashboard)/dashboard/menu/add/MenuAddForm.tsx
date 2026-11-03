@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { Link } from '@/i18n/navigation'
 import { useState, useEffect } from 'react'
@@ -310,6 +310,7 @@ export default function MenuAddForm() {
   return (
     <div>
       <form
+        className="admin-form p-5 sm:p-6"
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
@@ -634,7 +635,7 @@ export default function MenuAddForm() {
         />
         {errors.warning_message && <ErrorMessage message={errors.warning_message?.message} />}
 
-        <div className="flex items-center justify-between p-4 bg-muted rounded-md mb-6 mt-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-muted p-4 mb-6 mt-4">
           <div>
             <p className="text-sm font-bold">{t('publishMenu')}</p>
             <p className="text-xs text-muted-foreground mt-2">{t('publishMenuDescription')}</p>
@@ -646,7 +647,7 @@ export default function MenuAddForm() {
           />
         </div>
 
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end border-t border-border pt-5 mt-6">
           <div className="flex gap-3">
             <Button
               type="button"

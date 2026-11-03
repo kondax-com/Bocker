@@ -251,9 +251,9 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
 
   return (
     <div className="min-h-screen pb-8">
-      <div className="space-y-3 md:space-y-6">
+      <div className="space-y-6">
         {/* メニュー基本情報ヘッダー - Uber風デザイン */}
-        <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+        <div className="admin-panel overflow-hidden">
           <div className="bg-muted p-3 md:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-start md:items-center gap-4 w-full">
@@ -284,7 +284,7 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
         </div>
 
         {/* メインコンテンツエリア */}
-        <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+        <div className="admin-panel overflow-hidden">
           <div className="flex flex-col lg:flex-row">
             {/* メニュー画像セクション */}
             <div className="lg:w-1/2 p-6">
@@ -380,14 +380,14 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                   <TabsList className="grid w-full grid-cols-2 h-12 bg-secondary border border-border rounded-xl">
                     <TabsTrigger
                       value="basic"
-                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 font-medium"
+                      className="min-h-11 rounded-lg px-3 text-sm font-medium transition-colors data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm"
                     >
                       <Info className="w-4 h-4 mr-2" />
                       {t('tabs.basic')}
                     </TabsTrigger>
                     <TabsTrigger
                       value="details"
-                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 font-medium"
+                      className="min-h-11 rounded-lg px-3 text-sm font-medium transition-colors data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm"
                     >
                       <FileText className="w-4 h-4 mr-2" />
                       {t('tabs.details')}
@@ -399,19 +399,19 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                       {/* 料金情報 */}
                       <div className="group relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-r from-palette-1 to-palette-1 rounded-xl" />
-                        <div className="relative p-4 rounded-xl border border-palette-1 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-1/40">
+                        <div className="relative rounded-xl border border-border bg-card p-4">
                           <div className="flex items-center gap-3 mb-3">
                             <div className="p-2 rounded-lg bg-palette-1">
                               <PiggyBank className="w-4 h-4 text-primary-foreground" />
                             </div>
-                            <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                            <p className="text-xs text-primary leading-relaxed font-medium">
                               {t('fields.price')}
                             </p>
                           </div>
                           <div className="flex items-baseline">
                             {formattedSalePrice ? (
                               <div className="flex flex-col">
-                                <span className="text-xl font-bold text-primary">
+                                <span className="text-lg font-semibold text-foreground">
                                   {formattedSalePrice}
                                 </span>
                                 <span className="text-sm text-primary/70 line-through">
@@ -419,7 +419,7 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-xl font-bold text-primary">
+                              <span className="text-lg font-semibold text-foreground">
                                 {formattedPrice}
                               </span>
                             )}
@@ -430,12 +430,12 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                       {/* 所要時間 */}
                       <div className="group relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-r from-palette-2 to-palette-2 rounded-xl" />
-                        <div className="relative p-4 rounded-xl border border-palette-2 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-2/40">
+                        <div className="relative rounded-xl border border-border bg-card p-4">
                           <div className="flex items-center gap-3 mb-3">
                             <div className="p-2 rounded-lg bg-palette-2">
                               <Clock className="w-4 h-4 text-primary-foreground" />
                             </div>
-                            <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                            <p className="text-xs text-primary leading-relaxed font-medium">
                               {t('fields.totalDuration')}
                             </p>
                           </div>
@@ -450,12 +450,12 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="group relative overflow-hidden">
                           <div className="absolute inset-0 bg-gradient-to-r from-palette-3 to-palette-3 rounded-xl" />
-                          <div className="relative p-4 rounded-xl border border-palette-3 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-3/40">
+                          <div className="relative rounded-xl border border-border bg-card p-4">
                             <div className="flex items-center gap-3 mb-3">
                               <div className="p-2 rounded-lg bg-palette-3">
                                 <Users className="w-4 h-4 text-primary-foreground" />
                               </div>
-                              <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                              <p className="text-xs text-primary leading-relaxed font-medium">
                                 {t('fields.target')}
                               </p>
                             </div>
@@ -471,12 +471,12 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
 
                         <div className="group relative overflow-hidden">
                           <div className="absolute inset-0 bg-gradient-to-r from-palette-4 to-palette-4 rounded-xl" />
-                          <div className="relative p-4 rounded-xl border border-palette-4 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-4/40">
+                          <div className="relative rounded-xl border border-border bg-card p-4">
                             <div className="flex items-center gap-3 mb-3">
                               <div className="p-2 rounded-lg bg-palette-4">
                                 <Crosshair className="w-4 h-4 text-primary-foreground" />
                               </div>
-                              <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                              <p className="text-xs text-primary leading-relaxed font-medium">
                                 {t('fields.targetType')}
                               </p>
                             </div>
@@ -490,12 +490,12 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                       {/* 支払い方法 */}
                       <div className="group relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-r from-palette-5 to-palette-5 rounded-xl" />
-                        <div className="relative p-4 rounded-xl border border-palette-5 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-5/40">
+                        <div className="relative rounded-xl border border-border bg-card p-4">
                           <div className="flex items-center gap-3 mb-3">
                             <div className="p-2 rounded-lg bg-palette-5">
                               <CreditCard className="w-4 h-4 text-primary-foreground" />
                             </div>
-                            <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                            <p className="text-xs text-primary leading-relaxed font-medium">
                               {t('fields.paymentMethod')}
                             </p>
                           </div>
@@ -512,12 +512,12 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                     {menu.description && (
                       <div className="relative overflow-hidden group">
                         <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary rounded-xl" />
-                        <div className="relative p-6 rounded-xl border border-border bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-primary">
+                        <div className="relative rounded-xl border border-border bg-card p-5 sm:p-6">
                           <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-primary">
                               <FileText className="w-4 h-4 text-primary-foreground" />
                             </div>
-                            <h3 className="text-sm font-medium text-primary uppercase tracking-wide">
+                            <h3 className="text-sm font-medium text-primary leading-relaxed">
                               {t('fields.description')}
                             </h3>
                           </div>
@@ -565,7 +565,7 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                             <div className="p-2 rounded-lg bg-warning">
                               <FileText className="w-4 h-4 text-warning-foreground" />
                             </div>
-                            <h3 className="text-sm font-medium text-warning-foreground uppercase tracking-wide">
+                            <h3 className="text-sm font-medium text-warning-foreground leading-relaxed">
                               {t('fields.warningMessage')}
                             </h3>
                           </div>
@@ -612,7 +612,7 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                           <div className="p-2 rounded-lg bg-palette-3">
                             <Tag className="w-4 h-4 text-primary-foreground" />
                           </div>
-                          <h3 className="text-sm font-medium text-primary uppercase tracking-wide">
+                          <h3 className="text-sm font-medium text-primary leading-relaxed">
                             {t('fields.tags')}
                           </h3>
                         </div>
@@ -639,12 +639,12 @@ export function MenuDetailContent({ menu }: MenuDetailContentProps) {
                     {/* システム情報 */}
                     <div className="relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-muted to-muted rounded-xl" />
-                      <div className="relative p-6 rounded-xl border border-border bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-primary/40">
+                      <div className="relative rounded-xl border border-border bg-card p-5 sm:p-6">
                         <div className="flex items-center gap-3 mb-4">
                           <div className="p-2 rounded-lg bg-muted">
                             <Info className="w-4 h-4 text-muted-foreground" />
                           </div>
-                          <h3 className="text-sm font-medium text-primary uppercase tracking-wide">
+                          <h3 className="text-sm font-medium text-primary leading-relaxed">
                             {t('fields.systemInfo')}
                           </h3>
                         </div>

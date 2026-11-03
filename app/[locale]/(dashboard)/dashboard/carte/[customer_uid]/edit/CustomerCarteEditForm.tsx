@@ -429,25 +429,25 @@ function CustomerCarteEditForm() {
         : '顧客名未設定'
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="min-w-0">
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="flex w-fit gap-2 overflow-x-auto">
-          <TabsTrigger value="basic" className="text-xs">
+        <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 p-1">
+          <TabsTrigger value="basic" className="min-h-11 px-3 text-sm">
             {tCarte('edit.tabs.basic')}
           </TabsTrigger>
-          <TabsTrigger value="customer" className="text-xs">
+          <TabsTrigger value="customer" className="min-h-11 px-3 text-sm">
             {tCarte('edit.tabs.customer')}
           </TabsTrigger>
-          <TabsTrigger value="store" className="text-xs">
+          <TabsTrigger value="store" className="min-h-11 px-3 text-sm">
             {tCarte('edit.tabs.store')}
           </TabsTrigger>
-          <TabsTrigger value="medical" className="text-xs">
+          <TabsTrigger value="medical" className="min-h-11 px-3 text-sm">
             {tCarte('edit.tabs.medical')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="basic">
-          <Card className="shadow-md border-border">
+          <Card className="admin-panel">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5" />
@@ -527,7 +527,7 @@ function CustomerCarteEditForm() {
 
         {/* 🟢 顧客記入項目タブ */}
         <TabsContent value="customer">
-          <Card className="shadow-md border-border">
+          <Card className="admin-panel">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <UserCheck className="w-5 h-5" />
@@ -735,7 +735,7 @@ function CustomerCarteEditForm() {
 
         {/* 🔵 店舗記入項目タブ */}
         <TabsContent value="store">
-          <Card className="shadow-md border-border">
+          <Card className="admin-panel">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Scissors className="w-5 h-5" />
@@ -967,7 +967,7 @@ function CustomerCarteEditForm() {
         </TabsContent>
 
         <TabsContent value="medical" className="mt-6">
-          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="p-3 md:p-6 border-b border-border">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-destructive">
@@ -1047,7 +1047,7 @@ function CustomerCarteEditForm() {
 
       {/* フォームボタン */}
 
-      <div className="flex justify-end mt-6 gap-3">
+      <div className="flex flex-wrap justify-end gap-3 border-t border-border pr-20 pt-5 mt-6">
         <Button
           type="submit"
           disabled={isSubmitting || (!carteData && !isDirty)}

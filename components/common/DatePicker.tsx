@@ -19,6 +19,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { getDateFnsLocale, type SupportedLocale } from '@/lib/dateLocale'
 
 interface DatePickerProps {
+  id?: string
   /**
    * 選択された日付
    */
@@ -72,6 +73,7 @@ interface DatePickerProps {
  * Next.jsのi18n設定と連動してdate-fnsロケールを使用
  */
 export function DatePicker({
+  id,
   value,
   onChange,
   placeholder,
@@ -169,6 +171,7 @@ export function DatePicker({
   if (!dateFnsLocale) {
     return (
       <input
+        id={id}
         type="date"
         value={value ? format(value, 'yyyy-MM-dd') : ''}
         onChange={(e) => onChange?.(e.target.value ? new Date(e.target.value) : undefined)}
@@ -192,6 +195,7 @@ export function DatePicker({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
+          id={id}
           variant="outline"
           disabled={disabled}
           className={cn(

@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React from 'react';
+import React from 'react'
 import {
   LineChart as RechartsLineChart,
   Line,
@@ -9,50 +9,50 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend
-} from 'recharts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+  Legend,
+} from 'recharts'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   CHART_AXIS_COLOR,
   CHART_COLORS,
   CHART_GRID_COLOR,
   CHART_SURFACE_COLOR,
 } from '@/lib/chart-colors'
-import { ChartDataPoint } from '@/services/supabase/repositories/analytics/types';
+import { ChartDataPoint } from '@/services/supabase/repositories/analytics/types'
 
 interface LineChartProps {
-  data: ChartDataPoint[];
-  title?: string;
-  description?: string;
-  height?: number;
-  showLegend?: boolean;
-  showGrid?: boolean;
-  lineColor?: string;
-  className?: string;
-  valueFormatter?: (value: number) => string;
-  labelFormatter?: (label: string) => string;
+  data: ChartDataPoint[]
+  title?: string
+  description?: string
+  height?: number
+  showLegend?: boolean
+  showGrid?: boolean
+  lineColor?: string
+  className?: string
+  valueFormatter?: (value: number) => string
+  labelFormatter?: (label: string) => string
 }
 
 interface TooltipPayload {
-  color: string;
-  value: number;
+  color: string
+  value: number
 }
 
 /**
  * カスタムツールチップコンポーネント
  */
-const CustomTooltip = ({ 
-  active, 
-  payload, 
-  label = "", 
+const CustomTooltip = ({
+  active,
+  payload,
+  label = '',
   valueFormatter = (value: number) => `¥${value.toLocaleString()}`,
-  labelFormatter = (label: string) => label
+  labelFormatter = (label: string) => label,
 }: {
-  active?: boolean;
-  payload?: TooltipPayload[];
-  label?: string | number;
-  valueFormatter: (value: number) => string;
-  labelFormatter: (label: string) => string;
+  active?: boolean
+  payload?: TooltipPayload[]
+  label?: string | number
+  valueFormatter: (value: number) => string
+  labelFormatter: (label: string) => string
 }) => {
   if (active && payload && payload.length) {
     return (
@@ -67,10 +67,10 @@ const CustomTooltip = ({
           </p>
         ))}
       </div>
-    );
+    )
   }
-  return null;
-};
+  return null
+}
 
 /**
  * 線グラフコンポーネント
@@ -84,19 +84,19 @@ export function LineChart({
   showLegend = false,
   showGrid = true,
   lineColor,
-  className = "",
+  className = '',
   valueFormatter,
-  labelFormatter
+  labelFormatter,
 }: LineChartProps) {
   const defaultLineColor = lineColor || CHART_COLORS[0]
 
   // データが空の場合の表示
   if (!data || data.length === 0) {
     return (
-      <Card className={className}>
+      <Card className={`${className ?? ''} admin-panel min-w-0 shadow-sm`}>
         {(title || description) && (
           <CardHeader>
-            {title && <CardTitle className="text-lg">{title}</CardTitle>}
+            {title && <CardTitle className="text-base font-semibold">{title}</CardTitle>}
             {description && (
               <CardDescription className="text-sm text-muted-foreground">
                 {description}
@@ -106,7 +106,7 @@ export function LineChart({
         )}
         <CardContent>
           <div
-            className="flex items-center justify-center text-muted-foreground bg-muted rounded-lg"
+            className="admin-empty-state rounded-xl bg-muted text-muted-foreground"
             style={{ height: `${height}px` }}
           >
             <p className="text-sm">データがありません</p>
@@ -117,10 +117,10 @@ export function LineChart({
   }
 
   return (
-    <Card className={className}>
+    <Card className={`${className ?? ''} admin-panel min-w-0 shadow-sm`}>
       {(title || description) && (
         <CardHeader>
-          {title && <CardTitle className="text-lg">{title}</CardTitle>}
+          {title && <CardTitle className="text-base font-semibold">{title}</CardTitle>}
           {description && (
             <CardDescription className="text-sm text-muted-foreground">
               {description}
@@ -201,4 +201,4 @@ export function LineChart({
   )
 }
 
-export default LineChart;
+export default LineChart

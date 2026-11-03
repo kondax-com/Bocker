@@ -443,13 +443,13 @@ export default function CustomerList() {
   return (
     <div className="w-full space-y-4">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col-reverse md:flex-row items-end md:items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className="admin-toolbar justify-between">
+          <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1 sm:max-w-md">
+            <div className="relative w-full min-w-0 sm:max-w-md">
+              <Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={t('searchPlaceholder')}
-                className="pl-8"
+                className="min-h-11 pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -465,7 +465,7 @@ export default function CustomerList() {
           {(role === 'admin' || role === 'owner') && (
             <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="min-h-11 gap-2 rounded-lg">
                   <Download className="h-4 w-4" />
                   顧客データをダウンロード
                 </Button>
@@ -533,7 +533,7 @@ export default function CustomerList() {
                       (exportType === 'selected' && selectedCustomers.size === 0) ||
                       isInterval
                     }
-                    className="gap-2"
+                    className="min-h-11 gap-2 rounded-lg"
                   >
                     {isExporting ? (
                       <>
@@ -579,25 +579,35 @@ export default function CustomerList() {
         )}
       </div>
 
-      <div className="rounded-md border overflow-hidden shadow-sm">
+      <div className="admin-panel overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-neon-foreground">
-              <TableHead className="px-4 w-12 text-neon">
+            <TableRow className="bg-muted">
+              <TableHead className="px-4 w-12 text-muted-foreground">
                 <Checkbox
                   checked={isAllSelected}
                   onCheckedChange={handleSelectAll}
                   aria-label="全選択"
                 />
               </TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
                 {t('customerNameLineUser')}
               </TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">{t('contact')}</TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">{t('visitCount')}</TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">{t('birthday')}</TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">{t('lastVisit')}</TableHead>
-              <TableHead className="px-2 text-nowrap w-fit text-neon">{t('tags')}</TableHead>
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
+                {t('contact')}
+              </TableHead>
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
+                {t('visitCount')}
+              </TableHead>
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
+                {t('birthday')}
+              </TableHead>
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
+                {t('lastVisit')}
+              </TableHead>
+              <TableHead className="px-2 text-nowrap w-fit text-muted-foreground">
+                {t('tags')}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -609,7 +619,10 @@ export default function CustomerList() {
               </TableRow>
             ) : (
               displayCustomers.map((customerData) => (
-                <TableRow key={customerData.customer.uid} className="hover:bg-secondary">
+                <TableRow
+                  key={customerData.customer.uid}
+                  className="transition-colors hover:bg-muted"
+                >
                   <TableCell className="px-4">
                     <Checkbox
                       checked={selectedCustomers.has(customerData.customer.uid)}
@@ -621,7 +634,7 @@ export default function CustomerList() {
                     />
                   </TableCell>
                   <TableCell
-                    className="font-medium px-4 cursor-pointer"
+                    className="font-medium px-4 cursor-pointer text-foreground"
                     onClick={() => router.push(`/dashboard/customer/${customerData.customer.uid}`)}
                   >
                     <div className="flex items-center text-sm text-muted-foreground gap-4 text-nowrap">
@@ -702,7 +715,7 @@ export default function CustomerList() {
                           <Badge
                             variant="outline"
                             key={index}
-                            className="text-xs py-1 px-1 font-light bg-accent-2 text-accent-foreground"
+                            className="rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground"
                           >
                             {tag}
                           </Badge>
@@ -723,7 +736,12 @@ export default function CustomerList() {
 
       {hasMoreData && (
         <div className="flex justify-center mt-6">
-          <Button onClick={loadMore} variant="outline" className="gap-2" disabled={isLoadingMore}>
+          <Button
+            onClick={loadMore}
+            variant="outline"
+            className="min-h-11 gap-2 rounded-lg"
+            disabled={isLoadingMore}
+          >
             <span>{tCommon('loadMore')}</span>
             {isLoadingMore ? (
               <RefreshCw size={16} className="animate-spin" />

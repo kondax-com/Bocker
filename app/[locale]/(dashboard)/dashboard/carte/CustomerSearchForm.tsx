@@ -272,13 +272,13 @@ export default function CustomerSearchForm() {
   return (
     <div className="w-full space-y-4">
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+        <div className="admin-toolbar justify-between">
           <div className="flex items-center gap-2">
-            <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <div className="relative w-full min-w-0 sm:max-w-md">
+              <Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={tCarte('searchPlaceholder')}
-                className="pl-8"
+                className="min-h-11 pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -307,23 +307,23 @@ export default function CustomerSearchForm() {
         )}
       </div>
 
-      <div className="rounded-md border overflow-hidden shadow-sm">
+      <div className="admin-panel overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-neon-foreground">
-              <TableHead className="px-4 text-nowrap w-fit text-neon">
+            <TableRow className="bg-muted">
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
                 {tCarte('table.customerName')}
               </TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
                 {tCarte('table.contact')}
               </TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
                 {tCarte('table.visitCount')}
               </TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
                 {tCarte('table.lastVisit')}
               </TableHead>
-              <TableHead className="px-4 text-nowrap w-fit text-neon">
+              <TableHead className="px-4 text-nowrap w-fit text-muted-foreground">
                 {tCarte('table.tags')}
               </TableHead>
             </TableRow>
@@ -339,7 +339,7 @@ export default function CustomerSearchForm() {
               displayCustomers.map((customerData) => (
                 <TableRow
                   key={customerData.customer.uid}
-                  className="hover:bg-secondary cursor-pointer"
+                  className="cursor-pointer transition-colors hover:bg-muted"
                   onClick={() => router.push(`/dashboard/carte/${customerData.customer.uid}`)}
                 >
                   <TableCell className="font-medium px-4">
@@ -421,7 +421,12 @@ export default function CustomerSearchForm() {
 
       {hasMoreData && (
         <div className="flex justify-center mt-6">
-          <Button onClick={loadMore} variant="outline" className="gap-2" disabled={isLoadingMore}>
+          <Button
+            onClick={loadMore}
+            variant="outline"
+            className="min-h-11 gap-2 rounded-lg"
+            disabled={isLoadingMore}
+          >
             <span>{tCommon('loadMore')}</span>
             {isLoadingMore ? (
               <RefreshCw size={16} className="animate-spin" />

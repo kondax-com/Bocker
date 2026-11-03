@@ -220,11 +220,11 @@ export default function MyExceptionScheduleForm() {
   }
 
   return (
-    <Card className="border shadow-lg overflow-hidden">
+    <Card className="admin-panel overflow-hidden">
       <CardHeader>
-        <CardTitle className="text-primary text-xl font-bold">{t('title')}</CardTitle>
+        <CardTitle className="text-foreground text-lg font-semibold">{t('title')}</CardTitle>
       </CardHeader>
-      <CardContent className="px-6">
+      <CardContent className="px-4 sm:px-6">
         <div className="flex flex-col gap-4">
           <div>
             <CalendarMultiSelect
@@ -340,7 +340,7 @@ export default function MyExceptionScheduleForm() {
                           <Button
                             variant="destructive"
                             size="icon"
-                            className="scale-75"
+                            className="size-11 shrink-0 rounded-lg"
                             onClick={() => handleDelete(index)}
                           >
                             <Trash2 className="w-4 h-4" />

@@ -469,27 +469,29 @@ export default function OrgWeekHourSchedule() {
   }
 
   return (
-    <div>
+    <div className="admin-panel admin-form p-5 sm:p-6">
       <div className="">
         <div className="flex items-center gap-2">
-          <p className="text-2xl font-bold text-primary">{t('title')}</p>
+          <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
         </div>
         <p className="text-sm text-muted-foreground mt-1">{t('description')}</p>
 
         <div className="space-y-8 my-5">
           {/* 営業日設定 */}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 md:gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-7">
             {DAYS_OF_WEEK(t).map((day) => {
               const dayId = day.id as DayOfWeek
               const isOpen = weekScheduleData.scheduleSettings[dayId].isOpen
 
               return (
-                <div
+                <button
+                  type="button"
+                  aria-pressed={isOpen}
                   key={day.id}
                   onClick={() => handleDayToggle(dayId)}
                   className={`
-                          cursor-pointer p-2 md:p-3 rounded-lg border border-border transition-all
+                          cursor-pointer p-3 rounded-xl border border-border transition-colors text-left
                           ${
                             isOpen
                               ? `${day.color} border-current shadow-sm`
@@ -518,7 +520,7 @@ export default function OrgWeekHourSchedule() {
                       {weekScheduleData.scheduleSettings[dayId].endHour}
                     </div>
                   )}
-                </div>
+                </button>
               )
             })}
           </div>
@@ -529,7 +531,7 @@ export default function OrgWeekHourSchedule() {
             </div>
 
             <Tabs value={scheduleTab} onValueChange={setScheduleTab} className="w-full">
-              <TabsList className="mb-4 p-1 rounded-lg">
+              <TabsList className="mb-4 flex h-auto max-w-full flex-wrap gap-1 rounded-xl p-1.5">
                 <TabsTrigger value="common">
                   <Settings2 className="h-4 w-4 mr-2" />
                   {t('commonSettings')}
@@ -687,7 +689,7 @@ export default function OrgWeekHourSchedule() {
                         })}
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center p-8 border border-border rounded-lg bg-muted text-center">
+                    <div className="admin-empty-state rounded-xl bg-muted p-8">
                       <Coffee className="h-12 w-12  mb-3 text-muted-foreground" />
                       <p className="text-muted-foreground font-semibold mb-2">
                         {t('businessDayNotSet')}
@@ -701,11 +703,11 @@ export default function OrgWeekHourSchedule() {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-end items-center gap-3">
+        <div className="admin-toolbar mt-8 justify-end border-t border-border pt-5">
           <Button
             type="submit"
             size="lg"
-            className="min-w-[120px]"
+            className="min-h-11 min-w-[120px] rounded-lg shadow-none"
             onClick={handleSubmit(onSubmit)}
             disabled={isSaving}
           >

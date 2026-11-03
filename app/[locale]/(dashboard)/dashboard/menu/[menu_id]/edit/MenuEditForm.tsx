@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { Link } from '@/i18n/navigation'
 import { useState, useEffect, useMemo } from 'react'
@@ -441,6 +441,7 @@ export default function MenuEditForm() {
   return (
     <div>
       <form
+        className="admin-form p-5 sm:p-6"
         onSubmit={(e) => {
           handleSubmit(onSubmit, (validationErrors) => {
             console.error('❌ Zod validation errors:', validationErrors)
@@ -805,7 +806,7 @@ export default function MenuEditForm() {
         />
         {errors.warning_message && <ErrorMessage message={errors.warning_message?.message} />}
 
-        <div className="flex items-center justify-between p-4 bg-muted rounded-md mb-6 mt-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-muted p-4 mb-6 mt-4">
           <div>
             <p className="text-sm font-bold">{t('form.publish')}</p>
             <p className="mt-1 text-xs text-muted-foreground">{t('form.publishHelp')}</p>

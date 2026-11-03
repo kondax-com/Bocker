@@ -159,8 +159,8 @@ export default function InviteManagement() {
 
   return (
     <>
-      <Card className="mb-6">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <Card className="admin-panel mb-6">
+        <CardHeader className="flex flex-col gap-3 space-y-0 pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
@@ -193,9 +193,9 @@ export default function InviteManagement() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="border rounded-lg p-3 bg-muted/30"
+                    className="rounded-xl border border-border bg-muted p-4"
                   >
-                    <div className="flex flex-col md:flex-row items-center justify-between">
+                    <div className="flex flex-col items-start justify-between gap-3 md:flex-row">
                       <div className="flex-1">
                         <div className="flex flex-col items-start justify-start gap-2 w-full">
                           {invitation.metadata && (
@@ -205,7 +205,9 @@ export default function InviteManagement() {
                           )}
                           <div className="flex items-center gap-2">
                             <UserPlus className="h-6 w-6 text-neon" />
-                            <p className="text-sm text-neon w-full">({invitation.email})</p>
+                            <p className="min-w-0 break-all text-sm text-foreground">
+                              ({invitation.email})
+                            </p>
                           </div>
                           <div className="flex items-center gap-2">
                             {invitation.invitation_status === 'missing' && (
@@ -222,7 +224,7 @@ export default function InviteManagement() {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
+                        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1 text-nowrap">
                             <Clock className="h-3 w-3" />
                             登録日:{' '}
@@ -243,7 +245,7 @@ export default function InviteManagement() {
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center justify-end gap-2 w-full mt-4">
+                      <div className="flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
                         <Button
                           variant="ghost"
                           size="sm"
@@ -252,7 +254,7 @@ export default function InviteManagement() {
                             setShowCancelDialog(true)
                           }}
                           disabled={isProcessing}
-                          className="flex items-center gap-1 text-destructive bg-destructive-foreground hover:text-destructive-foreground"
+                          className="flex min-h-11 items-center gap-1 border border-destructive bg-card text-destructive hover:bg-destructive hover:text-destructive-foreground"
                         >
                           <Trash2 className="h-3 w-3" />
                           削除

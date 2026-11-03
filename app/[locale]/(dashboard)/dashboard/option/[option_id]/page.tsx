@@ -206,9 +206,9 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
       backLinkTitle={t('list.title')}
     >
       <div className="min-h-screen pb-8">
-        <div className="space-y-3 md:space-y-6">
+        <div className="space-y-6">
           {/* オプション基本情報ヘッダー */}
-          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="bg-muted p-3 md:p-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-start md:items-center gap-4 w-full">
@@ -243,7 +243,7 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
           </div>
 
           {/* メインコンテンツエリア */}
-          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+          <div className="admin-panel overflow-hidden">
             <div className="flex flex-col lg:flex-row">
               {/* オプション画像セクション */}
               <div className="lg:w-1/2 p-6">
@@ -326,14 +326,14 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
                     <TabsList className="grid w-full grid-cols-2 h-12 bg-secondary border border-border rounded-xl">
                       <TabsTrigger
                         value="basic"
-                        className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 font-medium"
+                        className="min-h-11 rounded-lg px-3 text-sm font-medium transition-colors data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm"
                       >
                         <Info className="w-4 h-4 mr-2" />
                         {t('tabs.basic')}
                       </TabsTrigger>
                       <TabsTrigger
                         value="details"
-                        className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 font-medium"
+                        className="min-h-11 rounded-lg px-3 text-sm font-medium transition-colors data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm"
                       >
                         <FileText className="w-4 h-4 mr-2" />
                         {t('tabs.details')}
@@ -345,19 +345,19 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
                         {/* 料金情報 */}
                         <div className="group relative overflow-hidden">
                           <div className="absolute inset-0 bg-gradient-to-r from-palette-1 to-palette-1 rounded-xl" />
-                          <div className="relative p-4 rounded-xl border border-palette-1 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-1/40">
+                          <div className="relative rounded-xl border border-border bg-card p-4">
                             <div className="flex items-center gap-3 mb-3">
                               <div className="p-2 rounded-lg bg-palette-1">
                                 <PiggyBank className="w-4 h-4 text-primary-foreground" />
                               </div>
-                              <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                              <p className="text-xs text-primary leading-relaxed font-medium">
                                 {t('fields.price')}
                               </p>
                             </div>
                             <div className="flex items-baseline">
                               {formattedSalePrice ? (
                                 <div className="flex flex-col">
-                                  <span className="text-xl font-bold text-primary">
+                                  <span className="text-lg font-semibold text-foreground">
                                     {formattedSalePrice}
                                   </span>
                                   <span className="text-sm text-primary/70 line-through">
@@ -379,12 +379,12 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
                         option.duration_min !== 0 ? (
                           <div className="group relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-r from-palette-2 to-palette-2 rounded-xl" />
-                            <div className="relative p-4 rounded-xl border border-palette-2 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-2/40">
+                            <div className="relative rounded-xl border border-border bg-card p-4">
                               <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 rounded-lg bg-palette-2">
                                   <Clock className="w-4 h-4 text-primary-foreground" />
                                 </div>
-                                <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                                <p className="text-xs text-primary leading-relaxed font-medium">
                                   {t('fields.totalDuration')}
                                 </p>
                               </div>
@@ -400,12 +400,12 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="group relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-r from-palette-3 to-palette-3 rounded-xl" />
-                            <div className="relative p-4 rounded-xl border border-palette-3 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-3/40">
+                            <div className="relative rounded-xl border border-border bg-card p-4">
                               <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 rounded-lg bg-palette-3">
                                   <Package className="w-4 h-4 text-primary-foreground" />
                                 </div>
-                                <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                                <p className="text-xs text-primary leading-relaxed font-medium">
                                   {t('fields.stock')}
                                 </p>
                               </div>
@@ -418,12 +418,12 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
 
                           <div className="group relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-r from-palette-4 to-palette-4 rounded-xl" />
-                            <div className="relative p-4 rounded-xl border border-palette-4 bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-palette-4/40">
+                            <div className="relative rounded-xl border border-border bg-card p-4">
                               <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 rounded-lg bg-palette-4">
                                   <Hash className="w-4 h-4 text-primary-foreground" />
                                 </div>
-                                <p className="text-xs text-primary uppercase tracking-wide font-medium">
+                                <p className="text-xs text-primary leading-relaxed font-medium">
                                   {t('fields.orderLimit')}
                                 </p>
                               </div>
@@ -442,12 +442,12 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
                       {option.description && (
                         <div className="relative overflow-hidden group">
                           <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary rounded-xl" />
-                          <div className="relative p-6 rounded-xl border border-border bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-primary">
+                          <div className="relative rounded-xl border border-border bg-card p-5 sm:p-6">
                             <div className="flex items-center gap-3 mb-4">
                               <div className="p-2 rounded-lg bg-primary">
                                 <FileText className="w-4 h-4 text-primary-foreground" />
                               </div>
-                              <h3 className="text-sm font-medium text-primary uppercase tracking-wide">
+                              <h3 className="text-sm font-medium text-primary leading-relaxed">
                                 {t('fields.description')}
                               </h3>
                             </div>
@@ -494,7 +494,7 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
                             <div className="p-2 rounded-lg bg-palette-3">
                               <Tag className="w-4 h-4 text-primary-foreground" />
                             </div>
-                            <h3 className="text-sm font-medium text-primary uppercase tracking-wide">
+                            <h3 className="text-sm font-medium text-primary leading-relaxed">
                               {t('fields.tags')}
                             </h3>
                           </div>
@@ -521,12 +521,12 @@ function OptionDetailPage({ params }: OptionDetailPageProps) {
                       {/* システム情報 */}
                       <div className="relative overflow-hidden group">
                         <div className="absolute inset-0 bg-gradient-to-r from-muted to-muted rounded-xl" />
-                        <div className="relative p-6 rounded-xl border border-border bg-card backdrop-blur-sm transition-all duration-300 hover:shadow-md group-hover:border-primary/40">
+                        <div className="relative rounded-xl border border-border bg-card p-5 sm:p-6">
                           <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 rounded-lg bg-muted">
                               <Info className="w-4 h-4 text-muted-foreground" />
                             </div>
-                            <h3 className="text-sm font-medium text-primary uppercase tracking-wide">
+                            <h3 className="text-sm font-medium text-primary leading-relaxed">
                               {t('fields.systemInfo')}
                             </h3>
                           </div>

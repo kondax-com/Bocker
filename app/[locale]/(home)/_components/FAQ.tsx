@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { motion } from 'framer-motion'
 
-export function FAQ() {
+export function FAQ({ variant = 'default' }: { variant?: 'default' | 'landing' }) {
   const t = useTranslations('landing.faq')
 
   const faqs = [
@@ -28,6 +28,39 @@ export function FAQ() {
       answer: t('items.4.answer'),
     },
   ]
+
+  if (variant === 'landing') {
+    return (
+      <section data-testid="faq-section" id="faq" className="landing-section landing-faq">
+        <div className="landing-container landing-faq-layout">
+          <div>
+            <h2 className="landing-heading">{t('title')}</h2>
+            <p className="landing-description mt-5">
+              {t('subtitle')}{' '}
+              <Link
+                role="link"
+                href="/contact"
+                className="font-semibold text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+              >
+                {t('cta')}
+              </Link>
+            </p>
+          </div>
+          <dl className="landing-faq-list">
+            {faqs.map((faq) => (
+              <div key={faq.question} className="landing-faq-item">
+                <dt className="text-base font-semibold leading-relaxed text-foreground">
+                  {faq.question}
+                </dt>
+                <dd className="mt-3 text-base leading-8 text-muted-foreground">{faq.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <div data-testid="faq-section" className="bg-background">
       <div className="mx-auto max-w-7xl px-6 py-16 sm:py-24 lg:px-8">

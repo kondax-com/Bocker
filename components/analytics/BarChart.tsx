@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React from 'react';
+import React from 'react'
 import {
   BarChart as RechartsBarChart,
   Bar,
@@ -10,25 +10,25 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  Cell
-} from 'recharts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+  Cell,
+} from 'recharts'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { CHART_AXIS_COLOR, CHART_COLORS, CHART_GRID_COLOR } from '@/lib/chart-colors'
-import { BarChartDataPoint } from '@/services/supabase/repositories/analytics/types';
+import { BarChartDataPoint } from '@/services/supabase/repositories/analytics/types'
 
 interface BarChartProps {
-  data: BarChartDataPoint[];
-  title?: string;
-  description?: string;
-  height?: number;
-  showLegend?: boolean;
-  showGrid?: boolean;
-  barColors?: string[];
-  className?: string;
-  valueFormatter?: (value: number) => string;
-  labelFormatter?: (label: string) => string;
-  horizontal?: boolean;
-  maxBars?: number;
+  data: BarChartDataPoint[]
+  title?: string
+  description?: string
+  height?: number
+  showLegend?: boolean
+  showGrid?: boolean
+  barColors?: string[]
+  className?: string
+  valueFormatter?: (value: number) => string
+  labelFormatter?: (label: string) => string
+  horizontal?: boolean
+  maxBars?: number
 }
 
 /**
@@ -70,7 +70,8 @@ const CustomTooltip = ({
             <span className="font-medium">
               {valueFormatter?.toString().includes('¥') ? '予約数: ' : 'コンバージョン: '}
             </span>
-            {data.bookingCount}{valueFormatter?.toString().includes('¥') ? '件' : '件'}
+            {data.bookingCount}
+            {valueFormatter?.toString().includes('¥') ? '件' : '件'}
           </p>
         )}
       </div>
@@ -104,10 +105,10 @@ export function BarChart({
   // データが空の場合の表示
   if (!limitedData || limitedData.length === 0) {
     return (
-      <Card className={className}>
+      <Card className={`${className ?? ''} admin-panel min-w-0 shadow-sm`}>
         {(title || description) && (
           <CardHeader>
-            {title && <CardTitle className="text-lg">{title}</CardTitle>}
+            {title && <CardTitle className="text-base font-semibold">{title}</CardTitle>}
             {description && (
               <CardDescription className="text-sm text-muted-foreground">
                 {description}
@@ -117,7 +118,7 @@ export function BarChart({
         )}
         <CardContent>
           <div
-            className="flex items-center justify-center text-muted-foreground bg-muted/20 rounded-lg"
+            className="admin-empty-state rounded-xl bg-muted text-muted-foreground"
             style={{ height: `${height}px` }}
           >
             <p className="text-sm">データがありません</p>
@@ -133,10 +134,10 @@ export function BarChart({
     : { top: 0, right: 0, left: 0, bottom: 10 }
 
   return (
-    <Card className={className}>
+    <Card className={`${className ?? ''} admin-panel min-w-0 shadow-sm`}>
       {(title || description) && (
         <CardHeader>
-          {title && <CardTitle className="text-lg">{title}</CardTitle>}
+          {title && <CardTitle className="text-base font-semibold">{title}</CardTitle>}
           {description && (
             <CardDescription className="text-sm text-muted-foreground">
               {description}
@@ -254,4 +255,4 @@ export function BarChart({
   )
 }
 
-export default BarChart;
+export default BarChart

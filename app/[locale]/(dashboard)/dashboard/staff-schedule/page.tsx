@@ -489,11 +489,11 @@ function StaffSchedulePage() {
       backLink="/dashboard"
       backLinkTitle={t('backToDashboard')}
     >
-      <div className="flex h-full flex-col">
-        <div className="sticky bg-background z-10 md:pt-5">
-          <header className="flex flex-none items-center justify-between border-b border-border md:px-6 pb-2">
+      <div className="flex min-w-0 h-full flex-col">
+        <div className="sticky bg-card z-10 rounded-xl border border-border">
+          <header className="flex flex-none flex-wrap items-center justify-between gap-4 p-4">
             <div className="flex flex-col">
-              <h1 className="text-sm md:text-lg font-semibold text-success-foreground">
+              <h2 className="text-sm md:text-lg font-semibold text-foreground">
                 {viewMode === 'week' ? (
                   <time
                     className="flex flex-col md:flex-row items-center justify-center gap-1"
@@ -511,7 +511,7 @@ function StaffSchedulePage() {
                     </div>
                   </time>
                 )}
-              </h1>
+              </h2>
             </div>
             <div className="flex flex-col gap-2">
               <div className="md:hidden flex flex-col gap-2 items-end justify-end">
@@ -534,7 +534,7 @@ function StaffSchedulePage() {
                 <div className="relative flex items-center rounded-md bg-background shadow-xs md:items-stretch">
                   <button
                     type="button"
-                    className="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-border pr-1 text-muted-foreground hover:text-primary focus:relative md:w-9 md:pr-0 md:hover:bg-muted"
+                    className="flex size-11 items-center justify-center rounded-l-lg border-y border-l border-border text-muted-foreground hover:bg-muted hover:text-primary focus:relative"
                     onClick={moveToPrevious}
                   >
                     <span className="sr-only">
@@ -552,7 +552,7 @@ function StaffSchedulePage() {
                   <span className="relative -mx-px h-5 w-px bg-border md:hidden" />
                   <button
                     type="button"
-                    className="flex h-9 w-12 items-center justify-center rounded-r-md border-y border-r border-border pl-1 text-primary hover:text-primary focus:relative md:w-9 md:pl-0 md:hover:bg-muted"
+                    className="flex size-11 items-center justify-center rounded-r-lg border-y border-r border-border text-primary hover:bg-muted focus:relative"
                     onClick={moveToNext}
                   >
                     <span className="sr-only">
@@ -586,7 +586,7 @@ function StaffSchedulePage() {
                   </Select>
                 </div>
                 <Menu as="div" className="relative ml-6 md:hidden">
-                  <MenuButton className="-mx-2 flex items-center rounded-full border border-transparent p-2 text-muted-foreground hover:text-primary">
+                  <MenuButton className="flex size-11 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted hover:text-primary">
                     <span className="sr-only">{t('openMenu')}</span>
                     <Ellipsis className="size-5" aria-hidden="true" />
                   </MenuButton>
@@ -621,7 +621,7 @@ function StaffSchedulePage() {
             </div>
           </header>
         </div>
-        <div className="mt-4 b-4">
+        <div className="mt-6 mb-4">
           <p className="text-sm font-medium mb-2">出勤表</p>
           {staffWeekSchedules && staffWeekSchedules.length > 0 ? (
             <div className="flex gap-2 w-full overflow-x-auto pb-4">
@@ -666,13 +666,13 @@ function StaffSchedulePage() {
                 ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center py-4 bg-muted rounded-lg">
+            <div className="admin-empty-state flex items-center justify-center">
               <p className="text-sm text-muted-foreground">{t('noScheduleAvailable')}</p>
             </div>
           )}
         </div>
         {reservations && reservations.length > 0 ? (
-          <div className="flex h-full flex-col">
+          <div className="flex min-w-0 h-full flex-col">
             <ScrollArea className="relative h-[calc(100vh)]">
               <div className="flex flex-auto flex-col">
                 {/* 日付ヘッダー部分（モバイル） - 日本語化 */}
@@ -805,13 +805,13 @@ function StaffSchedulePage() {
             </div>
           </div>
         ) : reservations.length === 0 && selectedStaffId ? (
-          <div className="flex-1 overflow-y-auto bg-muted rounded-md mt-4">
+          <div className="admin-empty-state flex-1 overflow-y-auto mt-4">
             <div className="flex items-center justify-center h-full py-12 px-4 sm:px-6 lg:px-8">
               <p className="text-muted-foreground text-sm">{t('noReservations')}</p>
             </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto bg-muted rounded-md mt-4">
+          <div className="admin-empty-state flex-1 overflow-y-auto mt-4">
             <div className="flex items-center justify-center h-full py-12 px-4 sm:px-6 lg:px-8">
               <p className="text-muted-foreground text-sm">{t('selectStaffToShow')}</p>
             </div>

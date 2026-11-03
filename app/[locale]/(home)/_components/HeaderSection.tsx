@@ -6,7 +6,11 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
-export function HeaderSection() {
+type HeaderSectionProps = {
+  variant?: 'default' | 'landing'
+}
+
+export function HeaderSection({ variant = 'default' }: HeaderSectionProps = {}) {
   const t = useTranslations('landing.headerSection')
   const cards = [
     {
@@ -20,6 +24,47 @@ export function HeaderSection() {
       icon: LifebuoyIcon,
     },
   ]
+
+  if (variant === 'landing') {
+    return (
+      <section
+        data-testid="header-section"
+        className="landing-support border-t border-[var(--landing-border)] bg-[var(--landing-canvas)] py-20 text-[var(--landing-ink)] sm:py-24 lg:py-28"
+      >
+        <div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-6 lg:grid-cols-2 lg:gap-20 lg:px-8">
+          <div>
+            <h2 className="max-w-xl text-balance text-3xl font-semibold leading-[1.4] tracking-tight sm:text-4xl">
+              {t('title')}
+            </h2>
+            <p className="mt-5 max-w-xl text-base leading-8 text-[var(--landing-muted)]">
+              {t('description')}
+            </p>
+            <Link
+              href="/contact"
+              className="mt-8 inline-flex min-h-12 items-center justify-center rounded-lg bg-[var(--landing-accent)] px-6 py-3 text-sm font-semibold text-[var(--landing-on-accent)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--landing-canvas)] motion-reduce:transition-none"
+            >
+              {t('cards.contact.title')}
+            </Link>
+          </div>
+          <div className="divide-y divide-[var(--landing-border)] border-y border-[var(--landing-border)]">
+            {cards.map((card) => (
+              <div key={card.name} className="flex items-start gap-5 py-7 sm:py-8">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[var(--landing-surface)] text-[var(--landing-accent)]">
+                  <card.icon aria-hidden="true" className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold leading-7">{card.name}</h3>
+                  <p className="mt-2 text-sm leading-7 text-[var(--landing-muted)]">
+                    {card.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <motion.div

@@ -3,114 +3,74 @@
 import { CloudArrowUpIcon, LockClosedIcon, ServerIcon } from '@heroicons/react/20/solid'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
-
-// Optimized for selective animation - only key elements are animated
 
 export function ContentSection() {
   const t = useTranslations('landing.content')
+  const tFeatures = useTranslations('landing.features.items')
+  const benefits = [
+    { key: 'sales', icon: CloudArrowUpIcon },
+    { key: 'mistakes', icon: LockClosedIcon },
+    { key: 'efficiency', icon: ServerIcon },
+  ] as const
+
   return (
-    <motion.div
+    <section
       data-testid="content-section"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-      viewport={{ once: true, amount: 0.2 }}
-      className="relative isolate overflow-hidden bg-background px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0"
+      className="bg-background py-20 text-foreground sm:py-24 lg:py-28"
     >
-      <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">
-        <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-          <div className="lg:pr-4">
-            <div className="lg:max-w-lg">
-              <p className="text-base/7 font-semibold text-link-foreground">{t('tagline')}</p>
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
-                viewport={{ once: true, amount: 0.2 }}
-                className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-foreground sm:text-5xl"
-              >
-                {t('title')}
-              </motion.h1>
-              <p className="mt-6 text-base md:text-lg text-muted-foreground">
-                {t('mainDescription')}
-              </p>
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
+          <div className="min-w-0">
+            <p className="text-base font-medium leading-7 text-primary">{t('tagline')}</p>
+            <h2 className="mt-4 text-balance text-[30px] font-semibold leading-[1.45] tracking-tight sm:text-[40px] sm:leading-[1.35]">
+              {t('title')}
+            </h2>
+            <p className="mt-6 text-pretty text-base leading-8 text-muted-foreground">
+              {t('mainDescription')}
+            </p>
+            <p className="mt-6 text-base leading-8 text-muted-foreground">{t('industryProblem')}</p>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-border bg-muted p-3 sm:rounded-3xl sm:p-5">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-background sm:rounded-2xl">
+              <Image
+                alt={tFeatures('marketing.title')}
+                src="/assets/mockup/pc/point.png"
+                width={3020}
+                height={1646}
+                sizes="(min-width: 1280px) 520px, (min-width: 1024px) 46vw, 100vw"
+                className="h-full w-full object-cover object-right"
+              />
             </div>
           </div>
         </div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, ease: 'easeOut', delay: 0.2 }}
-          viewport={{ once: true, amount: 0.2 }}
-          className="-mt-12 -ml-12 p-12 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden"
+        <ul
+          role="list"
+          className="mt-12 grid gap-8 border-t border-border pt-10 sm:mt-16 lg:grid-cols-3 lg:gap-10"
         >
-          <Image
-            alt="bocker dashboard"
-            src="/assets/mockup/pc/dashboard.png"
-            width={1000}
-            height={1000}
-            className="w-3xl max-w-none rounded-xl bg-foreground shadow-xl ring-1 ring-border sm:w-228"
-          />
-        </motion.div>
-        <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-          <div className="lg:pr-4">
-            <div className="max-w-xl text-base/7 text-foreground lg:max-w-lg">
-              <p>{t('industryProblem')}</p>
-              <motion.ul
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: 0.3 }}
-                viewport={{ once: true, amount: 0.2 }}
-                role="list"
-                className="mt-8 space-y-8 text-foreground"
-              >
-                <li className="flex gap-x-3">
-                  <CloudArrowUpIcon
-                    aria-hidden="true"
-                    className="mt-1 size-5 flex-none text-link-foreground"
-                  />
-                  <span className="text-primary">
-                    <strong className="font-semibold ">{t('benefits.sales.title')}</strong>{' '}
-                    {t('benefits.sales.description')}
-                  </span>
-                </li>
-                <li className="flex gap-x-3">
-                  <LockClosedIcon
-                    aria-hidden="true"
-                    className="mt-1 size-5 flex-none text-link-foreground"
-                  />
-                  <span className="text-primary">
-                    <strong className="font-semibold ">{t('benefits.mistakes.title')}</strong>{' '}
-                    {t('benefits.mistakes.description')}
-                  </span>
-                </li>
-                <li className="flex gap-x-3">
-                  <ServerIcon
-                    aria-hidden="true"
-                    className="mt-1 size-5 flex-none text-link-foreground"
-                  />
-                  <span className="text-primary">
-                    <strong className="font-semibold ">{t('benefits.efficiency.title')}</strong>{' '}
-                    {t('benefits.efficiency.description')}
-                  </span>
-                </li>
-              </motion.ul>
-              <p className="mt-8 text-muted-foreground">{t('averageResults')}</p>
-              <motion.h2
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: 0.4 }}
-                viewport={{ once: true, amount: 0.2 }}
-                className="mt-16 text-2xl font-bold tracking-tight text-primary"
-              >
-                {t('roi.title')}
-              </motion.h2>
-              <p className="mt-6 text-muted-foreground">{t('roi.description')}</p>
-            </div>
-          </div>
+          {benefits.map((benefit) => (
+            <li key={benefit.key}>
+              <div className="flex items-start gap-3">
+                <benefit.icon aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-primary" />
+                <h3 className="text-lg font-semibold leading-7">
+                  {t(`benefits.${benefit.key}.title`)}
+                </h3>
+              </div>
+              <p className="mt-3 text-base leading-8 text-muted-foreground">
+                {t(`benefits.${benefit.key}.description`)}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-10 max-w-4xl text-base leading-8 text-muted-foreground">
+          {t('averageResults')}
+        </p>
+        <div className="mt-12 grid gap-4 rounded-2xl bg-muted px-6 py-8 sm:px-8 lg:mt-16 lg:grid-cols-[0.7fr_1.3fr] lg:gap-10">
+          <h3 className="text-2xl font-semibold leading-9 tracking-tight text-foreground">
+            {t('roi.title')}
+          </h3>
+          <p className="text-base leading-8 text-muted-foreground">{t('roi.description')}</p>
         </div>
       </div>
-    </motion.div>
+    </section>
   )
 }

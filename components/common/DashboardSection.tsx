@@ -1,6 +1,6 @@
-import { ChevronRight } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react'
+import { Link } from '@/i18n/navigation'
+import { Button } from '@/components/ui/button'
 interface SectionContainerProps {
   children: React.ReactNode
   title?: string
@@ -25,44 +25,43 @@ export default function DashboardSection({
   subBtn,
 }: SectionContainerProps) {
   return (
-    <div className="container mx-auto overflow-x-hidden">
-      <div className="flex justify-between items-center">
-        {title ? (
-          <div className=" flex flex-col w-full mb-6 z-10">
-            <div className="flex justify-between items-center mb-4">
-              <Link href={backLink} className="group">
-                <span className="text-xs md:text-sm text-muted-foreground flex items-center gap-2 hover:underline">
-                  <span>{backLinkTitle}</span>
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </Link>
-            </div>
-            <h1 className="text-xl md:text-3xl font-bold text-primary">{title}</h1>
-          </div>
-        ) : (
-          <div className="flex flex-col w-full mb-2 z-10">
-            <Link href={backLink} className="group">
-              <span className="text-xs md:text-sm text-muted-foreground flex items-center gap-2 hover:underline">
-                <span>{backLinkTitle}</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
-          </div>
-        )}
-        <div className="flex flex-col md:flex-row gap-2">
+    <div className="mx-auto w-full min-w-0">
+      <header className="mb-7 flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+        <div className="flex min-w-0 flex-col gap-3 sm:flex-1 sm:basis-64">
+          <Link
+            href={backLink}
+            className="inline-flex min-h-9 w-fit items-center gap-2 rounded-md text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <ArrowLeft aria-hidden="true" className="size-3.5 shrink-0" />
+            <span>{backLinkTitle}</span>
+          </Link>
+          {title && (
+            <h1 className="break-words text-balance text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+              {title}
+            </h1>
+          )}
+        </div>
+        <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2">
           {infoBtn && (
-            <Button asChild className="text-xs md:text-sm">
+            <Button
+              asChild
+              className="h-auto min-h-11 max-w-full whitespace-normal rounded-lg px-5 text-left shadow-none"
+            >
               <Link href={infoBtn.link}>{infoBtn.text}</Link>
             </Button>
           )}
           {subBtn && (
-            <Button asChild className="text-xs md:text-sm">
+            <Button
+              asChild
+              variant="outline"
+              className="h-auto min-h-11 max-w-full whitespace-normal rounded-lg px-5 text-left shadow-none"
+            >
               <Link href={subBtn.link}>{subBtn.text}</Link>
             </Button>
           )}
         </div>
-      </div>
-      <div className="mb-24 max-w-[100vw] overflow-x-hidden">{children}</div>
+      </header>
+      <div className="min-w-0 pb-8">{children}</div>
     </div>
   )
 }

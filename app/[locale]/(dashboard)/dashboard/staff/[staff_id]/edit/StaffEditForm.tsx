@@ -502,15 +502,15 @@ export default function StaffEditForm() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="admin-form">
         <Tabs defaultValue="basic">
-          <TabsList>
+          <TabsList className="mb-4 h-auto max-w-full flex-wrap justify-start gap-1">
             <TabsTrigger value="basic">{t('staff.add.tabBasicInfo')}</TabsTrigger>
             <TabsTrigger value="exclusion">{t('staff.add.tabExclusionMenu')}</TabsTrigger>
           </TabsList>
           <TabsContent value="basic">
-            <Card className="shadow-md border-border">
-              <CardContent className="space-y-8 pt-6">
+            <Card className="admin-panel">
+              <CardContent className="space-y-8 px-4 pt-5 sm:px-6 sm:pt-6">
                 {/* 基本情報セクション */}
                 <div>
                   <div className="flex flex-col md:flex-row gap-6 pb-4 w-full overflow-hidden">
@@ -879,7 +879,7 @@ export default function StaffEditForm() {
             )}
           </TabsContent>
         </Tabs>
-        <div className="flex justify-between py-4 ">
+        <div className="admin-toolbar justify-between border-t border-border py-5 mt-6">
           <Button
             type="button"
             variant="outline"

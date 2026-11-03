@@ -429,7 +429,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
       backLink={`/dashboard/carte/${customerUid}`}
       backLinkTitle="カルテに戻る"
     >
-      <div className="space-y-3">
+      <div className="space-y-5">
         {/* ヘッダー情報 */}
         <Card>
           <CardHeader className="py-5 ">
@@ -445,7 +445,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
                   <CalendarDays className="w-4 h-4 text-muted-foreground" />
                   <span className="text-base text-muted-foreground">施術日時</span>
                 </div>
-                <p className="font-bold text-link-foreground underline">
+                <p className="font-semibold text-foreground">
                   {formatDate(
                     carteData.carteDetail?.service_start_time ||
                       carteData.carteDetail?.created_at ||
@@ -453,12 +453,12 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
                   )}
                 </p>
               </div>
-              <div className="bg-neon-foreground p-3 rounded-lg">
+              <div className="rounded-xl bg-muted p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <User className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">担当スタッフ</span>
                 </div>
-                <p className="font-bold text-neon underline">
+                <p className="font-bold text-foreground">
                   {carteData.carteDetail?.staff_name || '-'}
                 </p>
               </div>
@@ -474,12 +474,12 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
               ? ['treatment', 'notes']
               : ['photos', 'treatment', 'notes']
           }
-          className="space-y-3"
+          className="space-y-5"
         >
           {/* 施術後写真 */}
           <AccordionItem
             value="photos"
-            className={`border rounded-lg  py-3 ${subscription?.plan_name === 'LITE' ? 'pointer-events-none opacity-50' : ''}`}
+            className={`admin-panel py-2 ${subscription?.plan_name === 'LITE' ? 'pointer-events-none opacity-50' : ''}`}
           >
             <AccordionTrigger className="hover:no-underline py-3 px-4">
               <div className="flex items-center gap-2">
@@ -494,7 +494,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
             </AccordionTrigger>
             <AccordionContent className="space-y-3 pt-1 px-4">
               {/* 既存の画像管理 */}
-              <div className="space-y-3 md:grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div className="w-full mb-12 md:mb-0">
                   {existingImages.length > 0 ? (
                     <div className="w-full">
@@ -506,7 +506,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
                         {existingImages.map((image, index) => (
                           <div
                             key={index}
-                            className="relative aspect-[3/4] bg-muted group rounded-lg overflow-hidden border border-border"
+                            className="relative aspect-[3/4] bg-muted group rounded-xl overflow-hidden border border-border"
                           >
                             <Image
                               src={image.thumbnail_url}
@@ -519,7 +519,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
                             <Button
                               variant="destructive"
                               size="icon"
-                              className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg"
+                              className="absolute right-1 top-1 size-11 opacity-100 shadow-sm transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
                               onClick={() => {
                                 const newImages = existingImages.filter((_, i) => i !== index)
                                 setExistingImages(newImages)
@@ -588,7 +588,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
             </AccordionContent>
           </AccordionItem>
           {/* 施術内容 */}
-          <AccordionItem value="treatment" className="border rounded-lg py-2">
+          <AccordionItem value="treatment" className="admin-panel py-2">
             <AccordionTrigger className="hover:no-underline py-3 px-4">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
@@ -659,7 +659,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
           </AccordionItem>
 
           {/* 顧客要望・メモ */}
-          <AccordionItem value="notes" className="border rounded-lg py-2">
+          <AccordionItem value="notes" className="admin-panel py-2">
             <AccordionTrigger className="hover:no-underline py-3 px-4">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
@@ -668,8 +668,8 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
             </AccordionTrigger>
             <AccordionContent className="space-y-4 pt-1 px-4">
               <div className="bg-secondary border border-secondary rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
+                <div className="mb-2 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0 flex-1">
                     <Label
                       htmlFor="customer-requests"
                       className="text-sm font-semibold text-primary"
@@ -681,7 +681,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
                     </p>
                   </div>
                   <div
-                    className={`${subscription?.plan_name === 'LITE' ? 'pointer-events-none opacity-50' : ''}`}
+                    className={`shrink-0 ${subscription?.plan_name === 'LITE' ? 'pointer-events-none opacity-50' : ''}`}
                   >
                     {subscription?.plan_name === 'LITE' && (
                       <span className="text-xs text-muted-foreground mr-2 bg-muted px-2 py-1 rounded">
@@ -711,8 +711,8 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
                 />
               </div>
               <div className="bg-secondary border border-secondary rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
+                <div className="mb-2 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0 flex-1">
                     <Label htmlFor="staff-notes" className="text-sm font-semibold">
                       スタッフメモ
                     </Label>
@@ -721,7 +721,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
                     </p>
                   </div>
                   <div
-                    className={`${subscription?.plan_name === 'LITE' ? 'pointer-events-none opacity-50' : ''}`}
+                    className={`shrink-0 ${subscription?.plan_name === 'LITE' ? 'pointer-events-none opacity-50' : ''}`}
                   >
                     {subscription?.plan_name === 'LITE' && (
                       <span className="text-xs text-muted-foreground mr-2 bg-muted px-2 py-1 rounded">
@@ -753,7 +753,7 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
         </Accordion>
 
         {/* 保存ボタン */}
-        <div className="bg-card p-4 rounded-lg border border-border">
+        <div className="admin-panel p-4 sm:p-5">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <div
@@ -824,8 +824,8 @@ export default function CarteDetailPage({ params: paramsPromise }: CarteDetailPa
                             />
                             {existingImages.length > 1 && (
                               <>
-                                <CarouselPrevious className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background hover:bg-muted p-1 rounded-full text-muted-foreground" />
-                                <CarouselNext className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background hover:bg-muted p-1 rounded-full text-muted-foreground" />
+                                <CarouselPrevious className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-10 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 bg-background hover:bg-muted p-1 rounded-full text-muted-foreground" />
+                                <CarouselNext className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-10 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 bg-background hover:bg-muted p-1 rounded-full text-muted-foreground" />
                               </>
                             )}
                           </div>
