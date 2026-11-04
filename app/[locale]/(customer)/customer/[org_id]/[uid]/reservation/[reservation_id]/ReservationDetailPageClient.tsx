@@ -90,8 +90,10 @@ export function ReservationDetailPageClient({
   useEffect(() => {
     async function fetchReservationData() {
       // Convexデータがある場合
-      if (isConvexId && convexData) {
-        if (!convexData.reservation) {
+      if (isConvexId && convexData !== undefined) {
+        if (!convexData?.reservation) {
+          setReservationData(null)
+          setIsLoading(false)
           toast.error('予約が見つかりません')
           router.push(`/customer/${orgId}/${customerUid}/reservation`)
           return
