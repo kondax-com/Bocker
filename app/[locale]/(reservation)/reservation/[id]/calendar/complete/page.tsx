@@ -47,9 +47,10 @@ export default function CompletePage() {
   const [progress, setProgress] = useState(0)
   const [showConfetti, setShowConfetti] = useState(true)
 
-  const reservationWithDetail = useQuery(api.reservation.query.getWithDetailById, {
-    id: reservationId as Id<'reservation'>,
-  })
+  const reservationWithDetail = useQuery(
+    api.reservation.query.getWithDetailById,
+    reservationId ? { id: reservationId as Id<'reservation'> } : 'skip'
+  )
   const organizationConfig = useQuery(
     api.organization.config.query.findByTenantAndOrg,
     reservationWithDetail?.reservation?.org_id && reservationWithDetail?.reservation?.tenant_id
@@ -231,6 +232,14 @@ export default function CompletePage() {
         staggerChildren: 0.1,
       },
     },
+  }
+
+  if (!reservationId || reservationWithDetail === null) {
+    return (
+      <div className="container mx-auto px-4 py-12 text-center" role="status">
+        <p>予約が見つかりません</p>
+      </div>
+    )
   }
 
   // reservationデータがロードされるまでローディング表示

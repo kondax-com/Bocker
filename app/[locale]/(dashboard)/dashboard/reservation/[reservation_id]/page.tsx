@@ -189,10 +189,11 @@ export default function ReservationPage() {
 
   // ローディング条件を指名フリー予約に対応
   const shouldShowLoading = () => {
-    // 基本データがない場合
-    if (reservationLoading || !reservationData) {
+    // 基本データを取得中の場合
+    if (reservationLoading) {
       return true
     }
+    if (!reservationData) return false
 
     // Convexデータの場合のみメニュー詳細を待つ
     if (reservationData.source === 'convex' && !reservationMenuDetails) {
@@ -314,7 +315,19 @@ export default function ReservationPage() {
     }
   }
 
-  if (!reservationData) return <Loading />
+  if (!reservationData) {
+    return (
+      <DashboardSection
+        title={t('title')}
+        backLink="/dashboard/reservation"
+        backLinkTitle="予約一覧へ"
+      >
+        <p className="p-6 text-center" role="status">
+          予約が見つかりません
+        </p>
+      </DashboardSection>
+    )
+  }
 
   return (
     <DashboardSection
